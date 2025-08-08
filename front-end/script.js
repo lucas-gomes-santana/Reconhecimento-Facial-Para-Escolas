@@ -1,23 +1,41 @@
 const video = document.getElementById('video');
 
-// Função para enviar descritor facial ao backend
+// Adicione no início do arquivo:
+let lastDescriptor = null;
+const SIMILARITY_THRESHOLD = 0.5; // Ajuste conforme necessário (quanto menor, mais sensível)
+
+// Função para calcular distância euclidiana entre descritores
+function getDescriptorDistance(desc1, desc2) {
+  return faceapi.euclideanDistance(desc1, desc2);
+}
+
+// Modifique a função saveFaceDescriptor:
 async function saveFaceDescriptor(detections) {
   if (detections.length === 0) return;
 
-  const descriptor = detections[0].descriptor;
-  console.log("Descritor facial extraído:", descriptor);
+  const currentDescriptor = detections[0].descriptor;
+  
+  // Se não há último descritor ou é significativamente diferente
+  if (!lastDescriptor || 
+      getDescriptorDistance(lastDescriptor, currentDescriptor) > SIMILARITY_THRESHOLD) {
+    
+    console.log("Enviando novo descritor facial...");
+    lastDescriptor = currentDescriptor;
 
-  try {
-    const response = await fetch('http://localhost:3000/api/faces', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ 
-        descriptor: Array.from(descriptor) // Converte Float32Array para Array
-      })
-    });
-    console.log("Resposta do servidor:", await response.text());
-  } catch (err) {
-    console.error("Erro ao enviar descritor:", err);
+    try {
+      const response = await fetch('http://localhost:3000/api/faces', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          descriptor: Array.from(currentDescriptor)
+        })
+      });
+      console.log("Resposta do servidor:", await response.text());
+    } catch (err) {
+      console.error("Erro ao enviar descritor:", err);
+    }
+  } else {
+    console.log("Rosto similar detectado - não enviando");
   }
 }
 
@@ -70,11 +88,11 @@ video.addEventListener('playing', () => {
         // Envia para o backend após 2 segundos
         setTimeout(() => {
           saveFaceDescriptor(detections);
-        }, 2000);
+        }, 3000);
       }
 
     } catch (err) {
       console.error("Erro na detecção:", err);
     }
-  }, 100);
+  }, 200);
 });
