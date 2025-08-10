@@ -1,79 +1,110 @@
 // _home.scss
 
-// Variáveis de tema
-$primary-color: #2d89ef;
-$secondary-color: #1e1e1e;
-$light-bg: #f9f9f9;
-$card-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-$transition: all 0.3s ease;
+// Variáveis de tema atualizadas
+$primary-color: #4361ee;
+$secondary-color: #3a0ca3;
+$accent-color: #4cc9f0;
+$dark-bg: #1a1a2e;
+$light-bg: #f8f9fa;
+$card-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+$transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+$title-highlight: #4cc9f0;
 
-// Container superior
-.top-container {
-  position: relative;
+// Seção principal
+.main-content {
+  padding: 4rem 2rem;
+  background-color: $light-bg;
+}
+
+.section-title {
   text-align: center;
-  color: white;
+  color: $secondary-color;
+  font-size: 2rem;
+  margin-bottom: 3rem;
+  position: relative;
 
-  img {
-    width: 100%;
-    height: 600px;
-    object-fit: cover;
-    filter: brightness(0.7);
-  }
-
-  h1 {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: clamp(1.5rem, 3vw, 2.5rem);
-    font-weight: bold;
-    text-shadow: 0 3px 8px rgba(0, 0, 0, 0.6);
+  &::after {
+    content: '';
+    display: block;
+    width: 80px;
+    height: 4px;
+    background: $accent-color;
+    margin: 1rem auto 0;
+    border-radius: 2px;
   }
 }
 
-// Lista de ações
+// Lista de ações melhorada
 .actions-list {
-  display: flex;
-  justify-content: center;
-  gap: 4rem;
-  margin: 2rem auto;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
 
-  a {
+.action-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem;
+  background: white;
+  border-radius: 1rem;
+  text-decoration: none;
+  color: $secondary-color;
+  box-shadow: $card-shadow;
+  transition: $transition;
+  text-align: center;
+  height: 80%;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+
+  .action-icon {
+    width: 80px;
+    height: 80px;
     display: flex;
-    flex-direction: column;
     align-items: center;
-    padding: 1.5rem;
-    background: white;
-    border-radius: 1rem;
-    text-decoration: none;
-    color: $secondary-color;
-    box-shadow: $card-shadow;
+    justify-content: center;
+    background: linear-gradient(135deg, rgba($primary-color, 0.1) 0%, rgba($accent-color, 0.1) 100%);
+    border-radius: 50%;
+    margin-bottom: 1.5rem;
     transition: $transition;
-    width: 150px;
 
     svg {
       width: 40px;
       height: 40px;
-      margin-bottom: 0.5rem;
       color: $primary-color;
       transition: $transition;
     }
+  }
 
-    label {
-      font-weight: bold;
-      cursor: pointer;
-    }
+  h3 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    color: $dark-bg;
+  }
 
-    &:hover {
-      transform: translateY(-5px);
-      background: $primary-color;
-      color: white;
+  .action-description {
+    color: lighten($secondary-color, 20%);
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin-bottom: 0;
+  }
+
+  &:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+
+    .action-icon {
+      background: linear-gradient(135deg, $primary-color 0%, $accent-color 100%);
 
       svg {
         color: white;
       }
     }
+
+    h3 {
+      color: $primary-color;
+    }
   }
 }
-

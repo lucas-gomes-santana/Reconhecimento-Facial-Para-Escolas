@@ -1,90 +1,108 @@
 @import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap");
-.top-container {
-  position: relative;
+.main-content {
+  padding: 4rem 2rem;
+  background-color: #f8f9fa;
+}
+
+.section-title {
   text-align: center;
-  color: white;
+  color: #3a0ca3;
+  font-size: 2rem;
+  margin-bottom: 3rem;
+  position: relative;
 }
-.top-container img {
-  width: 100%;
-  height: 600px;
-  -o-object-fit: cover;
-     object-fit: cover;
-  filter: brightness(0.7);
-}
-.top-container h1 {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-size: clamp(1.5rem, 3vw, 2.5rem);
-  font-weight: bold;
-  text-shadow: 0 3px 8px rgba(0, 0, 0, 0.6);
+.section-title::after {
+  content: "";
+  display: block;
+  width: 80px;
+  height: 4px;
+  background: #4cc9f0;
+  margin: 1rem auto 0;
+  border-radius: 2px;
 }
 
 .actions-list {
-  display: flex;
-  justify-content: center;
-  gap: 4rem;
-  margin: 2rem auto;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
 }
-.actions-list a {
+
+.action-card {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 1.5rem;
+  padding: 2rem;
   background: white;
   border-radius: 1rem;
   text-decoration: none;
-  color: #1e1e1e;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-  transition: all 0.3s ease;
-  width: 150px;
+  color: #3a0ca3;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  text-align: center;
+  height: 80%;
+  border: 1px solid rgba(0, 0, 0, 0.05);
 }
-.actions-list a svg {
+.action-card .action-icon {
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, rgba(67, 97, 238, 0.1) 0%, rgba(76, 201, 240, 0.1) 100%);
+  border-radius: 50%;
+  margin-bottom: 1.5rem;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+.action-card .action-icon svg {
   width: 40px;
   height: 40px;
-  margin-bottom: 0.5rem;
-  color: #2d89ef;
-  transition: all 0.3s ease;
+  color: #4361ee;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
-.actions-list a label {
-  font-weight: bold;
-  cursor: pointer;
+.action-card h3 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  color: #1a1a2e;
 }
-.actions-list a:hover {
-  transform: translateY(-5px);
-  background: #2d89ef;
+.action-card .action-description {
+  color: rgb(99.2228571429, 37.9771428571, 239.0228571429);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  margin-bottom: 0;
+}
+.action-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+}
+.action-card:hover .action-icon {
+  background: linear-gradient(135deg, #4361ee 0%, #4cc9f0 100%);
+}
+.action-card:hover .action-icon svg {
   color: white;
 }
-.actions-list a:hover svg {
-  color: white;
-}
-
-body {
-  font-family: "Arial", sans-serif;
-  background-color: #f5f5f5;
-  margin: 0;
-  padding: 20px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
+.action-card:hover h3 {
+  color: #4361ee;
 }
 
 .cadastro-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   background: white;
   padding: 30px;
   border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  width: 100%;
-  max-width: 800px;
+  box-shadow: 0 6px 11px rgba(0, 0, 0, 0.3);
+  width: 40%;
+  margin-left: 30%;
+  margin-top: 2rem;
 }
-
-h1 {
-  color: #2c3e50;
-  text-align: center;
-  margin-bottom: 30px;
+.cadastro-container h1 {
+  color: #2a4159;
+  margin-bottom: 1.5rem;
 }
 
 .form-group {
@@ -119,7 +137,7 @@ h1 {
 }
 .video-container #status {
   position: absolute;
-  bottom: -30px;
+  bottom: -40px;
   left: 0;
   width: 100%;
   text-align: center;
@@ -137,6 +155,7 @@ button {
   font-size: 16px;
   margin-right: 10px;
   transition: background-color 0.3s;
+  margin-top: 2.2rem;
 }
 button:hover {
   background-color: #2980b9;
