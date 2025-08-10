@@ -1,50 +1,54 @@
 const video = document.getElementById('video');
-
-// Adicione no início do arquivo:
 let lastDescriptor = null;
-const SIMILARITY_THRESHOLD = 0.5; // Ajuste conforme necessário (quanto menor, mais sensível)
+const SIMILARITY_THRESHOLD = 0.5;
+let cadastroData = {}; // Armazena temporariamente nome e tipo
 
-// Função para calcular distância euclidiana entre descritores
-function getDescriptorDistance(desc1, desc2) {
-  return faceapi.euclideanDistance(desc1, desc2);
+// Função para configurar dados do formulário
+function setCadastroData(nome, tipoUsuario) {
+    cadastroData = { nome, tipoUsuario };
 }
 
-// Modifique a função saveFaceDescriptor:
 async function saveFaceDescriptor(detections) {
-  if (detections.length === 0) return;
+    if (detections.length === 0 || !cadastroData.nome || !cadastroData.tipoUsuario) return;
 
-  const currentDescriptor = detections[0].descriptor;
-  
-  // Se não há último descritor ou é significativamente diferente
-  if (!lastDescriptor || 
-      getDescriptorDistance(lastDescriptor, currentDescriptor) > SIMILARITY_THRESHOLD) {
+    const currentDescriptor = detections[0].descriptor;
     
-    console.log("Enviando novo descritor facial...");
-    lastDescriptor = currentDescriptor;
+    if (!lastDescriptor || 
+        faceapi.euclideanDistance(lastDescriptor, currentDescriptor) > SIMILARITY_THRESHOLD) {
+        
+        console.log("Enviando dados para cadastro...");
+        lastDescriptor = currentDescriptor;
 
-    try {
-      const response = await fetch('http://localhost:3000/api/faces', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          descriptor: Array.from(currentDescriptor)
-        })
-      });
-      console.log("Resposta do servidor:", await response.text());
-    } catch (err) {
-      console.error("Erro ao enviar descritor:", err);
+        try {
+            const response = await fetch('http://localhost:3000/api/usuarios', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    ...cadastroData,
+                    descriptor: Array.from(currentDescriptor)
+                })
+            });
+            
+            const result = await response.json();
+            if (response.ok) {
+                console.log("Cadastro realizado:", result);
+                alert(`Usuário ${cadastroData.nome} cadastrado com sucesso!`);
+            } else {
+                throw new Error(result.message || "Erro no cadastro");
+            }
+        } catch (err) {
+            console.error("Erro:", err);
+            alert("Erro ao cadastrar: " + err.message);
+        }
     }
-  } else {
-    console.log("Rosto similar detectado - não enviando");
-  }
 }
 
 // 1. Carregar TODOS os modelos necessários
 Promise.all([
-  faceapi.nets.tinyFaceDetector.loadFromUri('models'),
-  faceapi.nets.faceLandmark68Net.loadFromUri('models'),
-  faceapi.nets.faceRecognitionNet.loadFromUri('models'),
-  faceapi.nets.faceExpressionNet.loadFromUri('models')
+  faceapi.nets.tinyFaceDetector.loadFromUri('../models'),
+  faceapi.nets.faceLandmark68Net.loadFromUri('../models'),
+  faceapi.nets.faceRecognitionNet.loadFromUri('../models'),
+  faceapi.nets.faceExpressionNet.loadFromUri('../models')
 ]).then(startVideo).catch(err => console.error("Erro nos modelos:", err));
 
 function startVideo() {

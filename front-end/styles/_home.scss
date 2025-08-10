@@ -1,0 +1,79 @@
+// _home.scss
+
+// Variáveis de tema
+$primary-color: #2d89ef;
+$secondary-color: #1e1e1e;
+$light-bg: #f9f9f9;
+$card-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+$transition: all 0.3s ease;
+
+// Container superior
+.top-container {
+  position: relative;
+  text-align: center;
+  color: white;
+
+  img {
+    width: 100%;
+    height: 600px;
+    object-fit: cover;
+    filter: brightness(0.7);
+  }
+
+  h1 {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: clamp(1.5rem, 3vw, 2.5rem);
+    font-weight: bold;
+    text-shadow: 0 3px 8px rgba(0, 0, 0, 0.6);
+  }
+}
+
+// Lista de ações
+.actions-list {
+  display: flex;
+  justify-content: center;
+  gap: 4rem;
+  margin: 2rem auto;
+  flex-wrap: wrap;
+
+  a {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1.5rem;
+    background: white;
+    border-radius: 1rem;
+    text-decoration: none;
+    color: $secondary-color;
+    box-shadow: $card-shadow;
+    transition: $transition;
+    width: 150px;
+
+    svg {
+      width: 40px;
+      height: 40px;
+      margin-bottom: 0.5rem;
+      color: $primary-color;
+      transition: $transition;
+    }
+
+    label {
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    &:hover {
+      transform: translateY(-5px);
+      background: $primary-color;
+      color: white;
+
+      svg {
+        color: white;
+      }
+    }
+  }
+}
+
