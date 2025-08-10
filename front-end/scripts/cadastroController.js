@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     // Elementos do DOM
     const form = document.getElementById('cadastroForm');
     const nomeInput = document.getElementById('nome');
@@ -10,138 +10,163 @@ document.addEventListener('DOMContentLoaded', () => {
     const canvas = document.getElementById('canvas');
     
     // Variáveis de estado
-    let faceDescriptor = null;
-    let isCameraActive = false;
-    let detectionInterval;
+    let isDetecting = false;
 
-    // Configuração inicial
-    canvas.width = 640;
-    canvas.height = 480;
-    const displaySize = { width: 640, height: 480 };
-    faceapi.matchDimensions(canvas, displaySize);
+    // Aguarda um pouco para garantir que o face-api.js foi carregado
+    await new Promise(resolve => setTimeout(resolve, 100));
 
-    // Carrega modelos do face-api.js
-    async function loadModels() {
-        try {
-            await Promise.all([
-                faceapi.nets.tinyFaceDetector.loadFromUri('../models'),
-                faceapi.nets.faceLandmark68Net.loadFromUri('../models'),
-                faceapi.nets.faceRecognitionNet.loadFromUri('../models')
-            ]);
-            console.log('Modelos carregados com sucesso');
-        } catch (err) {
-            console.error('Erro ao carregar modelos:', err);
-            statusElement.textContent = 'Erro ao carregar recursos de reconhecimento';
-        }
+    try {
+        // Inicializa o reconhecedor facial
+        FaceRecognition.init(video, canvas);
+        
+        // Carrega os modelos do face-api.js
+        statusElement.textContent = 'Carregando modelos de IA...';
+        await FaceRecognition.loadModels();
+        
+        statusElement.textContent = 'Sistema pronto - Preencha os dados e inicie o reconhecimento';
+        
+    } catch (err) {
+        console.error('Falha na inicialização:', err);
+        statusElement.textContent = 'Erro ao carregar recursos do sistema';
+        return;
     }
 
-    // Inicia a câmera
-    async function startCamera() {
-        try {
-            const stream = await navigator.mediaDevices.getUserMedia({ video: {} });
-            video.srcObject = stream;
-            await video.play();
-            isCameraActive = true;
-            return true;
-        } catch (err) {
-            console.error('Erro na câmera:', err);
-            statusElement.textContent = 'Erro ao acessar a câmera';
-            return false;
-        }
-    }
-
-    // Detecta rostos periodicamente
-    function startFaceDetection() {
-        detectionInterval = setInterval(async () => {
-            if (!isCameraActive) return;
-
-            try {
-                const detections = await faceapi.detectAllFaces(
-                    video, 
-                    new faceapi.TinyFaceDetectorOptions()
-                ).withFaceLandmarks().withFaceDescriptors();
-
-                const resizedDetections = faceapi.resizeResults(detections, displaySize);
-                
-                // Limpa e desenha no canvas
-                const ctx = canvas.getContext('2d');
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                faceapi.draw.drawDetections(canvas, resizedDetections);
-                faceapi.draw.drawFaceLandmarks(canvas, resizedDetections);
-
-                if (detections.length > 0) {
-                    faceDescriptor = detections[0].descriptor;
-                    statusElement.textContent = 'Rosto detectado!';
-                    salvarBtn.disabled = false;
-                } else {
-                    statusElement.textContent = 'Posicione seu rosto na câmera';
-                    salvarBtn.disabled = true;
-                }
-            } catch (err) {
-                console.error('Erro na detecção:', err);
-            }
-        }, 300);
-    }
-
-    // Envia dados para o backend
-    async function cadastrarUsuario() {
-        if (!faceDescriptor || !nomeInput.value || !tipoUsuarioSelect.value) {
-            alert('Preencha todos os campos e posicione seu rosto!');
-            return;
-        }
-
-        try {
-            salvarBtn.disabled = true;
-            statusElement.textContent = 'Enviando dados...';
-
-            const response = await fetch('http://localhost:3000/api/usuarios', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    nome: nomeInput.value,
-                    tipoUsuario: tipoUsuarioSelect.value,
-                    descriptor: Array.from(faceDescriptor)
-                })
-            });
-
-            const data = await response.json();
-
-            if (response.ok) {
-                alert(`Usuário ${data.usuario.nome} cadastrado com sucesso!`);
-                form.reset();
-                statusElement.textContent = 'Pronto para novo cadastro';
-            } else {
-                throw new Error(data.error || 'Erro no cadastro');
-            }
-        } catch (err) {
-            console.error('Erro:', err);
-            alert('Falha no cadastro: ' + err.message);
-            statusElement.textContent = 'Erro - Tente novamente';
-        } finally {
-            salvarBtn.disabled = false;
-        }
-    }
-
-    // Event Listeners
+    // Event Listener para iniciar reconhecimento
     iniciarBtn.addEventListener('click', async () => {
-        if (!nomeInput.value || !tipoUsuarioSelect.value) {
+        if (!nomeInput.value.trim() || !tipoUsuarioSelect.value) {
             alert('Preencha nome e tipo de usuário primeiro!');
             return;
         }
 
-        statusElement.textContent = 'Iniciando câmera...';
-        iniciarBtn.disabled = true;
+        try {
+            iniciarBtn.disabled = true;
+            salvarBtn.disabled = true;
+            statusElement.textContent = 'Iniciando detecção facial...';
 
-        if (!isCameraActive) {
-            const success = await startCamera();
-            if (!success) return;
+            // Configura os dados do cadastro no FaceRecognition
+            FaceRecognition.setCadastroData(nomeInput.value.trim(), tipoUsuarioSelect.value);
+
+            // Inicia a detecção
+            await FaceRecognition.startDetection();
+            isDetecting = true;
+
+            // Aguarda captura do descritor (máximo 15 segundos)
+            statusElement.textContent = 'Posicione seu rosto na frente da câmera...';
+            const descriptor = await aguardarDescriptor(15000);
+
+            if (!descriptor) {
+                throw new Error('Não foi possível capturar seu rosto. Tente novamente.');
+            }
+
+            // Para a detecção
+            FaceRecognition.stopDetection();
+            isDetecting = false;
+
+            statusElement.textContent = 'Rosto capturado! Pronto para salvar.';
+            salvarBtn.disabled = false;
+            iniciarBtn.textContent = 'Reconhecimento Concluído ✓';
+
+        } catch (error) {
+            console.error('Erro no reconhecimento:', error);
+            statusElement.textContent = 'Erro no reconhecimento - Tente novamente';
+            alert(error.message || 'Erro durante o reconhecimento facial');
+            
+            // Reabilita botões
+            iniciarBtn.disabled = false;
+            iniciarBtn.textContent = 'Iniciar Reconhecimento';
+            salvarBtn.disabled = true;
+            
+            // Para detecção se ainda estiver ativa
+            if (isDetecting) {
+                FaceRecognition.stopDetection();
+                isDetecting = false;
+            }
         }
-
-        startFaceDetection();
     });
 
-    salvarBtn.addEventListener('click', cadastrarUsuario);
+    // Event Listener para salvar cadastro
+    salvarBtn.addEventListener('click', async () => {
+        try {
+            salvarBtn.disabled = true;
+            statusElement.textContent = 'Salvando cadastro...';
 
-    // Inicialização
-    loadModels();
+            // Usa o método saveFaceDescriptor do FaceRecognizer
+            await FaceRecognition.saveFaceDescriptor();
+
+            // Sucesso - limpa o formulário
+            form.reset();
+            iniciarBtn.disabled = false;
+            iniciarBtn.textContent = 'Iniciar Reconhecimento';
+            salvarBtn.disabled = true;
+            statusElement.textContent = 'Cadastro realizado com sucesso! Pronto para novo cadastro.';
+
+        } catch (error) {
+            console.error('Erro no cadastro:', error);
+            statusElement.textContent = 'Erro ao salvar - Tente novamente';
+            
+            // Trata erros específicos
+            if (error.message && error.message.includes('409')) {
+                alert('Este rosto já está cadastrado no sistema!');
+            } else if (error.message && error.message.includes('fetch')) {
+                alert('Erro de conexão. Verifique se o servidor está rodando.');
+            } else {
+                alert('Erro ao salvar cadastro: ' + (error.message || 'Erro desconhecido'));
+            }
+            
+            salvarBtn.disabled = false;
+        }
+    });
+
+    // Função para aguardar captura do descritor
+    function aguardarDescriptor(timeout = 15000) {
+        return new Promise((resolve, reject) => {
+            const startTime = Date.now();
+            let lastStatusUpdate = 0;
+            
+            const verificarDescriptor = () => {
+                const descriptor = FaceRecognition.getDescriptor();
+                const currentTime = Date.now();
+                
+                // Atualiza status a cada 2 segundos
+                if (currentTime - lastStatusUpdate > 2000) {
+                    const elapsed = Math.floor((currentTime - startTime) / 1000);
+                    const remaining = Math.max(0, Math.floor(timeout / 1000) - elapsed);
+                    statusElement.textContent = `Detectando rosto... (${remaining}s restantes)`;
+                    lastStatusUpdate = currentTime;
+                }
+                
+                if (descriptor && descriptor.length > 0) {
+                    console.log('Descritor capturado com sucesso:', descriptor.length, 'dimensões');
+                    resolve(descriptor);
+                    return;
+                }
+
+                // Verifica timeout
+                if (currentTime - startTime > timeout) {
+                    reject(new Error('Tempo esgotado: não foi possível detectar um rosto'));
+                    return;
+                }
+
+                // Tenta novamente após 300ms
+                setTimeout(verificarDescriptor, 300);
+            };
+
+            verificarDescriptor();
+        });
+    }
+
+    // Event Listener para o form (previne submit tradicional)
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        if (!salvarBtn.disabled) {
+            salvarBtn.click();
+        }
+    });
+
+    // Limpeza quando a página for fechada
+    window.addEventListener('beforeunload', () => {
+        if (isDetecting) {
+            FaceRecognition.stopDetection();
+        }
+    });
 });

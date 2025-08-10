@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verificar Cadastro</title>
+    <link rel="stylesheet" href="../styles/index.css">
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Verificação de Cadastro</h1>
+        
+        <div class="video-container">
+            <video id="video" width="640" height="480" autoplay muted playsinline></video>
+            <canvas id="canvas" class="overlay"></canvas>
+        </div>
+        
+        <div id="status">Inicializando sistema...</div>
+        <button id="iniciarVerificacao" disabled>Iniciar Verificação</button>
+        <div id="resultado" class="resultado-container"></div>
+    </div>
+
+    <!-- Scripts - ordem importante -->
+    <script defer src="../scripts/face-api.min.js"></script>
+    <script defer src="../scripts/faceRecognizer.js"></script>
+    <script defer src="../scripts/compararController.js"></script>
+</body>
+</html>

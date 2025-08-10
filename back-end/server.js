@@ -22,18 +22,32 @@ const UsuarioSchema = new mongoose.Schema({
     dataCadastro: { type: Date, default: Date.now }
 });
 
+const Usuario = mongoose.model('Usuario', UsuarioSchema);
+
+Usuario.createIndexes().then(() => {
+  console.log('Índices criados com sucesso');
+}).catch(err => {
+  console.error('Erro ao criar índices:', err);
+})
+
 // Middleware para verificar rosto duplicado
 async function verificarRostoExistente(descriptor) {
-    const point = { type: 'Point', coordinates: descriptor };
-    const usuarioExistente = await Usuario.findOne({
-        descriptor: {
-            $near: {
-                $geometry: point,
-                $maxDistance: 0.6
-            }
+  try {
+    return await Usuario.findOne({
+      descriptor: {
+        $nearSphere: {
+          $geometry: {
+            type: "Point",
+            coordinates: descriptor
+          },
+          $maxDistance: 0.9
         }
+      }
     });
-    return usuarioExistente;
+  } catch (err) {
+    console.error('Erro na consulta:', err);
+    throw err;
+  }
 }
 
 app.post('/api/usuarios', async (req, res) => {
@@ -64,6 +78,34 @@ app.post('/api/usuarios', async (req, res) => {
                 data: novoUsuario.dataCadastro
             }
         });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Nova rota para verificação
+app.post('/api/verificar-rosto', async (req, res) => {
+    try {
+        const { descriptor } = req.body;
+        
+        if (!descriptor) {
+            return res.status(400).json({ error: 'Descritor facial não fornecido' });
+        }
+
+        const usuarioExistente = await verificarRostoExistente(descriptor);
+        
+        if (usuarioExistente) {
+            return res.json({ 
+                encontrado: true,
+                usuario: {
+                    nome: usuarioExistente.nome,
+                    tipoUsuario: usuarioExistente.tipoUsuario,
+                    dataCadastro: usuarioExistente.dataCadastro
+                }
+            });
+        } else {
+            return res.json({ encontrado: false });
+        }
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
