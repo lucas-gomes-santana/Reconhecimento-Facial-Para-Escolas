@@ -20,8 +20,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         statusElement.textContent = 'Carregando modelos de IA...';
         await FaceRecognition.loadModels();
         
-        statusElement.textContent = 'Sistema pronto - Clique para verificar';
+        statusElement.textContent = 'Sistema pronto - Clique para verificar seu cadastro';
         btnVerificar.disabled = false;
+        btnVerificar.textContent = 'Iniciar Verificação';
         
     } catch (err) {
         console.error('Falha na inicialização:', err);
@@ -40,6 +41,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         try {
             // Desabilita botão e limpa resultados anteriores
             btnVerificar.disabled = true;
+            btnVerificar.textContent = 'Verificando...';
             statusElement.textContent = 'Posicione seu rosto na frente da câmera...';
             resultadoElement.innerHTML = '';
             resultadoElement.className = 'resultado-container';
@@ -47,53 +49,66 @@ document.addEventListener('DOMContentLoaded', async () => {
             // Inicia a detecção facial
             await FaceRecognition.startDetection();
             
-            // Aguarda captura do descritor facial (máximo 10 segundos)
-            const descriptor = await aguardarDescriptor(10000);
+            // Aguarda captura do descritor facial (máximo 15 segundos)
+            const descriptor = await aguardarDescriptor(15000);
             
             if (!descriptor) {
-                throw new Error('Não foi possível detectar um rosto. Tente novamente.');
+                throw new Error('Não foi possível detectar um rosto claro. Verifique se há iluminação adequada e tente novamente.');
             }
 
             // Para a detecção
             FaceRecognition.stopDetection();
-            statusElement.textContent = 'Rosto capturado! Verificando no banco de dados...';
+            statusElement.textContent = 'Rosto capturado! Buscando no banco de dados...';
 
             // Verifica no servidor
             await verificarNoServidor(descriptor);
 
         } catch (error) {
             console.error('Erro na verificação:', error);
-            showError(error.message || 'Erro durante a verificação');
+            showError(error.message || 'Erro durante a verificação facial');
         } finally {
             // Reabilita o botão
             btnVerificar.disabled = false;
+            btnVerificar.textContent = 'Nova Verificação';
             // Para a detecção caso ainda esteja ativa
             FaceRecognition.stopDetection();
         }
     }
 
-    // Aguarda até que um descritor facial seja capturado
-    function aguardarDescriptor(timeout = 10000) {
+    // Aguarda até que um descritor facial seja capturado com feedback visual
+    function aguardarDescriptor(timeout = 15000) {
         return new Promise((resolve, reject) => {
             const startTime = Date.now();
+            let lastStatusUpdate = 0;
+            let tentativas = 0;
             
             const verificarDescriptor = () => {
                 const descriptor = FaceRecognition.getDescriptor();
+                const currentTime = Date.now();
+                tentativas++;
+                
+                // Atualiza status a cada 2 segundos
+                if (currentTime - lastStatusUpdate > 2000) {
+                    const elapsed = Math.floor((currentTime - startTime) / 1000);
+                    const remaining = Math.max(0, Math.floor(timeout / 1000) - elapsed);
+                    statusElement.textContent = `Detectando rosto... (${remaining}s restantes) - Mantenha-se na frente da câmera`;
+                    lastStatusUpdate = currentTime;
+                }
                 
                 if (descriptor && descriptor.length > 0) {
-                    console.log('Descritor capturado com sucesso');
+                    console.log(`Descritor capturado após ${tentativas} tentativas:`, descriptor.length, 'dimensões');
                     resolve(descriptor);
                     return;
                 }
 
                 // Verifica timeout
-                if (Date.now() - startTime > timeout) {
-                    reject(new Error('Timeout: não foi possível detectar um rosto'));
+                if (currentTime - startTime > timeout) {
+                    reject(new Error('Tempo esgotado: não foi possível detectar um rosto. Certifique-se de que há luz suficiente e que seu rosto está visível.'));
                     return;
                 }
 
-                // Tenta novamente após 500ms
-                setTimeout(verificarDescriptor, 500);
+                // Tenta novamente após 200ms (mais rápido para melhor detecção)
+                setTimeout(verificarDescriptor, 200);
             };
 
             verificarDescriptor();
@@ -103,6 +118,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Envia descritor para o servidor e processa resposta
     async function verificarNoServidor(descriptor) {
         try {
+            console.log('Enviando descritor para verificação:', descriptor.length, 'dimensões');
+            
             const response = await fetch('http://localhost:3000/api/verificar-rosto', {
                 method: 'POST',
                 headers: { 
@@ -115,15 +132,16 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             if (!response.ok) {
                 const errorData = await response.json().catch(() => ({}));
-                throw new Error(errorData.message || `Erro HTTP: ${response.status}`);
+                throw new Error(errorData.message || `Erro HTTP: ${response.status} - Verifique se o servidor está funcionando`);
             }
 
             const data = await response.json();
             exibirResultado(data);
 
         } catch (error) {
+            console.error('Erro na comunicação com servidor:', error);
             if (error.name === 'TypeError' && error.message.includes('fetch')) {
-                throw new Error('Não foi possível conectar ao servidor. Verifique se ele está rodando.');
+                throw new Error('Não foi possível conectar ao servidor. Verifique se o servidor está rodando na porta 3000.');
             }
             throw error;
         }
@@ -135,6 +153,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         if (data.encontrado && data.usuario) {
             // Usuário encontrado
+            const similaridadeTexto = data.similaridade ? 
+                `<p><strong>Precisão da identificação:</strong> ${(data.similaridade * 100).toFixed(1)}%</p>` : '';
+            
+            const nivelConfianca = data.similaridade ? getNivelConfianca(data.similaridade) : '';
+            
             resultadoElement.innerHTML = `
                 <div class="resultado-sucesso">
                     <h3>✅ Cadastro encontrado!</h3>
@@ -142,7 +165,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                         <p><strong>Nome:</strong> ${escapeHtml(data.usuario.nome)}</p>
                         <p><strong>Tipo de usuário:</strong> ${escapeHtml(data.usuario.tipoUsuario)}</p>
                         <p><strong>Data do cadastro:</strong> ${formatarData(data.usuario.dataCadastro)}</p>
-                        ${data.similaridade ? `<p><strong>Similaridade:</strong> ${(data.similaridade * 100).toFixed(1)}%</p>` : ''}
+                        ${similaridadeTexto}
+                        ${nivelConfianca ? `<p class="confianca"><strong>Nível de confiança:</strong> ${nivelConfianca}</p>` : ''}
                     </div>
                 </div>
             `;
@@ -153,11 +177,38 @@ document.addEventListener('DOMContentLoaded', async () => {
             resultadoElement.innerHTML = `
                 <div class="resultado-erro">
                     <h3>❌ Cadastro não encontrado</h3>
-                    <p>Este rosto não está cadastrado no sistema.</p>
-                    <p>Se você deveria estar cadastrado, tente novamente ou procure o administrador.</p>
+                    <p>Este rosto não foi encontrado no banco de dados do sistema.</p>
+                    <div class="sugestoes">
+                        <h4>Possíveis motivos:</h4>
+                        <ul>
+                            <li>Você ainda não está cadastrado no sistema</li>
+                            <li>A iluminação pode estar inadequada</li>
+                            <li>Seu rosto pode estar parcialmente coberto</li>
+                            <li>O ângulo da câmera pode estar inadequado</li>
+                        </ul>
+                        <p><strong>Sugestões:</strong></p>
+                        <ul>
+                            <li>Tente novamente com melhor iluminação</li>
+                            <li>Posicione seu rosto de frente para a câmera</li>
+                            <li>Se o problema persistir, procure o administrador</li>
+                        </ul>
+                    </div>
                 </div>
             `;
             resultadoElement.classList.add('nao-encontrado');
+        }
+    }
+
+    // Determina nível de confiança baseado na similaridade
+    function getNivelConfianca(similaridade) {
+        if (similaridade >= 0.8) {
+            return '<span style="color: #28a745;">Muito Alto 🟢</span>';
+        } else if (similaridade >= 0.6) {
+            return '<span style="color: #ffc107;">Alto 🟡</span>';
+        } else if (similaridade >= 0.4) {
+            return '<span style="color: #fd7e14;">Médio 🟠</span>';
+        } else {
+            return '<span style="color: #dc3545;">Baixo 🔴</span>';
         }
     }
 
@@ -166,9 +217,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         statusElement.textContent = 'Erro na verificação';
         resultadoElement.innerHTML = `
             <div class="resultado-erro">
-                <h3>⚠️ Erro</h3>
+                <h3>⚠️ Erro na Verificação</h3>
                 <p>${escapeHtml(message)}</p>
-                <button onclick="location.reload()" class="btn-retry">Tentar Novamente</button>
+                <div class="error-actions">
+                    <button onclick="location.reload()" class="btn-retry">🔄 Recarregar Página</button>
+                    <button onclick="iniciarVerificacao()" class="btn-retry" style="margin-left: 10px;">🔄 Tentar Novamente</button>
+                </div>
             </div>
         `;
         resultadoElement.classList.add('nao-encontrado');
@@ -176,8 +230,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Função auxiliar para escapar HTML
     function escapeHtml(text) {
+        if (!text) return '';
         const div = document.createElement('div');
-        div.textContent = text;
+        div.textContent = text.toString();
         return div.innerHTML;
     }
 
@@ -193,7 +248,11 @@ document.addEventListener('DOMContentLoaded', async () => {
                 minute: '2-digit'
             });
         } catch (error) {
-            return dateString;
+            console.error('Erro ao formatar data:', error);
+            return dateString || 'Data não disponível';
         }
     }
+
+    // Expõe função para uso global (para botões de retry)
+    window.iniciarVerificacao = iniciarVerificacao;
 });
