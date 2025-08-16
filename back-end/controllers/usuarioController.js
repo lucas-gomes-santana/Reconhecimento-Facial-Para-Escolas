@@ -1,4 +1,5 @@
 const Usuario = require('../models/Usuario');
+const Estatistica = require('../models/Estatistica');
 const faceRecognitionService = require('../services/faceRecognitionService');
 
 class UsuarioController {
@@ -17,6 +18,9 @@ class UsuarioController {
 
             const novoUsuario = new Usuario({ nome, tipoUsuario, descriptor });
             await novoUsuario.save();
+            
+            // Incrementar contador de cadastros nas estatísticas
+            await Estatistica.incrementarCadastros();
             
             console.log(`Usuário ${nome} cadastrado com sucesso`);
             
@@ -42,6 +46,9 @@ class UsuarioController {
             console.log('Iniciando verificação facial...');
             
             const match = await faceRecognitionService.encontrarUsuarioPorSimilaridade(descriptor, 0.6);
+            
+            // Incrementar contador de verificações nas estatísticas (independente se encontrou ou não)
+            await Estatistica.incrementarVerificacoes();
             
             if (match) {
                 console.log(`Usuário encontrado: ${match.usuario.nome} (distância: ${match.distancia.toFixed(4)}, similaridade: ${(match.similaridade * 100).toFixed(1)}%)`);
@@ -82,6 +89,10 @@ class UsuarioController {
             if (!usuario) {
                 return res.status(404).json({ error: 'Usuário não encontrado' });
             }
+            
+            // Opcional: decrementar contador de cadastros ao deletar
+            // await Estatistica.decrementarCadastros(); // Você pode implementar este método se quiser
+            
             res.json({ message: 'Usuário deletado com sucesso' });
         } catch (err) {
             res.status(500).json({ error: err.message });

@@ -55,6 +55,73 @@ class ApiService {
             throw error;
         }
     }
+
+    // Novas funções para estatísticas
+    async obterEstatisticas() {
+        try {
+            const response = await fetch(`${this.baseURL}/estatisticas`, {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' }
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.error || `Erro HTTP: ${response.status}`);
+            }
+
+            return data;
+        } catch (error) {
+            if (error.name === 'TypeError' && error.message.includes('fetch')) {
+                throw new Error('Não foi possível conectar ao servidor para obter estatísticas.');
+            }
+            throw error;
+        }
+    }
+
+    async obterEstatisticasDetalhadas() {
+        try {
+            const response = await fetch(`${this.baseURL}/estatisticas/detalhadas`, {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' }
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.error || `Erro HTTP: ${response.status}`);
+            }
+
+            return data;
+        } catch (error) {
+            if (error.name === 'TypeError' && error.message.includes('fetch')) {
+                throw new Error('Não foi possível conectar ao servidor para obter estatísticas detalhadas.');
+            }
+            throw error;
+        }
+    }
+
+    async resetarEstatisticas() {
+        try {
+            const response = await fetch(`${this.baseURL}/estatisticas/reset`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.error || `Erro HTTP: ${response.status}`);
+            }
+
+            return data;
+        } catch (error) {
+            if (error.name === 'TypeError' && error.message.includes('fetch')) {
+                throw new Error('Não foi possível conectar ao servidor para resetar estatísticas.');
+            }
+            throw error;
+        }
+    }
 }
 
 // Cria uma instância global

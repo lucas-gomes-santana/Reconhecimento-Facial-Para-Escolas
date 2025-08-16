@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const databaseConfig = require('./config/database');
 const usuarioRoutes = require('./routes/usuarioRoutes');
+const estatisticaRoutes = require('./routes/estatisticaRoutes');
 
 const app = express();
 
@@ -11,6 +12,7 @@ app.use(express.json());
 
 // Rotas
 app.use('/api', usuarioRoutes);
+app.use('/api', estatisticaRoutes); // Adicionar esta linha
 
 // Inicialização do servidor
 async function startServer() {

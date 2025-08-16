@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estatísticas - Sistema de Reconhecimento Facial</title>
+</head>
+<body>
+    <header>
+        <h1>📊 Estatísticas do Sistema</h1>
+    </header>
+
+    <main>
+        <section class="controles">
+            <h2>Controles</h2>
+            <div class="botoes">
+                <button id="refreshBtn" onclick="refreshEstatisticas()">🔄 Atualizar</button>
+                <button id="toggleDetailBtn" onclick="toggleDetalhes()">📋 Mostrar Detalhes</button>
+                <button id="toggleAutoRefreshBtn" onclick="toggleAutoRefresh()">⏱️ Desativar Auto-Refresh</button>
+                <button id="resetBtn" onclick="resetEstatisticas()" style="background-color: #dc3545; color: white;">🗑️ Resetar Dados</button>
+            </div>
+        </section>
+
+        <section class="status-section">
+            <div id="status">Carregando sistema...</div>
+            <div id="lastRefresh"></div>
+        </section>
+
+        <section class="estatisticas-section">
+            <h2>Dados do Sistema</h2>
+            <div id="estatisticasContent">
+                <div class="loading">
+                    <p>⏳ Carregando estatísticas...</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="info-section">
+            <h3>ℹ️ Informações</h3>
+            <ul>
+                <li><strong>Total de Cadastros:</strong> Número total de usuários cadastrados no sistema</li>
+                <li><strong>Total de Verificações:</strong> Número total de tentativas de reconhecimento facial realizadas</li>
+                <li><strong>Auto-Refresh:</strong> As estatísticas são atualizadas automaticamente a cada 30 segundos</li>
+                <li><strong>Detalhes:</strong> Inclui informações sobre tipos de usuário e primeiro cadastro</li>
+            </ul>
+        </section>
+
+    </main>
+
+    <footer>
+        <p>Sistema de Reconhecimento Facial Escolar - Estatísticas em Tempo Real</p>
+        <small>Os dados são atualizados automaticamente conforme novos cadastros e verificações são realizados.</small>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="../services/apiService.js"></script>
+    <script src="../controllers/estatisticasController.js"></script>
+</body>
+</html>

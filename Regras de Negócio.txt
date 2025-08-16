@@ -1,0 +1,8 @@
+Arquivo temporário, remover quando for completa as tarefas
+
+Regra de Negócio:
+- Armazenar histórico de ano, mês, dia, hora, minuto, segundo do primeiro cadastro 
+- Armazenar histórico de ano, mês , dia, hora, minuto e segundo da entrada e saída  do estudante no cetep
+- Calcular quantos estudantes fizerem registro de entrada no dia
+- cadastro de professor, estudante, funcionário ( função)
+-
