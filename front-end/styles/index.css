@@ -1,7 +1,27 @@
 @import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap");
 .main-content {
-  padding: 4rem 2rem;
-  background-color: #f8f9fa;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 90vh;
+}
+.main-content .container-logo {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+.main-content .container-logo h1 {
+  color: #1a1a2e;
+}
+.main-content .container-logo .system-symbol {
+  width: 150px;
+}
+
+.actions-section {
+  background-color: #e2e5e8;
+  padding: 2rem;
+  border-radius: 20px;
 }
 
 .section-title {
@@ -14,7 +34,7 @@
 .section-title::after {
   content: "";
   display: block;
-  width: 80px;
+  width: 100%;
   height: 4px;
   background: #4cc9f0;
   margin: 1rem auto 0;
@@ -173,13 +193,19 @@ button:disabled {
 }
 
 .container {
-  background: white;
+  background: rgb(232, 231, 231);
   padding: 30px;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   width: 100%;
   max-width: 800px;
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-left: 25%;
+  margin-top: 4rem;
 }
 
 h1 {
@@ -220,6 +246,8 @@ button {
   font-size: 16px;
   margin: 10px 0;
   transition: background-color 0.3s;
+  width: 30%;
+  margin-top: 2rem;
 }
 button:hover {
   background-color: #2980b9;
@@ -244,6 +272,110 @@ button:disabled {
   background-color: #f8d7da;
   color: #721c24;
   border: 1px solid #f5c6cb;
+}
+
+header {
+  background: #4a90e2;
+  color: white;
+  text-align: center;
+  padding: 1rem;
+}
+header h1 {
+  font-size: 1.8rem;
+  color: black;
+}
+
+main {
+  flex: 1;
+  padding: 1.5rem;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+}
+
+.controles {
+  background: white;
+  padding: 1rem;
+  border-radius: 10px;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+}
+.controles h2 {
+  margin-bottom: 1rem;
+  font-size: 1.4rem;
+}
+.controles .botoes {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.controles .botoes button {
+  flex: 1;
+  min-width: 150px;
+  padding: 0.7rem 1rem;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+.controles .botoes button:nth-child(1) {
+  background: #27ae60;
+  color: white;
+}
+.controles .botoes button:nth-child(1):hover {
+  background: rgb(29.661971831, 132.338028169, 73.014084507);
+}
+.controles .botoes button:nth-child(2) {
+  background: #4a90e2;
+  color: white;
+}
+.controles .botoes button:nth-child(2):hover {
+  background: rgb(34.3857142857, 117.3857142857, 214.6142857143);
+}
+.controles .botoes button:nth-child(3) {
+  background: #e74c3c;
+  color: white;
+}
+.controles .botoes button:nth-child(3):hover {
+  background: rgb(213.698630137, 43.8356164384, 26.301369863);
+}
+
+.status-section {
+  background: white;
+  padding: 1rem;
+  border-radius: 10px;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+}
+.status-section #status {
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+.status-section #lastRefresh {
+  font-size: 0.9rem;
+  color: gray;
+}
+
+.estatisticas-section {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 10px;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+}
+.estatisticas-section h2 {
+  margin-bottom: 1rem;
+}
+.estatisticas-section .loading {
+  text-align: center;
+  font-size: 1.1rem;
+  color: gray;
+}
+
+footer {
+  background: #4a90e2;
+  color: white;
+  text-align: center;
+  padding: 1rem;
+  font-size: 0.9rem;
 }
 
 body {

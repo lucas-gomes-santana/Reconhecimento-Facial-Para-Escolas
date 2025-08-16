@@ -14,9 +14,6 @@ class EstatisticasController {
             // Carrega estatísticas iniciais
             await this.carregarEstatisticas();
             
-            // Inicia atualização automática a cada 30 segundos
-            this.iniciarAutoRefresh();
-            
             console.log('EstatisticasController inicializado com sucesso');
         } catch (err) {
             console.error('Falha na inicialização:', err);
@@ -57,15 +54,6 @@ class EstatisticasController {
         if (resetBtn) {
             resetBtn.addEventListener('click', () => this.handleReset());
         }
-
-        if (toggleAutoRefreshBtn) {
-            toggleAutoRefreshBtn.addEventListener('click', () => this.toggleAutoRefresh());
-        }
-
-        // Cleanup ao fechar a página
-        window.addEventListener('beforeunload', () => {
-            this.pararAutoRefresh();
-        });
     }
 
     async handleRefresh() {
@@ -168,6 +156,7 @@ class EstatisticasController {
         btn.textContent = mostrandoDetalhes ? 'Ocultar Detalhes' : 'Mostrar Detalhes';
     }
 
+    // Função para excluir dados de contagem 
     async handleReset() {
         const confirmacao = confirm('Tem certeza que deseja resetar todas as estatísticas? Esta ação não pode ser desfeita.');
         
@@ -187,36 +176,6 @@ class EstatisticasController {
             this.showError(error.message || 'Erro ao resetar estatísticas');
         } finally {
             this.setLoadingState(false);
-        }
-    }
-
-    iniciarAutoRefresh() {
-        this.autoRefreshInterval = setInterval(() => {
-            if (!this.isLoading) {
-                this.carregarEstatisticas();
-            }
-        }, 30000); // 30 segundos
-    }
-
-    pararAutoRefresh() {
-        if (this.autoRefreshInterval) {
-            clearInterval(this.autoRefreshInterval);
-            this.autoRefreshInterval = null;
-        }
-    }
-
-    toggleAutoRefresh() {
-        const btn = document.getElementById('toggleAutoRefreshBtn');
-        if (!btn) return;
-
-        if (this.autoRefreshInterval) {
-            this.pararAutoRefresh();
-            btn.textContent = 'Ativar Auto-Refresh';
-            this.updateStatus('Auto-refresh desativado');
-        } else {
-            this.iniciarAutoRefresh();
-            btn.textContent = 'Desativar Auto-Refresh';
-            this.updateStatus('Auto-refresh ativado (30s)');
         }
     }
 
@@ -295,11 +254,10 @@ class EstatisticasController {
     }
 
     setupGlobalFunctions() {
-        // Funções globais para uso nos botões HTML
+        // Funções para uso na página de estatísticas
         window.refreshEstatisticas = () => this.handleRefresh();
         window.toggleDetalhes = () => this.toggleDetalhes();
         window.resetEstatisticas = () => this.handleReset();
-        window.toggleAutoRefresh = () => this.toggleAutoRefresh();
     }
 }
 
