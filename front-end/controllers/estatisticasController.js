@@ -41,7 +41,6 @@ class EstatisticasController {
         const refreshBtn = document.getElementById('refreshBtn');
         const toggleDetailBtn = document.getElementById('toggleDetailBtn');
         const resetBtn = document.getElementById('resetBtn');
-        const toggleAutoRefreshBtn = document.getElementById('toggleAutoRefreshBtn');
 
         if (refreshBtn) {
             refreshBtn.addEventListener('click', () => this.handleRefresh());
