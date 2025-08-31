@@ -1,6 +1,6 @@
-const Usuario = require('../models/Usuario');
-const Estatistica = require('../models/Estatistica');
-const faceRecognitionService = require('../services/faceRecognitionService');
+import Usuario from '../models/Usuario.js';
+import Estatistica from '../models/Estatistica.js';
+import faceRecognitionService from '../services/faceRecognitionService.js';
 
 class UsuarioController {
 
@@ -85,7 +85,7 @@ class UsuarioController {
 
     async deletarUsuario(req, res) {
         try {
-            const usuario = await Usuario.findByIdAndDelete(req.params.id);
+            const usuario = await Usuario.deleteByNome(req.params.nome);
             if (!usuario) {
                 return res.status(404).json({ error: 'Usuário não encontrado' });
             }
@@ -93,11 +93,11 @@ class UsuarioController {
             // Opcional: decrementar contador de cadastros ao deletar
             // await Estatistica.decrementarCadastros(); // Você pode implementar este método se quiser
             
-            res.json({ message: 'Usuário deletado com sucesso' });
+            res.json({ message: 'Usuário removido com sucesso' });
         } catch (err) {
             res.status(500).json({ error: err.message });
         }
     }
 }
 
-module.exports = new UsuarioController();
+export default new UsuarioController();

@@ -1,4 +1,4 @@
-const Usuario = require('../models/Usuario');
+import Usuario from "../models/Usuario.js";
 
 class FaceRecognitionService {
     
@@ -45,4 +45,4 @@ class FaceRecognitionService {
     }
 }
 
-module.exports = new FaceRecognitionService();
+export default new FaceRecognitionService();

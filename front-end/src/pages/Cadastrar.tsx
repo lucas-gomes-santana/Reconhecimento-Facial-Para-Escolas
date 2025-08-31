@@ -11,6 +11,7 @@ function Cadastrar() {
   const [statusMessage, setStatusMessage] = useState('Sistema pronto - Preencha os dados e inicie o reconhecimento');
   const [canSave, setCanSave] = useState(false);
 
+
   // Hooks customizados
   const {
     videoRef,
@@ -137,11 +138,10 @@ function Cadastrar() {
       const verificacao = await verificarRosto(currentDescriptor);
       
       if (verificacao.existe) {
-        const similaridade = verificacao.dados?.similaridade || 0;
         const nomeExistente = verificacao.dados?.usuario?.nome || 'Usuário desconhecido';
         
-        setStatusMessage(`Rosto já cadastrado para: ${nomeExistente} (${(similaridade * 100).toFixed(1)}% de similaridade)`);
-        alert(`Este rosto já está cadastrado para: ${nomeExistente}\nSimilaridade: ${(similaridade * 100).toFixed(1)}%`);
+        setStatusMessage(`Rosto já cadastrado para: ${nomeExistente}`);
+        alert(`Este rosto já está cadastrado para: ${nomeExistente}`);
         return;
       }
 
@@ -163,7 +163,6 @@ function Cadastrar() {
       setNome('');
       setTipoUsuario('');
       setCanSave(false);
-      stopDetection();
       
     } catch (error) {
       console.error('Erro no cadastro:', error);

@@ -25,4 +25,4 @@ class ValidationMiddleware {
     }
 }
 
-module.exports = new ValidationMiddleware();
+export default new ValidationMiddleware();

@@ -1,12 +1,13 @@
-const express = require('express');
-const usuarioController = require('../controllers/usuarioController');
-const validation = require('../middlewares/validation');
+import express from "express";
+import usuarioController from "../controllers/usuarioController.js";
+import validation from "../middlewares/validation.js";
+
 
 const router = express.Router();
 
 router.post('/usuarios', validation.validateCadastroUsuario, usuarioController.cadastrarUsuario);
 router.post('/verificar-rosto', validation.validateVerificacaoRosto, usuarioController.verificarRosto);
 router.get('/usuarios', usuarioController.listarUsuarios);
-router.delete('/usuarios/:id', usuarioController.deletarUsuario);
+router.delete('/usuarios/:nome', usuarioController.deletarUsuario);
 
-module.exports = router;
+export default router;

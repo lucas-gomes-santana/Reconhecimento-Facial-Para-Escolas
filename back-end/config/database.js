@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from "mongoose";
 
 class DatabaseConfig {
     
@@ -16,4 +16,4 @@ class DatabaseConfig {
     }
 }
 
-module.exports = new DatabaseConfig();
+export default new DatabaseConfig();

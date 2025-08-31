@@ -1,4 +1,5 @@
-const Estatistica = require('../models/Estatistica');
+import Estatistica from '../models/Estatistica.js';
+
 
 class EstatisticaController {
 
@@ -75,4 +76,4 @@ class EstatisticaController {
     }
 }
 
-module.exports = new EstatisticaController();
+export default new EstatisticaController();

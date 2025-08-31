@@ -1,8 +1,8 @@
-const express = require('express');
-const cors = require('cors');
-const databaseConfig = require('./config/database');
-const usuarioRoutes = require('./routes/usuarioRoutes');
-const estatisticaRoutes = require('./routes/estatisticaRoutes');
+import express from "express";
+import cors from "cors"; // 👈 precisa importar o cors
+import databaseConfig from "./config/database.js";
+import usuarioRoutes from "./routes/usuarioRoutes.js";
+import estatisticaRoutes from "./routes/estatisticaRoutes.js";
 
 const app = express();
 
@@ -11,22 +11,22 @@ app.use(cors());
 app.use(express.json());
 
 // Rotas
-app.use('/api', usuarioRoutes);
-app.use('/api', estatisticaRoutes); // Adicionar esta linha
+app.use("/api", usuarioRoutes);
+app.use("/api", estatisticaRoutes);
 
 // Inicialização do servidor
 async function startServer() {
-    try {
-        await databaseConfig.connect();
-        
-        app.listen(3000, () => {
-            console.log('Servidor rodando na porta 3000');
-            console.log('Sistema de reconhecimento facial inicializado');
-        });
-    } catch (error) {
-        console.error('Erro ao inicializar servidor:', error);
-        process.exit(1);
-    }
+  try {
+    await databaseConfig.connect();
+
+    app.listen(3000, () => {
+      console.log("Servidor rodando na porta 3000");
+      console.log("Sistema de reconhecimento facial inicializado");
+    });
+  } catch (error) {
+    console.error("Erro ao inicializar servidor:", error);
+    process.exit(1);
+  }
 }
 
 startServer();

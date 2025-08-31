@@ -1,4 +1,5 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
+
 
 const EstatisticaSchema = new mongoose.Schema({
     totalCadastros: {
@@ -40,4 +41,4 @@ EstatisticaSchema.statics.incrementarVerificacoes = async function() {
     return estatistica;
 };
 
-module.exports = mongoose.model('Estatistica', EstatisticaSchema);
+export default mongoose.model('Estatistica', EstatisticaSchema);

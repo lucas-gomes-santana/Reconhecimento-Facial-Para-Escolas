@@ -129,11 +129,13 @@ export const useApi = () => {
       
       console.log('Resultado da verificação:', result);
       return result;
+      
     } catch (err) {
       const apiError = handleApiError(err);
       setError(apiError.message);
       console.error('Erro na verificação:', apiError);
       throw apiError;
+
     } finally {
       setLoading(false);
     }

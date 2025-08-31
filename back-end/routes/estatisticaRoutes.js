@@ -1,5 +1,6 @@
-const express = require('express');
-const estatisticaController = require('../controllers/estatisticaController');
+import express from 'express';
+import estatisticaController from "../controllers/estatisticaController.js";
+
 
 const router = express.Router();
 
@@ -9,7 +10,7 @@ router.get('/estatisticas', estatisticaController.obterEstatisticas);
 // Rota para obter estatísticas detalhadas
 router.get('/estatisticas/detalhadas', estatisticaController.obterEstatisticasDetalhadas);
 
-// Rota para resetar estatísticas (opcional - útil para testes)
+// Rota para resetar estatísticas
 router.post('/estatisticas/reset', estatisticaController.resetarEstatisticas);
 
-module.exports = router;
+export default router;

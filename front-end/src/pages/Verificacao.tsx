@@ -10,14 +10,11 @@ function Verificacao() {
     videoRef,
     canvasRef,
     isDetecting,
-    modelsLoaded,
     currentDescriptor,
     isAtIdealDistance,
     distanceStatus,
     loading: faceLoading,
     error: faceError,
-    videoReady,
-    isVideoLoading,
     startDetection,
     stopDetection,
     aguardarDescriptor
@@ -29,57 +26,30 @@ function Verificacao() {
     showValidationErrors 
   } = useValidation();
 
-  const [status, setStatus] = useState('Clique em "Iniciar Verificação" para começar');
   const [isInitialized, setIsInitialized] = useState(false);
   const [verificacaoCompleta, setVerificacaoCompleta] = useState(false);
   const [resultadoVerificacao, setResultadoVerificacao] = useState<any>(null);
 
-  // Efeito para atualizar o status baseado no estado da detecção
-  useEffect(() => {
-    if (!isDetecting) {
-      if (!isInitialized) {
-        setStatus('Clique em "Iniciar Verificação" para começar');
-      }
-      return;
-    }
-
-    if (isVideoLoading) {
-      setStatus('Inicializando câmera...');
-      return;
-    }
-
-    if (!videoReady) {
-      setStatus('Preparando vídeo...');
-      return;
-    }
-
-    // Atualizar status baseado na distância
-    const distanceMessage = getDistanceMessage(distanceStatus.status);
-    setStatus(distanceMessage);
-  }, [isDetecting, isVideoLoading, videoReady, distanceStatus, getDistanceMessage, isInitialized]);
-
   // Efeito para limpar erros quando necessário
   useEffect(() => {
     if (apiError) {
-      setStatus(`Erro: ${apiError}`);
+      console.log(`Erro: ${apiError}`);
     } else if (faceError) {
-      setStatus(`Erro: ${faceError}`);
+      console.log(`Erro: ${faceError}`);
     }
   }, [apiError, faceError]);
 
   const iniciarSistema = async () => {
     try {
       clearError();
-      setStatus('Iniciando sistema de reconhecimento facial...');
       setIsInitialized(true);
       setVerificacaoCompleta(false);
       setResultadoVerificacao(null);
       
       await startDetection();
-      setStatus('Sistema iniciado. Posicione seu rosto na câmera.');
     } catch (err) {
       console.error('Erro ao iniciar sistema:', err);
-      setStatus('Erro ao iniciar sistema. Verifique as permissões da câmera.');
+      console.log('Erro ao iniciar sistema. Verifique as permissões da câmera.');
       setIsInitialized(false);
     }
   };
@@ -91,12 +61,11 @@ function Verificacao() {
       // Validar se está na distância correta
       if (!isAtIdealDistance) {
         const errorMessage = 'Posicione-se na distância ideal antes de verificar.';
-        setStatus(errorMessage);
         showValidationErrors([errorMessage]);
         return;
       }
 
-      setStatus('Capturando dados biométricos...');
+      console.log('Capturando dados biométricos...');
       
       // Aguardar o descriptor estar disponível (com timeout de 5 segundos)
       let descriptor: number[];
@@ -107,7 +76,7 @@ function Verificacao() {
         try {
           descriptor = await aguardarDescriptor(5000);
         } catch (timeoutError) {
-          setStatus('Tempo esgotado. Mantenha-se na posição ideal e tente novamente.');
+          console.log('Tempo esgotado. Mantenha-se na posição ideal e tente novamente.');
           return;
         }
       }
@@ -115,12 +84,12 @@ function Verificacao() {
       // Validar o descriptor
       const validation = validateDescriptor(descriptor, isAtIdealDistance);
       if (!validation.isValid) {
-        setStatus('Erro na captura biométrica. Tente novamente.');
+        console.log('Erro na captura biométrica. Tente novamente.');
         showValidationErrors(validation.errors);
         return;
       }
 
-      setStatus('Verificando no banco de dados...');
+      console.log('Verificando no banco de dados...');
       
       // Realizar a verificação usando a API
       const resultado = await verificarRosto(descriptor);
@@ -129,29 +98,19 @@ function Verificacao() {
       setVerificacaoCompleta(true);
 
       if (resultado.existe && resultado.dados) {
-        const similaridade = (resultado.dados.similaridade * 100).toFixed(1);
-        setStatus(`✅ Usuário reconhecido! Similaridade: ${similaridade}%`);
-        
-        // Aqui você pode adicionar lógica adicional, como:
-        // - Redirecionar para dashboard
-        // - Salvar log de acesso
-        // - Enviar notificação
-        console.log('Dados do usuário encontrado:', resultado.dados.usuario);
-        
+        console.log('Dados do usuário encontrado:', resultado.dados.usuario); 
       } else {
-        setStatus('❌ Usuário não encontrado no sistema.');
+        console.log('❌ Usuário não encontrado no sistema.');
       }
       
     } catch (err) {
       console.error('Erro na verificação:', err);
-      setStatus('❌ Erro durante a verificação. Tente novamente.');
     }
   };
 
   const reiniciarProcesso = () => {
     setVerificacaoCompleta(false);
     setResultadoVerificacao(null);
-    setStatus('Posicione seu rosto na câmera para nova verificação.');
   };
 
   const pararSistema = () => {
@@ -159,7 +118,6 @@ function Verificacao() {
     setIsInitialized(false);
     setVerificacaoCompleta(false);
     setResultadoVerificacao(null);
-    setStatus('Sistema desligado. Clique em "Iniciar Verificação" para começar.');
   };
 
   // Determinar qual botão mostrar
@@ -249,17 +207,13 @@ function Verificacao() {
             <div className="absolute top-4 left-4 right-4">
               <div className={`px-3 py-2 rounded-lg text-sm font-medium ${
                 distanceStatus.isIdeal 
-                  ? 'bg-green-100 text-green-800 border border-green-300' 
-                  : 'bg-yellow-100 text-yellow-800 border border-yellow-300'
+                  ? 'bg-green-300 text-green-800 border border-green-300' 
+                  : 'bg-red-300 text-red-800 border border-yellow-300'
               }`}>
                 {getDistanceMessage(distanceStatus.status)}
               </div>
             </div>
           )}
-          
-          <div className="absolute -bottom-8 left-0 w-full text-center text-gray-600 italic">
-            {status}
-          </div>
         </div>
         
         {/* Mostrar erros se houver */}
@@ -277,35 +231,16 @@ function Verificacao() {
               : 'bg-red-100 border border-red-400 text-red-700'
           }`}>
             {resultadoVerificacao.existe ? (
-              <div>
-                <h3 className="font-bold text-lg mb-2">✅ Acesso Autorizado</h3>
-                <p>Similaridade: {(resultadoVerificacao.dados.similaridade * 100).toFixed(1)}%</p>
-                <p>Distância: {resultadoVerificacao.dados.distancia.toFixed(4)}</p>
+              <div className='mt-6'>
+                <h3 className="font-bold text-lg mb-2">✅Rosto encontrado. Acesso autorizado!</h3>
               </div>
             ) : (
               <div>
-                <h3 className="font-bold text-lg mb-2">❌ Acesso Negado</h3>
-                <p>Usuário não encontrado no sistema</p>
+                <h3 className="font-bold text-lg mb-2">❌Rosto não encontrado. Acesso negado!</h3>
               </div>
             )}
           </div>
         )}
-        
-        {/* Indicadores de status do sistema */}
-        <div className="flex justify-center gap-4 mb-6 text-sm">
-          <div className={`flex items-center gap-2 ${modelsLoaded ? 'text-green-600' : 'text-gray-400'}`}>
-            <div className={`w-3 h-3 rounded-full ${modelsLoaded ? 'bg-green-500' : 'bg-gray-300'}`}></div>
-            Modelos IA
-          </div>
-          <div className={`flex items-center gap-2 ${videoReady ? 'text-green-600' : 'text-gray-400'}`}>
-            <div className={`w-3 h-3 rounded-full ${videoReady ? 'bg-green-500' : 'bg-gray-300'}`}></div>
-            Câmera
-          </div>
-          <div className={`flex items-center gap-2 ${isAtIdealDistance ? 'text-green-600' : 'text-gray-400'}`}>
-            <div className={`w-3 h-3 rounded-full ${isAtIdealDistance ? 'bg-green-500' : 'bg-gray-300'}`}></div>
-            Posição Ideal
-          </div>
-        </div>
         
         {renderBotaoAcao()}
       </div>
