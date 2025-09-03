@@ -4,6 +4,7 @@ import { useFaceDetection } from '../hooks/useFaceDetection';
 import { useValidation } from '../hooks/useValidation';
 import '../styles/index.css';
 
+
 function Verificacao() {
   const { verificarRosto, loading: apiLoading, error: apiError, clearError } = useApi();
   const {
@@ -76,7 +77,7 @@ function Verificacao() {
         try {
           descriptor = await aguardarDescriptor(5000);
         } catch (timeoutError) {
-          console.log('Tempo esgotado. Mantenha-se na posição ideal e tente novamente.');
+          console.log('Tempo esgotado. Mantenha-se na posição ideal e tente novamente.', timeoutError);
           return;
         }
       }
@@ -233,6 +234,11 @@ function Verificacao() {
             {resultadoVerificacao.existe ? (
               <div className='mt-6'>
                 <h3 className="font-bold text-lg mb-2">✅Rosto encontrado. Acesso autorizado!</h3>
+                {resultadoVerificacao.dados?.usuario?.nome && (
+                  <p className="text-lg font-medium">
+                    Bem-vindo(a), <span className="font-bold">{resultadoVerificacao.dados.usuario.nome}</span>!
+                  </p>
+                )}
               </div>
             ) : (
               <div>

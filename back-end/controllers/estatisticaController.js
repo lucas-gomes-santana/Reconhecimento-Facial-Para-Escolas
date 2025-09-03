@@ -1,8 +1,10 @@
 import Estatistica from '../models/Estatistica.js';
+import Usuario from '../models/Usuario.js';
 
 
 class EstatisticaController {
 
+    // Nétodo para obter estatísticas simples
     async obterEstatisticas(req, res) {
         try {
             const estatistica = await Estatistica.getInstance();
@@ -21,7 +23,7 @@ class EstatisticaController {
         }
     }
 
-    // Método para resetar estatísticas (útil para testes ou início de período)
+    // Método para reiniciar estatísticas
     async resetarEstatisticas(req, res) {
         try {
             const estatistica = await Estatistica.getInstance();
@@ -40,11 +42,10 @@ class EstatisticaController {
         }
     }
 
-    // Método para obter estatísticas detalhadas (opcional)
+    // Método para obter estatísticas detalhadas
     async obterEstatisticasDetalhadas(req, res) {
         try {
             const estatistica = await Estatistica.getInstance();
-            const Usuario = require('../models/Usuario');
             
             // Contar usuários por tipo
             const usuariosPorTipo = await Usuario.aggregate([

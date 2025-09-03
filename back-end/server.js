@@ -1,8 +1,9 @@
 import express from "express";
-import cors from "cors"; // 👈 precisa importar o cors
+import cors from "cors";
 import databaseConfig from "./config/database.js";
 import usuarioRoutes from "./routes/usuarioRoutes.js";
 import estatisticaRoutes from "./routes/estatisticaRoutes.js";
+import adminRoutes from "./routes/adminRoutes.js";
 
 const app = express();
 
@@ -13,6 +14,7 @@ app.use(express.json());
 // Rotas
 app.use("/api", usuarioRoutes);
 app.use("/api", estatisticaRoutes);
+app.use("/api", adminRoutes);
 
 // Inicialização do servidor
 async function startServer() {

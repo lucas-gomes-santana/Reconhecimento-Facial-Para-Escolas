@@ -4,6 +4,7 @@ import faceRecognitionService from '../services/faceRecognitionService.js';
 
 class UsuarioController {
 
+    // Método de cadastro com reconhecimento facial
     async cadastrarUsuario(req, res) {
         try {
             const { nome, tipoUsuario, descriptor } = req.body;
@@ -39,6 +40,7 @@ class UsuarioController {
         }
     }
 
+    // Método de verificação facial
     async verificarRosto(req, res) {
         try {
             const { descriptor } = req.body;
@@ -74,6 +76,7 @@ class UsuarioController {
         }
     }
 
+    // Listar todo os usuários (ainda não utilizado)
     async listarUsuarios(req, res) {
         try {
             const usuarios = await Usuario.find({}, { descriptor: 0 });
@@ -83,6 +86,7 @@ class UsuarioController {
         }
     }
 
+    // Método de remover usuários (ainda não utilizado e provavelmente precisará de refatoração)
     async deletarUsuario(req, res) {
         try {
             const usuario = await Usuario.deleteByNome(req.params.nome);

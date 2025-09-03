@@ -3,6 +3,7 @@ import HomePage from "./pages/HomePage";
 import Cadastro from "./pages/Cadastrar";
 import Estatisticas from "./pages/Estatisticas";
 import Verificacao from './pages/Verificacao';
+import Login from './pages/Login';
 
 
 function App() {
@@ -11,7 +12,8 @@ function App() {
             <div>
                 <main>
                     <Routes>
-                        <Route path="/" element={<Navigate to={"/home"}/>}/>    
+                        <Route path="/" element={<Navigate to={"/login"}/>}/>    
+                        <Route path='/login' element={<Login />}></Route>
                         <Route path="/home" element={<HomePage />} />
                         <Route path='/cadastro' element={<Cadastro/>}/>
                         <Route path='/estatisticas' element={<Estatisticas/>}/>

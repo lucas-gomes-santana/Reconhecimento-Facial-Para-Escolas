@@ -1,19 +1,6 @@
 import { useState, useCallback } from 'react';
-
-interface UsuarioData {
-  nome: string;
-  tipoUsuario: string;
-  descriptor: number[];
-}
-
-interface VerificarRostoResponse {
-  existe: boolean;
-  dados?: {
-    usuario: unknown;
-    similaridade: number;
-    distancia: number;
-  } | null;
-}
+import type { UsuarioData } from '../types/user.types';
+import type { VerificarRostoResponse } from '../types/face.type';
 
 interface ApiError extends Error {
   status?: number;

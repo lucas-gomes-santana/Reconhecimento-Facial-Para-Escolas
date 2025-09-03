@@ -1,19 +1,7 @@
 import { useState, useCallback } from 'react';
 import { useApi } from './useApi';
+import type { EstatisticasBasicas } from '../types/estatisticas.types';
 
-interface EstatisticasBasicas {
-  totalCadastros: number;
-  totalVerificacoes: number;
-  ultimaAtualizacao: string;
-}
-
-interface EstatisticasDetalhadas extends EstatisticasBasicas {
-  usuariosPorTipo: Array<{
-    _id: string;
-    quantidade: number;
-  }>;
-  primeiroCadastro?: string;
-}
 
 export const useEstatisticas = () => {
   const [loading, setLoading] = useState(false);

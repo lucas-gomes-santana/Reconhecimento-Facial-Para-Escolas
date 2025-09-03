@@ -1,18 +1,7 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import * as faceapi from 'face-api.js';
+import type { DistanceResult, DistanceConfig } from '../types/distance.types';
 
-interface DistanceConfig {
-  minFaceSize: number;
-  maxFaceSize: number;
-  idealMinSize: number;
-  idealMaxSize: number;
-}
-
-interface DistanceResult {
-  status: 'muito_longe' | 'longe' | 'ideal' | 'perto' | 'muito_perto' | 'sem_face';
-  isIdeal: boolean;
-  faceSize?: number;
-}
 
 export const useFaceDetection = () => {
   const videoRef = useRef<HTMLVideoElement>(null);

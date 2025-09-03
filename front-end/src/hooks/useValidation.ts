@@ -1,15 +1,6 @@
 import { useCallback } from 'react';
+import type { DistanceStatus, DistanceValidationResult, ValidationResult } from '../types/distance.types';
 
-interface ValidationResult {
-  isValid: boolean;
-  errors: string[];
-}
-
-interface DistanceValidationResult extends ValidationResult {
-  isIdeal: boolean;
-}
-
-type DistanceStatus = 'muito_longe' | 'longe' | 'ideal' | 'perto' | 'muito_perto' | 'sem_face';
 
 export const useValidation = () => {
   
