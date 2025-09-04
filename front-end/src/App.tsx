@@ -4,6 +4,7 @@ import Cadastro from "./pages/Cadastrar";
 import Estatisticas from "./pages/Estatisticas";
 import Verificacao from './pages/Verificacao';
 import Login from './pages/Login';
+import UserManegement from './pages/UserManagement';
 
 
 function App() {
@@ -18,6 +19,7 @@ function App() {
                         <Route path='/cadastro' element={<Cadastro/>}/>
                         <Route path='/estatisticas' element={<Estatisticas/>}/>
                         <Route path='/verificacao' element={<Verificacao/>}></Route>
+                        <Route path='/gerenciar-usuarios' element={<UserManegement/>}></Route>
                     </Routes>
                 </main>
             </div>
