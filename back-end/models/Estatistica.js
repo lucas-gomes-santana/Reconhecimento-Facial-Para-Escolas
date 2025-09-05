@@ -41,4 +41,12 @@ EstatisticaSchema.statics.incrementarVerificacoes = async function() {
     return estatistica;
 };
 
+EstatisticaSchema.statics.decrementarCadastros = async function () {
+    const estatistica = await this.getInstance();
+    estatistica.totalCadastros = Math.max(0, estatistica.totalCadastros - 1);
+    estatistica.ultimaAtualizacao = new Date();
+    await estatistica.save();
+    return estatistica;
+}
+
 export default mongoose.model('Estatistica', EstatisticaSchema);

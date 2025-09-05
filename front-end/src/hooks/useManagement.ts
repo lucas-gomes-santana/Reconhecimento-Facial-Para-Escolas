@@ -72,8 +72,12 @@ export const useUserManagement = () => {
       // Remover usuário das listas locais
       setTodosUsuarios(prev => prev.filter(usuario => usuario.nome !== nome));
       setUsuariosExibidos(prev => prev.filter(usuario => usuario.nome !== nome));
-      
+
+      // Notificar outros hooks sobre a mudança (opcional)
+      window.dispatchEvent(new CustomEvent('userDeleted', { detail: { nome } }));
+
       return true;
+      
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Erro ao remover usuário';
       setError(errorMessage);

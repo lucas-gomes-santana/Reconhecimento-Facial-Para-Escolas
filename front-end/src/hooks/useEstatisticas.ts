@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useApi } from './useApi';
 import type { EstatisticasBasicas } from '../types/estatisticas.types';
 
@@ -96,6 +96,18 @@ export const useEstatisticas = () => {
       return dateString || 'Data não disponível';
     }
   }, []);
+
+  // Escutar por remoções de usuários para atualizar estatísticas
+  useEffect(() => {
+    const handleUserDeleted = () => {
+      if (estatisticas) {
+        carregarEstatisticas(mostrandoDetalhes);
+      }
+    };
+
+    window.addEventListener('userDeleted', handleUserDeleted);
+    return () => window.removeEventListener('userDeleted', handleUserDeleted);
+  }, [estatisticas, mostrandoDetalhes, carregarEstatisticas]);
 
   return {
     loading,

@@ -113,6 +113,15 @@ class UsuarioController {
             }
             
             console.log(`Usuário ${nome} removido com sucesso`);
+
+            // Decrementar contador de cadastros nas estatísticas
+            try {
+                await Estatistica.decrementarCadastros();
+
+            } catch (err) {
+                console.error('Erro ao decrementar estatísticas:', err);
+                // Não falha a operação por erro nas estatísticas
+            }
             
             res.json({ 
                 success: true, 

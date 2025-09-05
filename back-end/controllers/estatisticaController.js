@@ -75,6 +75,10 @@ class EstatisticaController {
             res.status(500).json({ error: err.message });
         }
     }
+
+    async decrementarCadastros(req, res) {
+        
+    }
 }
 
 export default new EstatisticaController();
