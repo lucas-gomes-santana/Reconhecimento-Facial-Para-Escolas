@@ -76,29 +76,56 @@ class UsuarioController {
         }
     }
 
-    // Listar todo os usuários (ainda não utilizado)
+    // Listar todos os usuários
     async listarUsuarios(req, res) {
         try {
-            const usuarios = await Usuario.find({}, { descriptor: 0 });
+            const usuarios = await Usuario.find({}, { descriptor: 0 }).sort({ dataCadastro: -1 });
+            res.json(usuarios);
+        } catch (err) {
+            console.error('Erro ao listar usuários:', err);
+            res.status(500).json({ error: err.message });
+        }
+    }
+
+    // Listar usuários por nome como parâmetro
+    async listarUsuariosPorNome(req, res) {
+        try {
+            const usuarios = await Usuario.find({}, 'nome').sort({ nome: 1 }); // Lista os nomes em ordem alfabética
             res.json(usuarios);
         } catch (err) {
             res.status(500).json({ error: err.message });
         }
     }
 
-    // Método de remover usuários (ainda não utilizado e provavelmente precisará de refatoração)
+    // Método para deletar usuário por nome
     async deletarUsuario(req, res) {
         try {
-            const usuario = await Usuario.deleteByNome(req.params.nome);
+            const { nome } = req.params;
+            
+            if (!nome) {
+                return res.status(400).json({ error: 'Nome do usuário é obrigatório' });
+            }
+
+            const usuario = await Usuario.findOneAndDelete({ nome: decodeURIComponent(nome) });
+            
             if (!usuario) {
                 return res.status(404).json({ error: 'Usuário não encontrado' });
             }
             
-            // Opcional: decrementar contador de cadastros ao deletar
-            // await Estatistica.decrementarCadastros(); // Você pode implementar este método se quiser
+            console.log(`Usuário ${nome} removido com sucesso`);
             
-            res.json({ message: 'Usuário removido com sucesso' });
+            res.json({ 
+                success: true, 
+                message: `Usuário ${nome} removido com sucesso`,
+                usuarioRemovido: {
+                    nome: usuario.nome,
+                    tipoUsuario: usuario.tipoUsuario,
+                    dataCadastro: usuario.dataCadastro
+                }
+            });
+            
         } catch (err) {
+            console.error('Erro ao remover usuário:', err);
             res.status(500).json({ error: err.message });
         }
     }
