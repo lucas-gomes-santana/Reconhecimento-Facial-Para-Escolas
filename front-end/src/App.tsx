@@ -5,6 +5,7 @@ import Estatisticas from "./pages/Estatisticas";
 import Verificacao from './pages/Verificacao';
 import Login from './pages/Login';
 import UserManegement from './pages/UserManagement';
+import AdminPage from './pages/AdminPage';
 
 
 function App() {
@@ -20,6 +21,7 @@ function App() {
                         <Route path='/estatisticas' element={<Estatisticas/>}/>
                         <Route path='/verificacao' element={<Verificacao/>}></Route>
                         <Route path='/gerenciar-usuarios' element={<UserManegement/>}></Route>
+                        <Route path='/pagina-do-admin' element={<AdminPage/>}></Route>
                     </Routes>
                 </main>
             </div>

@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
-import type { UsuarioData } from '../types/user.types';
-import type { VerificarRostoResponse } from '../types/face.type';
+import type { UsuarioData } from '../../types/user.types';
+import type { VerificarRostoResponse } from '../../types/face.type';
 
 interface ApiError extends Error {
   status?: number;

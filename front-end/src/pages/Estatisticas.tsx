@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useEstatisticas } from '../hooks/useEstatisticas';
+import { useEstatisticas } from '../hooks/frontend/useEstatisticas';
 import '../styles/index.css';
 
 function Estatisticas() {

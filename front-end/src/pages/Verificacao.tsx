@@ -1,12 +1,18 @@
 import { useEffect, useState } from 'react';
-import { useApi } from '../hooks/useApi';
-import { useFaceDetection } from '../hooks/useFaceDetection';
-import { useValidation } from '../hooks/useValidation';
+import { useApi } from '../hooks/api/useApi';
+import { useFaceDetection } from '../hooks/detection/useFaceDetection';
+import { useValidation } from '../hooks/validation/useValidation';
 import '../styles/index.css';
 
 
 function Verificacao() {
-  const { verificarRosto, loading: apiLoading, error: apiError, clearError } = useApi();
+  const { 
+    verificarRosto, 
+    loading: apiLoading, 
+    error: apiError, 
+    clearError 
+  } = useApi();
+
   const {
     videoRef,
     canvasRef,

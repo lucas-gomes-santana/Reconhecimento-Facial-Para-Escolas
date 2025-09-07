@@ -56,6 +56,31 @@ class AdminController {
             });
         }
     }
+
+    // Método de cadastro de admins
+    async cadastrarAdmin(req, res) {
+        try {
+            const {nome, senha, funcao} = req.body;
+
+            const novoAdmin = new Admin({nome, senha, funcao});
+            await novoAdmin.save();
+
+            console.log(`Admin ${nome} de função ${funcao} cadastrado com sucesso!`);
+
+            res.status(201).json({
+                success: true,
+                admin: {
+                    id: novoAdmin._id,
+                    nome: novoAdmin.nome,
+                    funcao: novoAdmin.funcao
+                }
+            });
+
+        } catch (error) {
+            console.error(`Erro no cadastro: `, error);
+            res.status(500).json({ error: error.message });
+        }
+    }
 }
 
 export default new AdminController();

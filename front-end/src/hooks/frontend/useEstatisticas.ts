@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
-import { useApi } from './useApi';
-import type { EstatisticasBasicas } from '../types/estatisticas.types';
+import { useApi } from '../api/useApi';
+import type { EstatisticasBasicas } from '../../types/estatisticas.types';
 
 
 export const useEstatisticas = () => {

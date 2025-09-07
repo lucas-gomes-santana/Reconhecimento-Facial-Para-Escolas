@@ -1,11 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
+import type { Usuario } from '../../types/user.types';
 
-interface Usuario {
-  _id: string;
-  nome: string;
-  tipoUsuario: string;
-  dataCadastro: string;
-}
 
 export const useUserManagement = () => {
   const [todosUsuarios, setTodosUsuarios] = useState<Usuario[]>([]);

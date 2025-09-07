@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Trash2, Search, Users, AlertTriangle, Loader } from 'lucide-react';
-import { useUserManagement } from '../hooks/useManagement';
+import { useUserManagement } from '../hooks/frontend/useManagement';
 
 function UserManagement() {
   const {

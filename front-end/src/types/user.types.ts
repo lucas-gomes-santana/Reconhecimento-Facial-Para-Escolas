@@ -3,3 +3,10 @@ export interface UsuarioData {
   tipoUsuario: string;
   descriptor: number[];
 }
+
+export interface Usuario {
+  _id: string;
+  nome: string;
+  tipoUsuario: string;
+  dataCadastro: string;
+} 

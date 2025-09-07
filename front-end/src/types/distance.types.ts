@@ -1,3 +1,5 @@
+import type { ValidationResult } from "./validation.types";
+
 export interface DistanceConfig {
   minFaceSize: number;
   maxFaceSize: number;
@@ -9,11 +11,6 @@ export interface DistanceResult {
   status: 'muito_longe' | 'longe' | 'ideal' | 'perto' | 'muito_perto' | 'sem_face';
   isIdeal: boolean;
   faceSize?: number;
-}
-
-export interface ValidationResult {
-  isValid: boolean;
-  errors: string[];
 }
 
 export interface DistanceValidationResult extends ValidationResult {

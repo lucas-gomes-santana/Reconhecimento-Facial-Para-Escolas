@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import * as faceapi from 'face-api.js';
-import type { DistanceResult, DistanceConfig } from '../types/distance.types';
+import type { DistanceResult, DistanceConfig } from '../../types/distance.types';
 
 
 export const useFaceDetection = () => {
@@ -18,9 +18,6 @@ export const useFaceDetection = () => {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  // Removido: const detectionIntervalRef = useRef<NodeJS.Timeout | null>(null);
-  // O useEffect gerenciará o intervalo agora.
 
   const distanceConfig: DistanceConfig = {
     minFaceSize: 150,

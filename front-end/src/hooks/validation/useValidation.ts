@@ -1,5 +1,6 @@
 import { useCallback } from 'react';
-import type { DistanceStatus, DistanceValidationResult, ValidationResult } from '../types/distance.types';
+import type { DistanceStatus, DistanceValidationResult } from '../../types/distance.types';
+import type { ValidationResult } from '../../types/validation.types';
 
 
 export const useValidation = () => {

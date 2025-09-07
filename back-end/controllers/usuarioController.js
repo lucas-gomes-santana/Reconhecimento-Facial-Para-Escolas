@@ -34,6 +34,7 @@ class UsuarioController {
                     data: novoUsuario.dataCadastro
                 }
             });
+            
         } catch (err) {
             console.error('Erro no cadastro:', err);
             res.status(500).json({ error: err.message });
