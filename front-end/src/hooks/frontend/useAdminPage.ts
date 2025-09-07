@@ -31,23 +31,7 @@ export const useAdminPage = () => {
 
     const baseURL = 'http://localhost:3000/api/admin/cadastrar';
 
-    // Função para gerar senha aleatória
-    const gerarSenhaAleatoria = useCallback(() => {
-        const caracteres = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%';
-        let novaSenha = '';
-        for (let i = 0; i < 10; i++) {
-            novaSenha += caracteres.charAt(Math.floor(Math.random() * caracteres.length));
-        }
-        setSenha(novaSenha);
-        return novaSenha;
-    }, []);
-
-    // Função para limpar o formulário
-    const limparFormulario = useCallback(() => {
-        setNome('');
-        setSenha('');
-        setFuncao('');
-    }, []);
+   
 
     // Função para cadastrar admin
     const handleCadastrarAdmin = useCallback(async (e: React.FormEvent) => {
@@ -104,8 +88,9 @@ export const useAdminPage = () => {
                     texto: `${funcao === 'admin' ? 'Administrador' : 'Segurança'} ${nome} cadastrado com sucesso!`
                 });
                 
-                // Limpar formulário após sucesso
-                limparFormulario();
+                setNome('');
+                setSenha('');
+                setFuncao('');
                 
             } else {
                 setMensagem({
@@ -129,7 +114,7 @@ export const useAdminPage = () => {
             setMensagem({ tipo: '', texto: '' });
         }, 5000);
 
-    }, [nome, senha, funcao, limparFormulario]);
+    }, [nome, senha, funcao]);
 
     return {
         // Estados do formulário
@@ -148,7 +133,5 @@ export const useAdminPage = () => {
         
         // Funções
         handleCadastrarAdmin,
-        gerarSenhaAleatoria,
-        limparFormulario
     };
 };

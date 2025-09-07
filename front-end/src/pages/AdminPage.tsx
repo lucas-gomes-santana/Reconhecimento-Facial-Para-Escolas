@@ -13,8 +13,6 @@ function AdminPage() {
         loading,
         mensagem,
         handleCadastrarAdmin,
-        gerarSenhaAleatoria,
-        limparFormulario
     } = useAdminPage();
 
     const [mostrarSenha, setMostrarSenha] = useState(false);
@@ -109,14 +107,6 @@ function AdminPage() {
                                             </svg>
                                         </button>
                                     </div>
-                                    <button
-                                        type="button"
-                                        onClick={gerarSenhaAleatoria}
-                                        className="mt-2 text-sm text-blue-600 hover:text-blue-800 transition-colors"
-                                        disabled={loading}
-                                    >
-                                        Gerar senha automática
-                                    </button>
                                 </div>
 
                                 {/* Campo Função */}
@@ -158,28 +148,8 @@ function AdminPage() {
                                         'Cadastrar Gestor'
                                     )}
                                 </button>
-
-                                <button
-                                    type="button"
-                                    onClick={limparFormulario}
-                                    disabled={loading}
-                                    className="flex-1 sm:flex-none bg-gray-300 hover:bg-gray-400 disabled:bg-gray-200 text-gray-700 font-medium py-3 px-6 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
-                                >
-                                    Limpar Formulário
-                                </button>
                             </div>
                         </form>
-                    </div>
-
-                    {/* Informações adicionais */}
-                    <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
-                        <h3 className="text-sm font-medium text-blue-800 mb-2">Informações importantes:</h3>
-                        <ul className="text-sm text-blue-700 space-y-1">
-                            <li>• <strong>Administrador:</strong> Acesso completo ao sistema</li>
-                            <li>• <strong>Segurança:</strong> Acesso limitado às funcionalidades de monitoramento</li>
-                            <li>• Use senhas fortes com no mínimo 8 caracteres</li>
-                            <li>• As credenciais devem ser entregues pessoalmente ao usuário</li>
-                        </ul>
                     </div>
                 </div>
             </main>

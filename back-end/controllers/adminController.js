@@ -1,8 +1,21 @@
 import Admin from '../models/Admin.js';
+import bcrypt from 'bcrypt'; // npm install bcrypt
 
 // Função para validar senha do front-end em relação ao banco
-function verificarSenha(senhaInformada, senhaArmazenada) {
-    return senhaInformada === senhaArmazenada;
+async function verificarSenha(senhaInformada, senhaArmazenada) {
+    return await bcrypt.compare(senhaInformada, senhaArmazenada);
+}
+
+// Função para criptografar senha
+async function criptografarSenha(senha) {
+    const saltRounds = 12;
+    return await bcrypt.hash(senha, saltRounds);
+}
+
+// Função para validar funções dos ADMs
+function validarFuncao(funcao) {
+    const funcoesValidas = ['admin', 'seguranca'];
+    return funcoesValidas.includes(funcao.toLowerCase());
 }
 
 class AdminController {
@@ -10,7 +23,7 @@ class AdminController {
     // Método de login
     async login(req, res) {
         try {
-            const {nome, senha} = req.body;
+            const { nome, senha } = req.body;
 
             if (!nome || !senha) {
                 return res.status(400).json({
@@ -19,18 +32,18 @@ class AdminController {
                 });
             }
 
-            const admin = await Admin.findOne({ nome: nome});
+            const admin = await Admin.findOne({ nome: nome });
 
-            if(!admin) {
+            if (!admin) {
                 return res.status(404).json({
                     success: false,
                     message: `Admin '${nome}' não encontrado!`
                 });
             }
 
-            const senhaCorreta = verificarSenha(senha, admin.senha); // Chama a função verificarSenha
+            const senhaCorreta = await verificarSenha(senha, admin.senha);
 
-            if(!senhaCorreta) {
+            if (!senhaCorreta) {
                 return res.status(401).json({
                     success: false,
                     message: `Senha do admin incorreta!`
@@ -60,15 +73,57 @@ class AdminController {
     // Método de cadastro de admins
     async cadastrarAdmin(req, res) {
         try {
-            const {nome, senha, funcao} = req.body;
+            const { nome, senha, funcao } = req.body;
 
-            const novoAdmin = new Admin({nome, senha, funcao});
+            // Validações
+            if (!nome || !senha || !funcao) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Nome, senha e função são obrigatórios!'
+                });
+            }
+
+            // Validar função
+            if (!validarFuncao(funcao)) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Função deve ser "admin" ou "seguranca"!'
+                });
+            }
+
+            // Verificar se nome já existe
+            const adminExistente = await Admin.findOne({ nome: nome });
+            if (adminExistente) {
+                return res.status(409).json({
+                    success: false,
+                    message: 'Já existe um administrador com este nome!'
+                });
+            }
+
+            // Validar força da senha
+            if (senha.length < 8) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Senha deve ter no mínimo 8 caracteres!'
+                });
+            }
+
+            // Criptografar senha
+            const senhaCriptografada = await criptografarSenha(senha);
+
+            const novoAdmin = new Admin({
+                nome,
+                senha: senhaCriptografada,
+                funcao: funcao.toLowerCase()
+            });
+
             await novoAdmin.save();
 
             console.log(`Admin ${nome} de função ${funcao} cadastrado com sucesso!`);
 
             res.status(201).json({
                 success: true,
+                message: `${funcao === 'admin' ? 'Administrador' : 'Segurança'} cadastrado com sucesso!`,
                 admin: {
                     id: novoAdmin._id,
                     nome: novoAdmin.nome,
@@ -78,9 +133,22 @@ class AdminController {
 
         } catch (error) {
             console.error(`Erro no cadastro: `, error);
-            res.status(500).json({ error: error.message });
+            
+            // Tratar erro de duplicação do MongoDB
+            if (error.code === 11000) {
+                return res.status(409).json({
+                    success: false,
+                    message: 'Administrador com este nome já existe!'
+                });
+            }
+
+            res.status(500).json({
+                success: false,
+                message: 'Erro interno do servidor'
+            });
         }
     }
+    
 }
 
 export default new AdminController();
