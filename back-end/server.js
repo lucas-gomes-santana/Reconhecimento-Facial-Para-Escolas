@@ -1,15 +1,16 @@
 import express from "express";
-import cors from "cors";
 import databaseConfig from "./config/database.js";
 import usuarioRoutes from "./routes/usuarioRoutes.js";
 import estatisticaRoutes from "./routes/estatisticaRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
+import corsConfig from "./config/corsConfig.js";
+
 
 const app = express();
 
 // Middlewares
-app.use(cors());
 app.use(express.json());
+app.use(corsConfig);
 
 // Rotas
 app.use("/api", usuarioRoutes);

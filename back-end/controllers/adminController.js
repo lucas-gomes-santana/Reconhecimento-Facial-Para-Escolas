@@ -1,5 +1,6 @@
 import Admin from '../models/Admin.js';
-import bcrypt from 'bcrypt'; // npm install bcrypt
+import bcrypt from 'bcrypt';
+import { gerarToken } from '../config/jwtConfig.js';
 
 // Função para validar senha do front-end em relação ao banco
 async function verificarSenha(senhaInformada, senhaArmazenada) {
@@ -20,7 +21,7 @@ function validarFuncao(funcao) {
 
 class AdminController {
 
-    // Método de login
+    // Método de login COM JWT
     async login(req, res) {
         try {
             const { nome, senha } = req.body;
@@ -50,10 +51,25 @@ class AdminController {
                 });
             }
 
-            // Retorna resposta 200 se tudo estiver certo
+            // Gerar token JWT
+            const tokenPayload = {
+                id: admin._id,
+                nome: admin.nome,
+                funcao: admin.funcao
+            };
+
+            const token = gerarToken(tokenPayload);
+
+            // Atualizar último login
+            await Admin.findByIdAndUpdate(admin._id, { 
+                ultimoLogin: new Date() 
+            });
+
+            // Retorna resposta 200 com token
             return res.status(200).json({
                 success: true,
                 message: 'Admin encontrado e autenticado',
+                token: token,
                 admin: {
                     id: admin._id,
                     nome: admin.nome,
@@ -70,10 +86,18 @@ class AdminController {
         }
     }
 
-    // Método de cadastro de admins
+    // Método de cadastro de admins (PROTEGIDA - só admin pode cadastrar)
     async cadastrarAdmin(req, res) {
         try {
             const { nome, senha, funcao } = req.body;
+
+            // Verificar se o usuário autenticado é admin
+            if (req.usuario.funcao !== 'admin') {
+                return res.status(403).json({
+                    success: false,
+                    message: 'Apenas administradores podem cadastrar novos usuários!'
+                });
+            }
 
             // Validações
             if (!nome || !senha || !funcao) {
@@ -119,7 +143,7 @@ class AdminController {
 
             await novoAdmin.save();
 
-            console.log(`Admin ${nome} de função ${funcao} cadastrado com sucesso!`);
+            console.log(`Admin ${nome} de função ${funcao} cadastrado com sucesso por ${req.usuario.nome}!`);
 
             res.status(201).json({
                 success: true,
@@ -148,7 +172,28 @@ class AdminController {
             });
         }
     }
-    
+
+    // Método para verificar token (útil para frontend)
+    async verificarAutenticacao(req, res) {
+        try {
+            // Se chegou até aqui, o token é válido (middleware já verificou)
+            res.status(200).json({
+                success: true,
+                message: 'Token válido',
+                admin: {
+                    id: req.usuario.id,
+                    nome: req.usuario.nome,
+                    funcao: req.usuario.funcao
+                }
+            });
+        } catch (error) {
+            console.error('Erro ao verificar autenticação:', error);
+            res.status(500).json({
+                success: false,
+                message: 'Erro interno do servidor'
+            });
+        }
+    }
 }
 
 export default new AdminController();
