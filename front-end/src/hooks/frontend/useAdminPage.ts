@@ -1,4 +1,5 @@
 import { useCallback, useState } from "react";
+import { useAuth } from "../auth/useAuth";
 
 interface AdminData {
     nome: string;
@@ -29,14 +30,29 @@ export const useAdminPage = () => {
         texto: ''
     });
 
-    const baseURL = 'http://localhost:3000/api/admin/cadastrar';
+    // Hook de autenticação
+    const { authenticatedFetch, isAdmin, admin } = useAuth();
 
-   
+    // Função para limpar o formulário
+    const limparFormulario = useCallback(() => {
+        setNome('');
+        setSenha('');
+        setFuncao('');
+    }, []);
 
-    // Função para cadastrar admin
+    // Função para cadastrar admin COM JWT
     const handleCadastrarAdmin = useCallback(async (e: React.FormEvent) => {
         e.preventDefault();
         
+        // Verificar se usuário é admin antes de prosseguir
+        if (!isAdmin()) {
+            setMensagem({
+                tipo: 'error',
+                texto: 'Apenas administradores podem cadastrar novos usuários!'
+            });
+            return;
+        }
+
         // Validações básicas
         if (!nome.trim()) {
             setMensagem({
@@ -72,11 +88,9 @@ export const useAdminPage = () => {
                 funcao
             };
 
-            const response = await fetch(`${baseURL}`, {
+            // Usar authenticatedFetch para incluir automaticamente o token JWT
+            const response = await authenticatedFetch('http://localhost:3000/api/admin/cadastrar', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
                 body: JSON.stringify(userData),
             });
 
@@ -88,9 +102,8 @@ export const useAdminPage = () => {
                     texto: `${funcao === 'admin' ? 'Administrador' : 'Segurança'} ${nome} cadastrado com sucesso!`
                 });
                 
-                setNome('');
-                setSenha('');
-                setFuncao('');
+                // Limpar formulário após sucesso
+                limparFormulario();
                 
             } else {
                 setMensagem({
@@ -99,22 +112,26 @@ export const useAdminPage = () => {
                 });
             }
 
-        } catch (error) {
+        } catch (error: any) {
             console.error("Erro no cadastro de admin:", error);
-            setMensagem({
-                tipo: 'error',
-                texto: 'Erro de conexão com o servidor!'
-            });
+            
+            if (error.message.includes('Sessão expirada')) {
+                setMensagem({
+                    tipo: 'error',
+                    texto: 'Sessão expirada. Você será redirecionado para o login.'
+                });
+            } else {
+                setMensagem({
+                    tipo: 'error',
+                    texto: 'Erro de conexão com o servidor!'
+                });
+            }
         } finally {
             setLoading(false);
         }
 
-        // Limpar mensagem após 5 segundos
-        setTimeout(() => {
-            setMensagem({ tipo: '', texto: '' });
-        }, 5000);
 
-    }, [nome, senha, funcao]);
+    }, [nome, senha, funcao, authenticatedFetch, isAdmin, limparFormulario]);
 
     return {
         // Estados do formulário
@@ -131,7 +148,12 @@ export const useAdminPage = () => {
         loading,
         mensagem,
         
+        // Dados do usuário logado
+        admin,
+        isAdmin: isAdmin(),
+        
         // Funções
         handleCadastrarAdmin,
+        limparFormulario
     };
 };

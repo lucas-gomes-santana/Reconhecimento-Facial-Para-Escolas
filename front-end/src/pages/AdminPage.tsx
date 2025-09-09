@@ -21,6 +21,7 @@ function AdminPage() {
         <>
             <main className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-6">
                 <div className="max-w-4xl mx-auto">
+
                     {/* Header */}
                     <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
                         <h1 className="text-3xl font-bold text-gray-800 mb-2">
@@ -38,6 +39,7 @@ function AdminPage() {
                                 ? 'bg-green-100 border-green-300 text-green-700' 
                                 : 'bg-red-100 border-red-300 text-red-700'
                         }`}>
+
                             <div className="flex">
                                 <div className="flex-shrink-0">
                                     {mensagem.tipo === 'success' ? (
@@ -61,10 +63,11 @@ function AdminPage() {
                     <div className="bg-white rounded-xl shadow-lg p-6">
                         <form onSubmit={handleCadastrarAdmin}>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
                                 {/* Campo Nome */}
                                 <div className="md:col-span-2">
                                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        Nome do Gestor:
+                                        Nome do Adm/Segurança:
                                     </label>
                                     <input
                                         type="text"
@@ -80,7 +83,7 @@ function AdminPage() {
                                 {/* Campo Senha */}
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        Senha para o Gestor:
+                                        Senha para o Adm/Segurança:
                                     </label>
                                     <div className="relative">
                                         <input
@@ -88,7 +91,7 @@ function AdminPage() {
                                             value={senha}
                                             onChange={(e) => setSenha(e.target.value)}
                                             className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                                            placeholder="Digite ou gere uma senha"
+                                            placeholder="Crie uma senha"
                                             required
                                             disabled={loading}
                                         />
@@ -112,7 +115,7 @@ function AdminPage() {
                                 {/* Campo Função */}
                                 <div>
                                     <label htmlFor="tipoGestor" className="block text-sm font-medium text-gray-700 mb-2">
-                                        Tipo do Gestor:
+                                        Tipo do Usuário:
                                     </label>
                                     <select
                                         id="tipoGestor"
@@ -148,10 +151,15 @@ function AdminPage() {
                                         'Cadastrar Gestor'
                                     )}
                                 </button>
+
                             </div>
+
                         </form>
+
                     </div>
+
                 </div>
+                
             </main>
         </>
     );
