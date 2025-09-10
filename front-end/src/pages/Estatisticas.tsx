@@ -20,6 +20,7 @@ function Estatisticas() {
   useEffect(() => {
     // Carrega estatísticas ao montar o componente
     handleRefresh();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleRefresh = async () => {

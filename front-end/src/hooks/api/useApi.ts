@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 import type { UsuarioData } from '../../types/user.types';
 import type { VerificarRostoResponse } from '../../types/face.type';
+import { baseURL } from '../../config/url';
 
 interface ApiError extends Error {
   status?: number;
@@ -10,7 +11,6 @@ export const useApi = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   
-  const baseURL = 'http://localhost:3000/api';
 
   const handleApiError = useCallback((error: any): ApiError => {
     console.error('Erro na API:', error);
@@ -65,11 +65,13 @@ export const useApi = () => {
 
       console.log('Cadastro realizado com sucesso:', data);
       return data;
+
     } catch (err) {
       const apiError = handleApiError(err);
       setError(apiError.message);
       console.error('Erro no cadastro:', apiError);
       throw apiError;
+      
     } finally {
       setLoading(false);
     }

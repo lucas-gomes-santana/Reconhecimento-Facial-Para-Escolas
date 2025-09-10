@@ -1,22 +1,9 @@
 import { useCallback, useState } from "react";
 import { useAuth } from "../auth/useAuth";
+import type { AdminSign } from "../../types/admin.types";
+import type { ApiResponse } from "../../types/api.types";
+import { baseURL } from "../../config/url";
 
-interface AdminData {
-    nome: string;
-    senha: string;
-    funcao: string;
-}
-
-interface ApiResponse {
-    success: boolean;
-    message?: string;
-    admin?: {
-        id: string;
-        nome: string;
-        funcao: string;
-    };
-    error?: string;
-}
 
 export const useAdminPage = () => {
     const [nome, setNome] = useState('');
@@ -82,14 +69,14 @@ export const useAdminPage = () => {
         setMensagem({ tipo: '', texto: '' });
 
         try {
-            const userData: AdminData = {
+            const userData: AdminSign= {
                 nome: nome.trim(),
                 senha,
                 funcao
             };
 
-            // Usar authenticatedFetch para incluir automaticamente o token JWT
-            const response = await authenticatedFetch('http://localhost:3000/api/admin/cadastrar', {
+            // Usar authenticatedFetch para incluir automaticamente o token JWT no cadastro de admin
+            const response = await authenticatedFetch(`${baseURL}/admin/cadastrar`, {
                 method: 'POST',
                 body: JSON.stringify(userData),
             });
@@ -134,25 +121,16 @@ export const useAdminPage = () => {
     }, [nome, senha, funcao, authenticatedFetch, isAdmin, limparFormulario]);
 
     return {
-        // Estados do formulário
         nome,
         senha,
         funcao,
-        
-        // Setters
         setNome,
         setSenha,
         setFuncao,
-        
-        // Estados de controle
         loading,
         mensagem,
-        
-        // Dados do usuário logado
         admin,
         isAdmin: isAdmin(),
-        
-        // Funções
         handleCadastrarAdmin,
         limparFormulario
     };

@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
-import { useApi } from '../api/useApi';
 import type { EstatisticasBasicas } from '../../types/estatisticas.types';
+import { baseURL } from '../../config/url';
 
 
 export const useEstatisticas = () => {
@@ -8,14 +8,12 @@ export const useEstatisticas = () => {
   const [error, setError] = useState<string | null>(null);
   const [estatisticas, setEstatisticas] = useState<EstatisticasBasicas | null>(null);
   const [mostrandoDetalhes, setMostrandoDetalhes] = useState(false);
-  const { obterEstatisticas } = useApi();
 
   const carregarEstatisticas = useCallback(async (detalhadas: boolean = false) => {
     setLoading(true);
     setError(null);
     
     try {
-      const baseURL = 'http://localhost:3000/api';
       const endpoint = detalhadas ? '/estatisticas/detalhadas' : '/estatisticas';
       
       const response = await fetch(`${baseURL}${endpoint}`, {
@@ -45,9 +43,7 @@ export const useEstatisticas = () => {
     setLoading(true);
     setError(null);
     
-    try {
-      const baseURL = 'http://localhost:3000/api';
-      
+    try {      
       const response = await fetch(`${baseURL}/estatisticas/reset`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' }

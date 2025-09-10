@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import clsx from "clsx";
 import '../styles/index.css';
 
-
+// Estilos Tailwind para componentes HTML da página Home
 const cardStyle = "group bg-white p-6 rounded-xl shadow-md flex flex-col items-center text-center transition-all duration-300 hover:-translate-y-2.5 hover:shadow-xl border border-gray-100";
 const divStyle = "w-16 h-16 md:w-20 md:h-20 flex items-center justify-center bg-gradient-to-br from-blue-100 to-cyan-100 rounded-full mb-4 transition-all duration-300 group-hover:from-blue-500 group-hover:to-cyan-400";
 const svgStyle = "w-8 h-8 md:w-10 md:h-10 text-blue-600 transition-all duration-300 group-hover:text-white";

@@ -69,4 +69,4 @@ Com a funcionalidade de reconhecimento facial do C.E.R.F, buscamos controlar o f
 
 O projeto está licenciado pela licença CC BY-NC-ND 4.0(Attribution-NonCommercial-NoDerivatives 4.0 International) da Creative Commons. Não está autorizado o uso dele para fins comerciais. Apenas compartilhamento sem modificações e com atribuição ao autor original.
 
-Caso tenha disponibilidade. leia o artigo feito a respeito do projeto para mais informações.
+Caso tenha disponibilidade. leia o artigo feito a respeito do projeto para mais informações e analise os diagramas disponíveis na pasta **docs**.

@@ -1,46 +1,19 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../hooks/auth/useAuth';
+import { useLogin } from '../hooks/frontend/useLogin';
 import '../styles/index.css';
 
 function Login() {
-    const [nome, setNome] = useState('');
-    const [senha, setSenha] = useState('');
-    const [error, setError] = useState('');
-    const [mostrarSenha, setMostrarSenha] = useState(false);
-    
-    const { login, loading } = useAuth();
-    const navigate = useNavigate();
-
-    async function handleLogin(e: React.FormEvent) {
-        e.preventDefault();
-        setError('');
-
-        // Validações básicas
-        if (!nome || !senha) {
-            setError('Todos os campos são obrigatórios!');
-            return;
-        }
-
-        try {
-            const result = await login(nome, senha);
-
-            if (result.success) {
-                if (result.admin?.funcao === 'admin' || result.admin?.funcao === 'seguranca') {
-                    navigate('/home');
-                } else { 
-                    setError("Acesso não autorizado!");
-                }
-            }
-
-        } catch (error) {
-            setError('Erro inesperado. Tente novamente.');
-            console.error('Erro no login:', error);
-        }
-    }
-    const toggleMostrarSenha = () => {
-        setMostrarSenha(!mostrarSenha);
-    };
+    const {
+        nome,
+        setNome,
+        senha,
+        setSenha, 
+        mostrarSenha,
+        error,
+        setError,
+        loading,
+        handleLogin,
+        toggleMostrarSenha
+    } = useLogin();
 
     return (
         <>
