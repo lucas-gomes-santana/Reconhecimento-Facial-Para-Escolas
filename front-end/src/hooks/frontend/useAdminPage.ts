@@ -60,7 +60,7 @@ export const useAdminPage = () => {
         // Verificar se usuário é admin antes de prosseguir
         if (!isAdmin()) {
             setMessage({ 
-                texto: "Apenas administradores podem acessar esta página!", 
+                texto: "Apenas administradores podem cadastrar outros Admins!", 
                 tipo: 'error' 
             });
             limparMensagem();
@@ -152,9 +152,6 @@ export const useAdminPage = () => {
 
             const data = await response.json();
             
-            console.log("Dados recebidos da API:", data);
-            
-            // ✅ Mapear os dados corretamente - o backend já retorna dataCadastro
             // No mapeamento dos dados
             const admins = Array.isArray(data) ? data.map(admin => ({
                 _id: admin._id,
@@ -162,8 +159,6 @@ export const useAdminPage = () => {
                 funcao: admin.funcao,
                 dataCadastro: admin.dataCadastro || admin.createdAt || new Date().toISOString()
             })) : [];
-
-            console.log("Admins mapeados:", admins);
 
             if (reset) {
                 setTodosAdmins(admins);
@@ -230,11 +225,6 @@ export const useAdminPage = () => {
 
     // Função para atualizar admins exibidos com paginação
     const atualizarAdminsExibidos = useCallback(() => {
-        console.log("atualizarAdminsExibidos chamado");
-        console.log("todosAdmins:", todosAdmins);
-        console.log("searchTerm:", searchTerm);
-        console.log("page:", page);
-
         let adminsFiltrados = todosAdmins;
 
         // Aplicar filtro de busca
@@ -255,10 +245,7 @@ export const useAdminPage = () => {
 
     // Effect para atualizar lista quando dependências mudarem
     useEffect(() => {
-        console.log("todosAdmins estado:", todosAdmins);
-        console.log("adminsExibidos antes da atualização:", adminsExibidos);
         atualizarAdminsExibidos();
-        console.log("adminsExibidos após atualização:", adminsExibidos);
     }, [atualizarAdminsExibidos]);
 
     // Função para carregar mais admins (scroll infinito)
