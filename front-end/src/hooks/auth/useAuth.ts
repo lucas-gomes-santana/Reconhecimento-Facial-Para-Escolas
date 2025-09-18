@@ -1,21 +1,12 @@
 import { useState, useCallback, useEffect } from 'react';
+import type { LoginResponse } from '../../types/login.types';
+import type { AdminData } from '../../types/admin.types';
+import { baseURL } from '../../config/url';
 
-interface Admin {
-    id: string;
-    nome: string;
-    funcao: 'admin' | 'seguranca';
-}
-
-interface LoginResponse {
-    success: boolean;
-    message?: string;
-    token?: string;
-    admin?: Admin;
-}
 
 export const useAuth = () => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [admin, setAdmin] = useState<Admin | null>(null);
+    const [admin, setAdmin] = useState<AdminData | null>(null);
     const [loading, setLoading] = useState(true);
 
     // Chaves para localStorage
@@ -28,7 +19,7 @@ export const useAuth = () => {
     }, []);
 
     // Função para salvar dados de autenticação
-    const saveAuthData = useCallback((token: string, adminData: Admin) => {
+    const saveAuthData = useCallback((token: string, adminData: AdminData) => {
         localStorage.setItem(TOKEN_KEY, token);
         localStorage.setItem(ADMIN_KEY, JSON.stringify(adminData));
         setIsAuthenticated(true);
@@ -46,7 +37,7 @@ export const useAuth = () => {
     // Função de login
     const login = useCallback(async (nome: string, senha: string): Promise<LoginResponse> => {
         try {
-            const response = await fetch('http://localhost:3000/api/admin/login', {
+            const response = await fetch(`${baseURL}/admin/login`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -93,7 +84,7 @@ export const useAuth = () => {
         }
 
         try {
-            const response = await fetch('http://localhost:3000/api/admin/verificar', {
+            const response = await fetch(`${baseURL}/admin/verificar`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`,

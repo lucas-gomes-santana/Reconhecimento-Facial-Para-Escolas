@@ -31,6 +31,7 @@ export const useFaceDetection = () => {
     if (modelsLoaded) return;
     setLoading(true);
     setError(null);
+
     try {
       console.log('Iniciando carregamento dos modelos...');
       await Promise.all([
@@ -40,11 +41,13 @@ export const useFaceDetection = () => {
       ]);
       setModelsLoaded(true);
       console.log('Modelos carregados com sucesso');
+
     } catch (err) {
       const errorMsg = 'Erro ao carregar modelos de reconhecimento facial: ' + (err instanceof Error ? err.message : 'Erro desconhecido');
       setError(errorMsg);
       console.error('Erro detalhado:', err);
       throw new Error(errorMsg);
+
     } finally {
       setLoading(false);
     }
@@ -216,7 +219,7 @@ export const useFaceDetection = () => {
     }
   }, [isDetecting, modelsLoaded, loadModels, startVideo]);
 
-  // Função para parar a detecção (com melhoria)
+  // Função para parar a detecção
   const stopDetection = useCallback(() => {
     // Apenas desativa o estado. O useEffect cuidará de limpar o intervalo.
     setIsDetecting(false);
@@ -238,7 +241,7 @@ export const useFaceDetection = () => {
     setCurrentDescriptor(null);
   }, []);
 
-  // O restante do hook permanece o mesmo...
+  // Aguardar descriptor do rosto do usuário cadastrado
   const aguardarDescriptor = useCallback((timeout: number = 15000): Promise<number[]> => {
     return new Promise((resolve, reject) => {
       const startTime = Date.now();

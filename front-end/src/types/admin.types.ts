@@ -1,17 +1,12 @@
 export interface AdminData {
-    id: string;
+    _id: string;
     nome: string;
-    funcao: string;
+    funcao: 'admin' | 'seguranca';
+    dataCadastro: string;
 }
 
 export interface AdminSign {
     nome: string;
     senha: string;
     funcao: string;
-}
-
-export interface Admin {
-    id: string;
-    nome: string;
-    funcao: 'admin' | 'seguranca';
 }

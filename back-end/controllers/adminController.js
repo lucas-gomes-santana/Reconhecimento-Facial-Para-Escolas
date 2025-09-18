@@ -115,8 +115,11 @@ class AdminController {
                 });
             }
 
+            const nomeValido = nome.toLowerCase();
+
             // Verificar se nome já existe
-            const adminExistente = await Admin.findOne({ nome: nome });
+            const adminExistente = await Admin.findOne({ nome: nomeValido });
+
             if (adminExistente) {
                 return res.status(409).json({
                     success: false,
@@ -173,10 +176,10 @@ class AdminController {
         }
     }
 
-    // Método para verificar token (útil para frontend)
+    // Método para verificar token
     async verificarAutenticacao(req, res) {
         try {
-            // Se chegou até aqui, o token é válido (middleware já verificou)
+            // Se chegou até aqui, o token é válido
             res.status(200).json({
                 success: true,
                 message: 'Token válido',
@@ -193,6 +196,58 @@ class AdminController {
                 message: 'Erro interno do servidor'
             });
         }
+    }
+
+    // Método de listar admins
+    async listarAdmins(req, res) {
+        try {
+            const admins = await Admin.find().select('_id nome funcao createdAt');
+            
+            // Mapear para o formato esperado pelo frontend
+            const adminsFormatados = admins.map(admin => ({
+                _id: admin._id,
+                nome: admin.nome,
+                funcao: admin.funcao,
+                dataCadastro: admin.createdAt // Usar createdAt como dataCadastro
+            }));
+            
+            res.json(adminsFormatados);
+        } catch (err) {
+            console.error('Erro ao listar admins:', err);
+            res.status(500).json({ error: err.message });
+        }
+    }
+
+    // Remover admins do sistema por nome
+    async removerAdmins(req, res) {
+        const { nome, funcao } = req.params;
+
+        // Verificar se o usuário autenticado é admin
+        if (req.usuario.funcao !== 'admin') {
+            return res.status(403).json({
+                success: false,
+                message: 'Apenas administradores podem cadastrar novos usuários!'
+            });
+        }
+
+        const admin = await Admin.findOneAndDelete({ nome: decodeURIComponent(nome) });
+        
+        if (!admin) {
+            return res.status(404).json({ error: `Admin ${nome} não encontrado!` });
+        }
+
+        console.log(`${funcao === 'admin' ? 'Administrador' : 'Segurança'} ${nome} removido com sucesso`);
+
+        res.json({
+            success: true,
+            message: `${funcao === 'admin' ? 'Administrador' : 'Segurança'} removido com sucesso`,
+            admin: {
+                id: admin._id,
+                nome: admin.nome,
+                funcao: admin.funcao
+            }
+        });
+
     }
 }
 

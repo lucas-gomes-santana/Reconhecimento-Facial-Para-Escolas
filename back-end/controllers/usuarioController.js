@@ -93,6 +93,7 @@ class UsuarioController {
         try {
             const usuarios = await Usuario.find({}, 'nome').sort({ nome: 1 }); // Lista os nomes em ordem alfabética
             res.json(usuarios);
+            
         } catch (err) {
             res.status(500).json({ error: err.message });
         }

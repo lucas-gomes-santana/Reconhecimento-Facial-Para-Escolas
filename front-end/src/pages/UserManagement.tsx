@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from 'react';
 import { Trash2, Search, Users, AlertTriangle, Loader } from 'lucide-react';
 import { useUserManagement } from '../hooks/frontend/useManagement';
@@ -60,19 +61,22 @@ function UserManagement() {
 
   const getTipoUsuarioColor = (tipo: string) => {
     switch (tipo.toLowerCase()) {
+
       case 'professor':
         return 'bg-blue-100 text-blue-800 border-blue-200';
+
       case 'aluno':
         return 'bg-green-100 text-green-800 border-green-200';
+
       case 'funcionário':
       case 'funcionario':
         return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      case 'administrador':
-        return 'bg-purple-100 text-purple-800 border-purple-200';
+
       default:
         return 'bg-gray-100 text-gray-800 border-gray-200';
     }
   };
+  
 
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">

@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
 import type { Usuario } from '../../types/user.types';
+import { baseURL } from '../../config/url';
 
 
 export const useUserManagement = () => {
@@ -11,9 +12,9 @@ export const useUserManagement = () => {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
 
-  const USERS_PER_PAGE = 15;
+  const USERS_PER_PAGE = 30;
 
-  // Carregar todos os usuários da API
+  // Carregar todos os usuários do banco de dados pela Api
   const carregarUsuarios = useCallback(async (reset: boolean = false) => {
     if (loading) return;
     
@@ -21,7 +22,7 @@ export const useUserManagement = () => {
     setError(null);
     
     try {
-      const response = await fetch('http://localhost:3000/api/usuarios', {
+      const response = await fetch(`${baseURL}/usuarios/listar`, {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' }
       });
@@ -38,11 +39,12 @@ export const useUserManagement = () => {
         setPage(1);
       }
       
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Erro ao carregar usuários';
-      setError(errorMessage);
+    } 
+    catch (err) {
       console.error('Erro ao carregar usuários:', err);
-    } finally {
+
+    } 
+    finally {
       setLoading(false);
     }
   }, [loading]);
@@ -54,14 +56,13 @@ export const useUserManagement = () => {
     setError(null);
     
     try {
-      const response = await fetch(`http://localhost:3000/api/usuarios/${encodeURIComponent(nome)}`, {
+      const response = await fetch(`${baseURL}/usuarios/remover/${encodeURIComponent(nome)}`, {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' }
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || `Erro HTTP: ${response.status}`);
+        throw new Error(`Erro HTTP: ${response.status}`);
       }
 
       // Remover usuário das listas locais
@@ -73,9 +74,8 @@ export const useUserManagement = () => {
 
       return true;
       
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Erro ao remover usuário';
-      setError(errorMessage);
+    } 
+    catch (err) {
       console.error('Erro ao remover usuário:', err);
       return false;
     }
@@ -132,8 +132,10 @@ export const useUserManagement = () => {
         month: '2-digit',
         year: 'numeric'
       });
+
     } catch (error) {
-      return 'Data inválida';
+        console.error(error);
+        return 'Data inválida';
     }
   }, []);
 
@@ -144,6 +146,7 @@ export const useUserManagement = () => {
         usuario.nome.toLowerCase().includes(searchTerm.toLowerCase())
       ).length;
     }
+    
     return todosUsuarios.length;
   }, [todosUsuarios, searchTerm]);
 

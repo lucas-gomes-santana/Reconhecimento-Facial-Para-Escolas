@@ -10,8 +10,14 @@ router.post('/admin/login', adminController.login);
 // Rota para verificar se o token é válido (PROTEGIDA)
 router.get('/admin/verificar', autenticarToken, adminController.verificarAutenticacao);
 
-// Rota para cadastrar admins (PROTEGIDA - só admin)
+// Rota para cadastrar admins (PROTEGIDA)
 router.post('/admin/cadastrar', autenticarToken, adminController.cadastrarAdmin);
+
+// Rota para listar os admins cadastrados
+router.get('/admin/listar', autenticarToken, adminController.listarAdmins);
+
+// Rota para remover admin por nome (PROTEGIDA)
+router.delete('/admin/remover/:nome', autenticarToken, adminController.removerAdmins);
 
 
 export default router;

@@ -40,7 +40,7 @@ export const useApi = () => {
         descriptorLength: userData.descriptor?.length 
       });
       
-      const response = await fetch(`${baseURL}/usuarios`, {
+      const response = await fetch(`${baseURL}/usuarios/cadastrar`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
@@ -54,6 +54,7 @@ export const useApi = () => {
       
       try {
         data = responseText ? JSON.parse(responseText) : {};
+        
       } catch (parseError) {
         console.error('Erro ao parsear resposta:', parseError, 'Resposta:', responseText);
         throw new Error(`Resposta inválida do servidor: ${response.status} ${response.statusText}`);

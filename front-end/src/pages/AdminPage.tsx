@@ -1,6 +1,8 @@
-import { useState } from 'react';
+/* eslint-disable react-hooks/exhaustive-deps */
+import { useEffect, useState } from 'react';
 import { useAdminPage } from '../hooks/frontend/useAdminPage';
 import '../styles/index.css';
+import { Search, AlertTriangle, Users, Loader, Trash2 } from 'lucide-react';
 
 function AdminPage() {
     const {
@@ -11,17 +13,85 @@ function AdminPage() {
         setSenha,
         setFuncao,
         loading,
-        mensagem,
+        loadingList,
+        message,
         handleCadastrarAdmin,
+        carregarAdmins,
+        formatData,
+        getTotalAdmins,
+        buscarAdmins,
+        admins,
+        carregarMaisAdmins,
+        searchTerm,
+        removerAdmin,
+        hasMore,
     } = useAdminPage();
 
-    const [mostrarSenha, setMostrarSenha] = useState(false);
+    const [adminParaRemover, setAdminParaRemover] = useState<string | null>(null);
+    const [removendoAdmin, setRemovendoAdmin] = useState<string | null>(null);
+
+    // Carregar admins na inicialização
+    useEffect(() => {
+        console.log("Carregando Admins...");
+        carregarAdmins(true);
+    }, []);
+
+    // Scroll infinito
+    useEffect(() => {
+        const handleScroll = () => {
+            if (
+                window.innerHeight + document.documentElement.scrollTop >= 
+                document.documentElement.offsetHeight - 1000 &&
+                !loadingList &&
+                hasMore
+            ) {
+                carregarMaisAdmins();
+            }
+        };
+
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, [carregarMaisAdmins, loadingList, hasMore]);
+
+    // Função para remover admin com confirmação
+    const handleRemoverAdmin = async (nome: string) => {
+        setRemovendoAdmin(nome);
+        const sucesso = await removerAdmin(nome);
+
+        if (sucesso) {
+            setAdminParaRemover(null);
+        }
+
+        setRemovendoAdmin(null);
+    };
+
+    const confirmarRemocao = (nome: string) => {
+        setAdminParaRemover(nome);
+    };
+
+    const cancelarRemocao = () => {
+        setAdminParaRemover(null);
+    };
+
+    // Função para obter cores baseadas no tipo de admin
+    const getTipoAdminColor = (tipo: string) => {
+        switch (tipo.toLowerCase()) {
+            case 'admin':
+                return 'bg-purple-100 text-purple-800 border-purple-200';
+            case 'seguranca':
+            case 'segurança':
+                return 'bg-red-100 text-red-800 border-red-200';
+            default:
+                return 'bg-gray-100 text-gray-800 border-gray-200';
+        }
+    };
+
 
     return (
         <>
+            {/* Seção de Cadastro */}
             <main className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-6">
                 <div className="max-w-4xl mx-auto">
-
                     {/* Header */}
                     <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
                         <h1 className="text-3xl font-bold text-gray-800 mb-2">
@@ -33,27 +103,18 @@ function AdminPage() {
                     </div>
 
                     {/* Mensagens de Feedback */}
-                    {mensagem.texto && (
+                    {message.texto && (
                         <div className={`mb-6 p-4 rounded-lg border ${
-                            mensagem.tipo === 'success' 
+                            message.tipo === 'success' 
                                 ? 'bg-green-100 border-green-300 text-green-700' 
                                 : 'bg-red-100 border-red-300 text-red-700'
                         }`}>
-
                             <div className="flex">
                                 <div className="flex-shrink-0">
-                                    {mensagem.tipo === 'success' ? (
-                                        <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                                        </svg>
-                                    ) : (
-                                        <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                                        </svg>
-                                    )}
+                                    {/* Ícones de sucesso/erro */}
                                 </div>
                                 <div className="ml-3">
-                                    <p className="text-sm font-medium">{mensagem.texto}</p>
+                                    <p className="text-sm font-medium">{message.texto}</p>
                                 </div>
                             </div>
                         </div>
@@ -63,11 +124,10 @@ function AdminPage() {
                     <div className="bg-white rounded-xl shadow-lg p-6">
                         <form onSubmit={handleCadastrarAdmin}>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-
                                 {/* Campo Nome */}
                                 <div className="md:col-span-2">
                                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        Nome do Adm/Segurança:
+                                        Nome do Administrador/Segurança:
                                     </label>
                                     <input
                                         type="text"
@@ -83,33 +143,18 @@ function AdminPage() {
                                 {/* Campo Senha */}
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        Senha para o Adm/Segurança:
+                                        Senha para o Usuário:
                                     </label>
-                                    <div className="relative">
-                                        <input
-                                            type={mostrarSenha ? "text" : "password"}
-                                            value={senha}
-                                            onChange={(e) => setSenha(e.target.value)}
-                                            className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                                            placeholder="Crie uma senha"
-                                            required
-                                            disabled={loading}
-                                        />
-                                        <button
-                                            type="button"
-                                            onClick={() => setMostrarSenha(!mostrarSenha)}
-                                            className="absolute inset-y-0 right-0 pr-3 flex items-center"
-                                            disabled={loading}
-                                        >
-                                            <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                {mostrarSenha ? (
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.878 9.878L3 3m6.878 6.878L21 21" />
-                                                ) : (
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                                )}
-                                            </svg>
-                                        </button>
-                                    </div>
+                                    <input
+                                        type="text"
+                                        value={senha}
+                                        onChange={(e) => setSenha(e.target.value)}
+                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                                        placeholder="Crie uma senha segura"
+                                        required
+                                        disabled={loading}
+                                        minLength={6}
+                                    />
                                 </div>
 
                                 {/* Campo Função */}
@@ -132,35 +177,186 @@ function AdminPage() {
                                 </div>
                             </div>
 
-                            {/* Botões */}
-                            <div className="flex flex-col sm:flex-row gap-4 mt-8">
+                            {/* Botão de Submit */}
+                            <div className="mt-8">
                                 <button
                                     type="submit"
                                     disabled={loading}
-                                    className="flex-1 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-medium py-3 px-6 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                                    className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-medium py-3 px-8 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                                 >
                                     {loading ? (
                                         <div className="flex items-center justify-center">
-                                            <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                            </svg>
+                                            <Loader className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" />
                                             Cadastrando...
                                         </div>
                                     ) : (
-                                        'Cadastrar Gestor'
+                                        'Cadastrar Usuário'
                                     )}
                                 </button>
-
                             </div>
-
                         </form>
-
                     </div>
-
                 </div>
-                
             </main>
+
+            {/* Seção de Gerenciamento */}
+            <section className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
+                <div className="max-w-7xl mx-auto">
+                    <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+                        {/* Header */}
+                        <div className="bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-8">
+                            <div className="flex items-center gap-3 mb-4">
+                                <Users className="h-8 w-8 text-white" />
+                                <h1 className="text-3xl font-bold text-white">Gerenciamento de Usuários</h1>
+                            </div>
+                            <p className="text-blue-100">
+                                {getTotalAdmins() > 0 
+                                    ? `${getTotalAdmins()} usuário${getTotalAdmins() > 1 ? 's' : ''} ${searchTerm ? 'encontrado' : 'cadastrado'}${getTotalAdmins() > 1 ? 's' : ''}`
+                                    : searchTerm 
+                                        ? 'Nenhum usuário encontrado' 
+                                        : 'Nenhum usuário cadastrado'
+                                }
+                            </p>
+                        </div>
+
+                        {/* Barra de Pesquisa */}
+                        <div className="p-6 border-b border-gray-200">
+                            <div className="relative max-w-md">
+                                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                                <input
+                                    type="text"
+                                    placeholder="Pesquisar por nome ou função..."
+                                    value={searchTerm}
+                                    onChange={(e) => buscarAdmins(e.target.value)}
+                                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+                                />
+                            </div>
+                        </div>
+
+                        {/* Conteúdo Principal */}
+                        <div className="p-6">
+                            {/* Lista de Usuários */}
+                            {admins.length === 0 && !loadingList ? (
+                                <div className="text-center py-12">
+                                    <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                                    <h3 className="text-lg font-medium text-gray-900 mb-2">
+                                        {searchTerm ? 'Nenhum usuário encontrado' : 'Nenhum usuário cadastrado'}
+                                    </h3>
+                                    <p className="text-gray-500">
+                                        {searchTerm 
+                                            ? 'Tente buscar com outros termos' 
+                                            : 'Cadastre o primeiro usuário usando o formulário acima'
+                                        }
+                                    </p>
+                                </div>
+                            ) : (
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                    {admins.map((usuario) => (
+                                        <div
+                                            key={usuario._id}
+                                            className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
+                                        >
+                                            <div className="flex items-start justify-between">
+                                                <div className="flex-1 min-w-0">
+                                                    <h3 className="text-lg font-semibold text-gray-900 truncate">
+                                                        {usuario.nome}
+                                                    </h3>
+                                                    <div className="mt-2">
+                                                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getTipoAdminColor(usuario.funcao)}`}>
+                                                            {usuario.funcao === 'admin' ? 'Administrador' : 'Segurança'}
+                                                        </span>
+                                                    </div>
+                                                    {/*<p className="text-sm text-gray-500 mt-2">
+                                                        Cadastrado em {formatData(usuario.dataCadastro)}
+                                                    </p>*/}
+                                                </div>
+                                                
+                                                <button
+                                                    onClick={() => confirmarRemocao(usuario.nome)}
+                                                    disabled={removendoAdmin === usuario.nome}
+                                                    className="ml-3 p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                                    title="Remover usuário"
+                                                >
+                                                    {removendoAdmin === usuario.nome ? (
+                                                        <Loader className="h-5 w-5 animate-spin" />
+                                                    ) : (
+                                                        <Trash2 className="h-5 w-5" />
+                                                    )}
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+
+                            {/* Indicador de Carregamento */}
+                            {loadingList && (
+                                <div className="flex justify-center items-center py-8">
+                                    <Loader className="h-6 w-6 animate-spin text-blue-500 mr-2" />
+                                    <span className="text-gray-600">Carregando usuários...</span>
+                                </div>
+                            )}
+
+                            {/* Indicador de Fim da Lista */}
+                            {!hasMore && admins.length > 0 && (
+                                <div className="text-center py-6">
+                                    <p className="text-gray-500">
+                                        {searchTerm 
+                                            ? 'Todos os resultados foram carregados'
+                                            : 'Todos os usuários foram carregados'
+                                        }
+                                    </p>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+
+                {/* Modal de Confirmação de Remoção */}
+                {adminParaRemover && (
+                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+                        <div className="bg-white rounded-lg max-w-md w-full p-6">
+                            <div className="flex items-center gap-3 mb-4">
+                                <div className="flex-shrink-0 w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
+                                    <AlertTriangle className="h-5 w-5 text-red-600" />
+                                </div>
+                                <h3 className="text-lg font-semibold text-gray-900">
+                                    Confirmar Remoção
+                                </h3>
+                            </div>
+                            
+                            <p className="text-gray-600 mb-6">
+                                Tem certeza que deseja remover o usuário <strong>{adminParaRemover}</strong>? 
+                                Esta ação não pode ser desfeita.
+                            </p>
+                            
+                            <div className="flex justify-end gap-3">
+                                <button
+                                    onClick={cancelarRemocao}
+                                    disabled={removendoAdmin === adminParaRemover}
+                                    className="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
+                                    Cancelar
+                                </button>
+                                <button
+                                    onClick={() => handleRemoverAdmin(adminParaRemover)}
+                                    disabled={removendoAdmin === adminParaRemover}
+                                    className="px-4 py-2 bg-red-600 text-white hover:bg-red-700 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                                >
+                                    {removendoAdmin === adminParaRemover ? (
+                                        <>
+                                            <Loader className="h-4 w-4 animate-spin" />
+                                            Removendo...
+                                        </>
+                                    ) : (
+                                        'Remover'
+                                    )}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
+            </section>
         </>
     );
 }

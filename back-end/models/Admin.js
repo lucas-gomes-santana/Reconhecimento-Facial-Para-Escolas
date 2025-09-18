@@ -20,6 +20,10 @@ const AdminSchema = new mongoose.Schema({
         },
         lowercase: true
     },
+    dataCadastro: { // ✅ Campo explícito
+        type: Date,
+        default: Date.now
+    },
     ativo: {
         type: Boolean,
         default: true
@@ -28,8 +32,6 @@ const AdminSchema = new mongoose.Schema({
         type: Date,
         default: null
     }
-}, {
-    timestamps: true // Adiciona createdAt e updatedAt automaticamente
 });
 
 // Índice para melhorar performance na busca por nome
