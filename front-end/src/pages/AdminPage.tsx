@@ -1,8 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from 'react';
 import { useAdminPage } from '../hooks/frontend/useAdminPage';
-import '../styles/index.css';
 import { Search, AlertTriangle, Users, Loader, Trash2 } from 'lucide-react';
+import '../styles/index.css';
 
 function AdminPage() {
     const {
@@ -78,11 +78,33 @@ function AdminPage() {
         switch (tipo.toLowerCase()) {
             case 'admin':
                 return 'bg-purple-100 text-purple-800 border-purple-200';
+
             case 'seguranca':
             case 'segurança':
                 return 'bg-red-100 text-red-800 border-red-200';
+
+            case 'super-admin':
+                return 'bg-green-100 text-red-800 border-red-200'
+
+            case 'desenvolvedor': 
+                return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+        }
+    };
+
+    // ✅ ADICIONE ESTA NOVA FUNÇÃO AQUI
+    const formatarFuncao = (funcao: string) => {
+        switch (funcao.toLowerCase()) {
+            case 'admin':
+                return 'Administrador';
+            case 'seguranca':
+            case 'segurança':
+                return 'Segurança';
+            case 'super-admin':
+                return 'Super Admin';
+            case 'desenvolvedor':
+                return 'Desenvolvedor';
             default:
-                return 'bg-gray-100 text-gray-800 border-gray-200';
+                return funcao; // Retorna o valor original se não for reconhecido
         }
     };
 
@@ -210,7 +232,7 @@ function AdminPage() {
                                 </div>
                                 <p className="text-blue-100">
                                     {getTotalAdmins() > 0 
-                                        ? `${getTotalAdmins()} usuário${getTotalAdmins() > 1 ? 's' : ''}/segurança${getTotalAdmins() > 1 ? 's' : ''}  ${searchTerm ? 'encontrado' : 'cadastrado'}${getTotalAdmins() > 1 ? 's' : ''}`
+                                        ? `${getTotalAdmins()} admin${getTotalAdmins() > 1 ? 's' : ''}/segurança${getTotalAdmins() > 1 ? 's' : ''}  ${searchTerm ? 'encontrado' : 'cadastrado'}${getTotalAdmins() > 1 ? 's' : ''}`
                                         : searchTerm 
                                             ? 'Nenhum usuário encontrado' 
                                             : 'Nenhum usuário cadastrado'
@@ -234,7 +256,7 @@ function AdminPage() {
 
                             {/* Conteúdo Principal */}
                             <div className="p-6">
-                                {/* Lista de Usuários */}
+                                {/* Lista de Adms e Seguranças */}
                                 {admins.length === 0 && !loadingList ? (
                                     <div className="text-center py-12">
                                         <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
@@ -256,13 +278,17 @@ function AdminPage() {
                                                 className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
                                             >
                                                 <div className="flex items-start justify-between">
+
+                                                    {/* Nome do Adm */}
                                                     <div className="flex-1 min-w-0">
                                                         <h3 className="text-lg font-semibold text-gray-900 truncate">
                                                             {usuario.nome}
                                                         </h3>
+
+                                                        {/* Tipo do Adm */}
                                                         <div className="mt-2">
                                                             <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getTipoAdminColor(usuario.funcao)}`}>
-                                                                {usuario.funcao === 'admin' ? 'Administrador' : 'Segurança'}
+                                                                {formatarFuncao(usuario.funcao)}
                                                             </span>
                                                         </div>
                                                        <p className="text-sm text-gray-500 mt-2">

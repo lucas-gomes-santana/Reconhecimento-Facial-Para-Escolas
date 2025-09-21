@@ -4,6 +4,7 @@ import usuarioRoutes from "./routes/usuarioRoutes.js";
 import estatisticaRoutes from "./routes/estatisticaRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import corsConfig from "./config/corsConfig.js";
+import { cadastrarDesenvolvedor }  from "./controllers/adminController.js";
 
 
 const app = express();
@@ -20,7 +21,8 @@ app.use("/api", adminRoutes);
 // Inicialização do servidor
 async function startServer() {
   try {
-    await databaseConfig.connect();
+    await databaseConfig.connect(); 
+    await cadastrarDesenvolvedor();
 
     app.listen(3000, () => {
       console.log("Servidor rodando na porta 3000");

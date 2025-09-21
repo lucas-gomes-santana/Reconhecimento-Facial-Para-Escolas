@@ -19,6 +19,43 @@ function validarFuncao(funcao) {
     return funcoesValidas.includes(funcao.toLowerCase());
 }
 
+export async function cadastrarDesenvolvedor() {
+    try {
+        // Definindo as credenciais do desenvolvedor.
+        // O ideal é usar variáveis de ambiente para isso!
+        const devNome = process.env.DEV_USER_NOME || 'Lucas Gomes';
+        const devSenha = process.env.DEV_USER_SENHA || 'lucasgomes';
+        const devFuncao = 'desenvolvedor';
+
+        // 1. Verifica se o usuário já existe (case-insensitive)
+        const devExistente = await Admin.findOne({ nome: devNome.toLowerCase() });
+
+        if (!devExistente) {
+            console.log(`Usuário '${devNome}' não encontrado. Criando...`);
+            
+            // 2. Se não existir, criptografa a senha
+            const senhaCriptografada = await criptografarSenha(devSenha);
+
+            // 3. Cria o novo usuário no banco de dados
+            const novoDev = new Admin({
+                nome: devNome,
+                senha: senhaCriptografada,
+                funcao: devFuncao
+            });
+
+            await novoDev.save();
+            console.log(`Usuário '${devNome}' criado com sucesso!`);
+        } else {
+            console.log(`Usuário '${devNome}' já existe. Nenhuma ação necessária.`);
+        }
+
+    } catch (error) {
+        console.error('❌ Erro ao tentar criar o usuário desenvolvedor:', error);
+        // Em caso de erro na configuração inicial, é uma boa prática encerrar o processo.
+        process.exit(1);
+    }
+}
+
 class AdminController {
 
     // Método de login COM JWT
@@ -38,7 +75,7 @@ class AdminController {
             if (!admin) {
                 return res.status(404).json({
                     success: false,
-                    message: `Admin '${nome}' não encontrado!`
+                    message: `Admin ${nome} não encontrado!`
                 });
             }
 
@@ -86,16 +123,16 @@ class AdminController {
         }
     }
 
-    // Método de cadastro de admins (PROTEGIDA - só admin pode cadastrar)
+    // Método de cadastro de admins (PROTEGIDA - só o super-usuário e desenvolvedor podem cadastrar)
     async cadastrarAdmin(req, res) {
         try {
             const { nome, senha, funcao } = req.body;
 
-            // Verificar se o usuário autenticado é admin
-            if (req.usuario.funcao !== 'admin') {
+            // Verificar se o usuário autenticado é super-user ou desenvolvedor
+            if (req.usuario.funcao !== 'super-usuario' && req.usuario.funcao !== 'desenvolvedor') {
                 return res.status(403).json({
                     success: false,
-                    message: 'Apenas administradores podem cadastrar novos usuários!'
+                    message: 'Apenas o super usuário pode cadastrar novos Admistradores!'
                 });
             }
 
@@ -115,7 +152,7 @@ class AdminController {
                 });
             }
 
-            const nomeValido = nome.toLowerCase();
+            const nomeValido = nome;
 
             // Verificar se nome já existe
             const adminExistente = await Admin.findOne({ nome: nomeValido });
@@ -220,35 +257,43 @@ class AdminController {
 
     // Remover admins do sistema por nome
     async removerAdmins(req, res) {
-        const { nome, funcao } = req.params;
+        const { nome } = req.params;
 
-        // Verificar se o usuário autenticado é admin
-        if (req.usuario.funcao !== 'admin') {
+        // Não se pode remover sua própria conta
+        if (req.usuario.nome === nome) {
             return res.status(403).json({
                 success: false,
-                message: 'Apenas administradores podem cadastrar novos usuários!'
+                message: 'Você não pode remover sua própria conta!'
             });
         }
 
-        const admin = await Admin.findOneAndDelete({ nome: decodeURIComponent(nome) });
-        
-        if (!admin) {
-            return res.status(404).json({ error: `Admin ${nome} não encontrado!` });
+        // Verificar se o usuário autenticado é admin
+        if (req.usuario.funcao !== 'super-usuario' && req.usuario.funcao !== 'desenvolvedor') {
+            return res.status(403).json({
+                success: false,
+                message: 'Apenas o super-usuario pode remover Adms ou Seguranças!'
+            });
         }
 
-        console.log(`${funcao === 'admin' ? 'Administrador' : 'Segurança'} ${nome} removido com sucesso`);
+        const admin = await Admin.findOneAndDelete({ nome });
+
+        if (!admin) {
+            return res.status(404).json({ error: `${nome} não encontrado!` });
+        }
+
+        console.log(`${nome} removido com sucesso do C.E.R.F`);
 
         res.json({
             success: true,
-            message: `${funcao === 'admin' ? 'Administrador' : 'Segurança'} removido com sucesso`,
+            message: `${nome} removido com sucesso do C.E.R.F`,
             admin: {
                 id: admin._id,
                 nome: admin.nome,
                 funcao: admin.funcao
             }
         });
-
     }
+
 }
 
 export default new AdminController();

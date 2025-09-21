@@ -9,7 +9,7 @@ class UsuarioController {
         try {
             const { nome, tipoUsuario, descriptor } = req.body;
             
-            const rostoExistente = await faceRecognitionService.verificarRostoExistente(descriptor, 0.4);
+            const rostoExistente = await faceRecognitionService.verificarRostoExistente(descriptor, 0.6);
             if (rostoExistente) {
                 return res.status(409).json({ 
                     error: 'Rosto já cadastrado',
@@ -44,14 +44,17 @@ class UsuarioController {
     // Método de verificação facial
     async verificarRosto(req, res) {
         try {
-            const { descriptor } = req.body;
+             // ✅ PASSO 1: Obtenha o 'contexto' do corpo da requisição
+            const { descriptor, contexto } = req.body;
 
             console.log('Iniciando verificação facial...');
             
             const match = await faceRecognitionService.encontrarUsuarioPorSimilaridade(descriptor, 0.6);
             
-            // Incrementar contador de verificações nas estatísticas (independente se encontrou ou não)
-            await Estatistica.incrementarVerificacoes();
+            // ✅ PASSO 2: Incremente o contador APENAS se o contexto NÃO FOR 'cadastro'
+            if (contexto !== 'cadastro') {
+                await Estatistica.incrementarVerificacoes();
+            }
             
             if (match) {
                 console.log(`Usuário encontrado: ${match.usuario.nome} (distância: ${match.distancia.toFixed(4)}, similaridade: ${(match.similaridade * 100).toFixed(1)}%)`);
@@ -88,18 +91,7 @@ class UsuarioController {
         }
     }
 
-    // Listar usuários por nome como parâmetro
-    async listarUsuariosPorNome(req, res) {
-        try {
-            const usuarios = await Usuario.find({}, 'nome').sort({ nome: 1 }); // Lista os nomes em ordem alfabética
-            res.json(usuarios);
-            
-        } catch (err) {
-            res.status(500).json({ error: err.message });
-        }
-    }
-
-    // Método para deletar usuário por nome
+    // Método para remover usuário por nome
     async deletarUsuario(req, res) {
         try {
             const { nome } = req.params;
@@ -108,7 +100,7 @@ class UsuarioController {
                 return res.status(400).json({ error: 'Nome do usuário é obrigatório' });
             }
 
-            const usuario = await Usuario.findOneAndDelete({ nome: decodeURIComponent(nome) });
+            const usuario = await Usuario.findOneAndDelete({ nome });
             
             if (!usuario) {
                 return res.status(404).json({ error: 'Usuário não encontrado' });

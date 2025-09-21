@@ -106,6 +106,7 @@ export const useAuth = () => {
             clearAuthData();
             setLoading(false);
             return false;
+            
         } catch (error) {
             console.error('Erro ao verificar token:', error);
             clearAuthData();
@@ -178,6 +179,15 @@ export const useAuth = () => {
         return admin?.funcao === 'seguranca';
     }, [admin]);
 
+    const isSuperAdmin = useCallback(() => {
+        return admin?.funcao === 'super-admin';
+    }, [admin]);
+
+    const isDesenvolvedor = useCallback(() => {
+        return admin?.funcao === 'desenvolvedor';
+    }, [admin]);
+
+
     return {
         // Estados
         isAuthenticated,
@@ -193,6 +203,8 @@ export const useAuth = () => {
         // Utilitários
         isAdmin,
         isSeguranca,
+        isDesenvolvedor,
+        isSuperAdmin,
         getToken
     };
 };

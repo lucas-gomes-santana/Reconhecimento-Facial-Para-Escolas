@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from 'react';
 import { Trash2, Search, Users, AlertTriangle, Loader } from 'lucide-react';
-import { useUserManagement } from '../hooks/frontend/useManagement';
+import { useUserManagement } from '../hooks/frontend/useUserManagement';
 
 function UserManagement() {
   const {

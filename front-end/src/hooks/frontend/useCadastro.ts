@@ -132,7 +132,7 @@ export const useCadastroFacial = (): UseCadastroFacialReturn => {
       setStatusMessage('Verificando se o rosto já está cadastrado...');
       
       // Verifica se o rosto já existe
-      const verificacao = await verificarRosto(currentDescriptor);
+      const verificacao = await verificarRosto(currentDescriptor, 'cadastro');
       
       if (verificacao.existe) {
         const nomeExistente = verificacao.dados?.usuario?.nome || 'Usuário desconhecido';

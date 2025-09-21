@@ -34,6 +34,7 @@ export const useEstatisticas = () => {
       const errorMessage = err instanceof Error ? err.message : 'Erro ao carregar estatísticas';
       setError(errorMessage);
       throw err;
+      
     } finally {
       setLoading(false);
     }

@@ -5,6 +5,7 @@ const AdminSchema = new mongoose.Schema({
         type: String, 
         required: [true, 'Nome é obrigatório'],
         trim: true,
+        unique: true
     },
     senha: {
         type: String, 
@@ -15,7 +16,7 @@ const AdminSchema = new mongoose.Schema({
         type: String, 
         required: [true, 'Função é obrigatória'],
         enum: {
-            values: ['admin', 'seguranca'],
+            values: ['admin', 'seguranca', 'super-admin', 'desenvolvedor'],
             message: 'Função deve ser "admin" ou "seguranca"'
         },
         lowercase: true
@@ -36,6 +37,17 @@ const AdminSchema = new mongoose.Schema({
 
 // Índice para melhorar performance na busca por nome
 AdminSchema.index({ nome: 1 });
+
+// Garantir que só exista um usuário do tipo "desenvolvedor" e "super-admin" no banco de dados
+AdminSchema.index(
+    { funcao: 1 }, 
+    { 
+        unique: true, 
+        partialFilterExpression: { 
+            funcao: { $in: ['desenvolvedor', 'super-admin'] } 
+        } 
+    }
+);
 
 // Middleware para não retornar senha nas consultas por padrão
 AdminSchema.methods.toJSON = function() {

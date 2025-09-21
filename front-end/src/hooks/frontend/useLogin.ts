@@ -20,11 +20,10 @@ export const useLogin = () => {
             const result = await login(nome, senha);
 
             if (result.success) {
-                if (result.admin?.funcao === 'admin' || result.admin?.funcao === 'seguranca') {
-                    navigate('/home');
-                } else { 
-                    setError("Acesso não autorizado!");
-                }
+                navigate('/home');   
+            }
+            else {
+                setError("Acesso não autorizado! Verifique o nome e senha.");
             }
 
         } catch (error) {

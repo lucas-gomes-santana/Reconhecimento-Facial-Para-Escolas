@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useCallback } from 'react';
 import type { UsuarioData } from '../../types/user.types';
 import type { VerificarRostoResponse } from '../../types/face.type';
@@ -78,7 +79,7 @@ export const useApi = () => {
     }
   }, [baseURL, handleApiError]);
 
-  const verificarRosto = useCallback(async (descriptor: number[]): Promise<VerificarRostoResponse> => {
+  const verificarRosto = useCallback(async (descriptor: number[], contexto: string): Promise<VerificarRostoResponse> => {
     setLoading(true);
     setError(null);
     
@@ -91,7 +92,7 @@ export const useApi = () => {
           'Content-Type': 'application/json',
           'Accept': 'application/json'
         },
-        body: JSON.stringify({ descriptor })
+        body: JSON.stringify({ descriptor, contexto })
       });
 
       const responseText = await response.text();

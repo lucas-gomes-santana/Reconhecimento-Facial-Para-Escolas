@@ -1,8 +1,10 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useCallback, useEffect, useState } from "react";
 import { useAuth } from "../auth/useAuth";
-import type { AdminSign } from "../../types/admin.types";
+import type { AdminData, AdminSign } from "../../types/admin.types";
 import type { ApiResponse } from "../../types/api.types";
 import { baseURL } from "../../config/url";
+
 
 const ADMINS_PER_PAGE = 10;
 
@@ -11,20 +13,13 @@ interface MessageState {
     tipo: 'success' | 'error';
 }
 
-interface AdminData {
-    _id: string;  // MongoDB usa _id
-    nome: string;
-    funcao: 'admin' | 'seguranca';
-    dataCadastro: string;
-}
-
 export const useAdminPage = () => {
     // Estados do formulário
     const [nome, setNome] = useState('');
     const [senha, setSenha] = useState('');
     const [funcao, setFuncao] = useState('');
     
-    // Estados da lista de admins
+    // Estados da lista dez admins
     const [todosAdmins, setTodosAdmins] = useState<AdminData[]>([]);
     const [adminsExibidos, setAdminsExibidos] = useState<AdminData[]>([]);
     const [searchTerm, setSearchTerm] = useState('');
@@ -37,14 +32,20 @@ export const useAdminPage = () => {
     const [message, setMessage] = useState<MessageState>({ texto: '', tipo: 'success' });
 
     // Hook de autenticação
-    const { authenticatedFetch, isAdmin, admin } = useAuth();
+    const { 
+        authenticatedFetch, 
+        isAdmin, 
+        isDesenvolvedor, 
+        isSuperAdmin, 
+        admin 
+    } = useAuth();
 
     // Função para limpar mensagens após um tempo
-    const limparMensagem = useCallback(() => {
+    /*const limparMensagem = useCallback(() => {
         setTimeout(() => {
             setMessage({ texto: '', tipo: 'success' });
-        }, 5000);
-    }, []);
+        }, 8000);
+    }, []);*/
 
     // Função para limpar o formulário
     const limparFormulario = useCallback(() => {
@@ -57,13 +58,12 @@ export const useAdminPage = () => {
     const handleCadastrarAdmin = useCallback(async (e: React.FormEvent) => {
         e.preventDefault();
         
-        // Verificar se usuário é admin antes de prosseguir
-        if (!isAdmin()) {
+        // Verificar se usuário é super-usuário ou desenvolvedor antes de cadastrar
+        if (!isSuperAdmin() && !isDesenvolvedor()) {
             setMessage({ 
                 texto: "Apenas administradores podem cadastrar outros Admins!", 
                 tipo: 'error' 
             });
-            limparMensagem();
             return;
         }
 
@@ -72,7 +72,6 @@ export const useAdminPage = () => {
                 texto: "Função é obrigatória", 
                 tipo: 'error' 
             });
-            limparMensagem();
             return;
         }
 
@@ -129,10 +128,9 @@ export const useAdminPage = () => {
             }
         } finally {
             setLoading(false);
-            limparMensagem();
         }
 
-    }, [nome, senha, funcao, authenticatedFetch, isAdmin, limparFormulario, limparMensagem]);
+    }, [nome, senha, funcao, authenticatedFetch, isAdmin, limparFormulario]);
 
     // Função para carregar admins
     const carregarAdmins = useCallback(async (reset: boolean = false) => {
@@ -157,7 +155,7 @@ export const useAdminPage = () => {
                 _id: admin._id,
                 nome: admin.nome,
                 funcao: admin.funcao,
-                dataCadastro: admin.dataCadastro || admin.createdAt || new Date().toISOString()
+                dataCadastro: admin.createAt ||  new Date().toISOString()
             })) : [];
 
             if (reset) {
@@ -173,18 +171,16 @@ export const useAdminPage = () => {
                 texto: "Erro ao carregar lista de usuários", 
                 tipo: 'error' 
             });
-            limparMensagem();
         } finally {
             setLoadingList(false);
         }
-    }, [loadingList, authenticatedFetch, limparMensagem]);
+    }, [loadingList, authenticatedFetch]);
 
     // Função para remover admin
     const removerAdmin = useCallback(async (nome: string): Promise<boolean> => {
         if (!nome) return false;
 
         try {
-            // ✅ Correção: Adicionar barra antes do parâmetro
             const response = await authenticatedFetch(`${baseURL}/admin/remover/${encodeURIComponent(nome)}`, {
                 method: 'DELETE',
                 headers: { 'Content-Type': 'application/json' }
@@ -200,15 +196,14 @@ export const useAdminPage = () => {
                     tipo: 'success' 
                 });
                 
-                limparMensagem();
                 return true;
+
             } else {
                 const errorData = await response.json();
                 setMessage({ 
                     texto: errorData.message || "Erro ao remover usuário", 
                     tipo: 'error' 
                 });
-                limparMensagem();
                 return false;
             }
 
@@ -218,10 +213,9 @@ export const useAdminPage = () => {
                 texto: "Erro de conexão ao remover usuário", 
                 tipo: 'error' 
             });
-            limparMensagem();
             return false;
         }
-    }, [authenticatedFetch, limparMensagem]);
+    }, [authenticatedFetch]);
 
     // Função para atualizar admins exibidos com paginação
     const atualizarAdminsExibidos = useCallback(() => {

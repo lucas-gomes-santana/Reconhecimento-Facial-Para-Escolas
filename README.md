@@ -29,41 +29,50 @@ Com a funcionalidade de reconhecimento facial do C.E.R.F, buscamos controlar o f
 <br>
 
 1. Baixe o arquivo .zip deste repositório ou faça fork e clone usando:
+
    ```bash
    https://github.com/lucas-gomes-santana/Reconhecimento-Facial-Para-Escolas.git
    ```
 
 <br>
 
-2. Instale as dependências necessárias usando no **front-end**:
-   ```bash
-   npm install face-api-js react-router-dom tailwindcss
-   ```
+2. Instale o gerenciador de pacotes pnpm. Pois este mesmo foi o gerenciador usado neste projeto:
 
-   E também em **back-end**:
    ```bash
-   npm install express mongoose cors
+   npm install -g pnpm
    ```
 
 <br>
 
-3. Execute a API back-end Node:
+3. Instale as dependências necessárias usando este comando dentro das pastas **front-end** e **back-end**:
+
+   ```bash
+   pnpm install
+   ```
+
+   O pnpm irá detectar automaticamente as bibliotecas usadas na aplicação lendo os arquivos **package-json** presentes em ambos os diretórios citados
+
+<br>
+
+4. Execute a API back-end Node:
+
    ```bash
    node server.js
    ```
 
    E execute o front-end React:
+
    ```bash
-   npm run dev
+   pnpm dev
    ```
 
    Copie e cole o link gerado no **front-end** em seu navegador:
+
    ```bash
    http://localhost:5173/
    ```
 
 ****
-
 
 ### Avisos Finais
 

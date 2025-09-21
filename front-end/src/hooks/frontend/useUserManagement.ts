@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import type { Usuario } from '../../types/user.types';
 import { baseURL } from '../../config/url';
+import { useAuth } from '../auth/useAuth';
 
 
 export const useUserManagement = () => {
@@ -13,6 +14,8 @@ export const useUserManagement = () => {
   const [hasMore, setHasMore] = useState(true);
 
   const USERS_PER_PAGE = 30;
+
+  const {authenticatedFetch} = useAuth();
 
   // Carregar todos os usuários do banco de dados pela Api
   const carregarUsuarios = useCallback(async (reset: boolean = false) => {
@@ -56,7 +59,7 @@ export const useUserManagement = () => {
     setError(null);
     
     try {
-      const response = await fetch(`${baseURL}/usuarios/remover/${encodeURIComponent(nome)}`, {
+      const response = await authenticatedFetch(`${baseURL}/usuarios/remover/${encodeURIComponent(nome)}`, {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' }
       });
@@ -68,6 +71,8 @@ export const useUserManagement = () => {
       // Remover usuário das listas locais
       setTodosUsuarios(prev => prev.filter(usuario => usuario.nome !== nome));
       setUsuariosExibidos(prev => prev.filter(usuario => usuario.nome !== nome));
+
+      console.log(`Usuário ${nome} removido do C.E.R.F.`)
 
       // Notificar outros hooks sobre a mudança (opcional)
       window.dispatchEvent(new CustomEvent('userDeleted', { detail: { nome } }));
