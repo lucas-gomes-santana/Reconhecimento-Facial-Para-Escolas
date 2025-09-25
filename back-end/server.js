@@ -1,4 +1,5 @@
 import express from "express";
+import cookieParser from "cookie-parser";
 import databaseConfig from "./config/database.js";
 import usuarioRoutes from "./routes/usuarioRoutes.js";
 import estatisticaRoutes from "./routes/estatisticaRoutes.js";
@@ -12,6 +13,8 @@ const app = express();
 // Middlewares
 app.use(express.json());
 app.use(corsConfig);
+app.use(cookieParser());
+
 
 // Rotas
 app.use("/api", usuarioRoutes);

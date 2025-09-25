@@ -1,6 +1,6 @@
 import Admin from '../models/Admin.js';
 import bcrypt from 'bcrypt';
-import { gerarToken } from '../config/jwtConfig.js';
+import { gerarToken, definirTokenCookie } from '../config/jwtConfig.js';
 
 
 async function verificarSenha(senhaInformada, senhaArmazenada) {
@@ -46,7 +46,7 @@ export async function cadastrarDesenvolvedor() { // Cadastrando o usuário desen
     } catch (error) {
         console.error("Erro ao tentar criar o usuário desenvolvedor. O desenvolvedor já foi cadastrado ou um erro desconhecido aconteceu: ", error);
         // Interrompe o processo em caso de erro. 
-        // No caso
+        // Está apontando erro pois foi configurado no model para existir apenas um usuário do tipo 'desenvolvedor' na collection admins
         // process.exit(1); Descomentar em produção para segurança do back-end
     }
 }
@@ -92,16 +92,18 @@ class AdminController {
 
             const token = gerarToken(tokenPayload);
 
+            // Define o cookie com o token JWT
+            definirTokenCookie(res, token);
+
             // Atualizar último login
             await Admin.findByIdAndUpdate(admin._id, { 
                 ultimoLogin: new Date() 
             });
 
-            // Retorna resposta 200 com token
+            // Retorna resposta 200 sem o token (agora está no cookie)
             return res.status(200).json({
                 success: true,
                 message: 'Admin encontrado e autenticado',
-                token: token,
                 admin: {
                     id: admin._id,
                     nome: admin.nome,
@@ -111,6 +113,22 @@ class AdminController {
 
         } catch (error) {
             console.error('Erro no login:', error);
+            return res.status(500).json({
+                success: false,
+                message: 'Erro interno do servidor'
+            });
+        }
+    }
+
+    async logout(req, res) {
+        try {
+            removerTokenCookie(res);
+            return res.status(200).json({
+                success: true,
+                message: 'Logout realizado com sucesso'
+            });
+        } catch (error) {
+            console.error('Erro no logout:', error);
             return res.status(500).json({
                 success: false,
                 message: 'Erro interno do servidor'
@@ -222,7 +240,6 @@ class AdminController {
         }
     }
 
-    // Método de listar admins
     async listarAdmins(req, res) {
         try {
             // Buscar todos os admins com os campos necessários
