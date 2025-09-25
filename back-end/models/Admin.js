@@ -21,10 +21,6 @@ const AdminSchema = new mongoose.Schema({
         },
         lowercase: true
     },
-    dataCadastro: { // ✅ Campo explícito
-        type: Date,
-        default: Date.now
-    },
     ativo: {
         type: Boolean,
         default: true
@@ -33,6 +29,8 @@ const AdminSchema = new mongoose.Schema({
         type: Date,
         default: null
     }
+}, {
+    timestamps: true // Cria automaticamente createdAt e updatedAt
 });
 
 // Índice para melhorar performance na busca por nome
@@ -55,5 +53,13 @@ AdminSchema.methods.toJSON = function() {
     delete adminObject.senha;
     return adminObject;
 };
+
+// Virtual para padronizar dataCadastro como createdAt
+AdminSchema.virtual('dataCadastro').get(function() {
+    return this.createdAt;
+});
+
+// Garantir que virtuals sejam incluídos na serialização JSON
+AdminSchema.set('toJSON', { virtuals: true });
 
 export default mongoose.model('Admin', AdminSchema);

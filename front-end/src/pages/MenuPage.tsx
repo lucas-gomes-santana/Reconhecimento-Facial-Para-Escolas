@@ -10,7 +10,7 @@ const subtitleStyle = "text-lg font-medium text-gray-800 mb-2 transition-colors 
 const paragraphStyle = "text-sm text-gray-600";
 
 
-function HomePage() {
+function MenuPage() {
   return (
     <main className="flex flex-col items-center justify-center min-h-[100vh] bg-white py-8 px-4">
 
@@ -137,7 +137,7 @@ function HomePage() {
             </p>
           </Link>
 
-          {/* Card de página do super-usuário */}
+          {/* Card de página do super-admin e desenvolvedor */}
           <Link
             to={"/pagina-do-admin"}
             className={clsx(cardStyle)}
@@ -156,7 +156,7 @@ function HomePage() {
             </div>
 
             <h3 className={clsx(subtitleStyle)}>
-              Cadastro de ADMs
+              Página dos ADMs
             </h3>
             <p className={clsx(paragraphStyle)}>
               Página dedicada aos administradores do C.E.R.F
@@ -170,4 +170,4 @@ function HomePage() {
   );
 }
 
-export default HomePage;
+export default MenuPage;

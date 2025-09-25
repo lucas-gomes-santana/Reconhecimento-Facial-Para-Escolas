@@ -2,7 +2,7 @@
 
 ### Descrição
 
-Bem vindo ao repositório do projeto C.E.R.F. Um projeto dedicado para a Feira de Ciências 2025 do CETEP de Ipirá, Bahia. Embora seja de propósito acadêmico, há a intenção de escalá-lo para torná-lo pronto para uso em cenários reais das instituições acadêmicas.
+Bem vindo ao repositório do projeto C.E.R.F. Um projeto dedicado para a Feira de Ciências 2025 do CETEP de Ipirá, Bahia. Embora seja de propósito acadêmico, existe a intenção de escalá-lo para torná-lo pronto para uso em cenários reais das instituições acadêmicas.
 
 O objetivo do C.E.R.F é reforçar a segurança das escolas, através do uso de um sistema web que faz cadastro de alunos, professores e outras pessoas que frequentam instalações de caráter escolar. Com a funcionalidade de cadastro biométrico facial, ao invés de usar senhas convencionais.
 
@@ -54,23 +54,28 @@ Com a funcionalidade de reconhecimento facial do C.E.R.F, buscamos controlar o f
 
 <br>
 
-4. Execute a API back-end Node:
+4. Execute o projeto:
+
+
+   Começando pelo back-end:
 
    ```bash
-   node server.js
+   cd back-end && node server.js
    ```
 
    E execute o front-end React:
 
    ```bash
-   pnpm dev
+   cd front-end && pnpm dev
    ```
 
-   Copie e cole o link gerado no **front-end** em seu navegador:
+   Copie e cole o link gerado no **front-end** na barra de endereços do seu navegador:
 
    ```bash
    http://localhost:5173/
    ```
+
+   OBS: Use esses comandos pelo terminal do seu sistema operacional, como o CMD do Windows, dentro da pasta da aplicação.
 
 ****
 

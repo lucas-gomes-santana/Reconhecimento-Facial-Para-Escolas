@@ -44,14 +44,14 @@ class UsuarioController {
     // Método de verificação facial
     async verificarRosto(req, res) {
         try {
-             // ✅ PASSO 1: Obtenha o 'contexto' do corpo da requisição
+            // Obtendo o 'contexto' do corpo da requisição
             const { descriptor, contexto } = req.body;
 
             console.log('Iniciando verificação facial...');
             
             const match = await faceRecognitionService.encontrarUsuarioPorSimilaridade(descriptor, 0.6);
             
-            // ✅ PASSO 2: Incremente o contador APENAS se o contexto NÃO FOR 'cadastro'
+            // Incrementando o contador apenas se o contexto não for 'cadastro'
             if (contexto !== 'cadastro') {
                 await Estatistica.incrementarVerificacoes();
             }
@@ -80,10 +80,9 @@ class UsuarioController {
         }
     }
 
-    // Listar todos os usuários
     async listarUsuarios(req, res) {
         try {
-            const usuarios = await Usuario.find({}, { descriptor: 0 }).sort({ dataCadastro: -1 });
+            const usuarios = await Usuario.find({}, { descriptor: 0 }).sort({ dataCadastro: -1 }); // Listando os usuários cadastrados mais recentemente primeiro
             res.json(usuarios);
         } catch (err) {
             console.error('Erro ao listar usuários:', err);
@@ -91,7 +90,6 @@ class UsuarioController {
         }
     }
 
-    // Método para remover usuário por nome
     async deletarUsuario(req, res) {
         try {
             const { nome } = req.params;
@@ -105,17 +103,10 @@ class UsuarioController {
             if (!usuario) {
                 return res.status(404).json({ error: 'Usuário não encontrado' });
             }
+
+            await Estatistica.decrementarCadastros();
             
             console.log(`Usuário ${nome} removido com sucesso`);
-
-            // Decrementar contador de cadastros nas estatísticas
-            try {
-                await Estatistica.decrementarCadastros();
-
-            } catch (err) {
-                console.error('Erro ao decrementar estatísticas:', err);
-                // Não falha a operação por erro nas estatísticas
-            }
             
             res.json({ 
                 success: true, 

@@ -77,7 +77,32 @@ class EstatisticaController {
     }
 
     async decrementarCadastros(req, res) {
-        
+        try {
+            const estatistica = await Estatistica.decrementarCadastros();
+            
+            if (estatistica.totalCadastros === 0) {
+                return res.status(400).json({
+                    success: false,
+                    error: "Não é possível decrementar: total de cadastros já está em zero"
+                });
+            }
+
+            res.json({
+                success: true,
+                dados: {
+                    totalCadastros: estatistica.totalCadastros,
+                    totalVerificacoes: estatistica.totalVerificacoes,
+                    ultimaAtualizacao: estatistica.ultimaAtualizacao
+                }
+            });
+
+        } catch (error) {
+            console.error("Erro ao decrementar cadastros:", error);
+            res.status(500).json({ 
+                success: false, 
+                error: error.message 
+            });
+        }
     }
 }
 

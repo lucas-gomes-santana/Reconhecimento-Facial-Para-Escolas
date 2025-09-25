@@ -20,7 +20,7 @@ export const useLogin = () => {
             const result = await login(nome, senha);
 
             if (result.success) {
-                navigate('/home');   
+                navigate('/menu');   
             }
             else {
                 setError("Acesso não autorizado! Verifique o nome e senha.");

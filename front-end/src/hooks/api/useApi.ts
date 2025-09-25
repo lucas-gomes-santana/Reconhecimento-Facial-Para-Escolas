@@ -3,6 +3,7 @@ import { useState, useCallback } from 'react';
 import type { UsuarioData } from '../../types/user.types';
 import type { VerificarRostoResponse } from '../../types/face.type';
 import { baseURL } from '../../config/url';
+import { useAuth } from '../auth/useAuth';
 
 interface ApiError extends Error {
   status?: number;
@@ -12,6 +13,9 @@ export const useApi = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   
+  const {
+    authenticatedFetch,
+  } = useAuth();
 
   const handleApiError = useCallback((error: any): ApiError => {
     console.error('Erro na API:', error);
@@ -41,7 +45,7 @@ export const useApi = () => {
         descriptorLength: userData.descriptor?.length 
       });
       
-      const response = await fetch(`${baseURL}/usuarios/cadastrar`, {
+      const response = await authenticatedFetch(`${baseURL}/usuarios/cadastrar`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',

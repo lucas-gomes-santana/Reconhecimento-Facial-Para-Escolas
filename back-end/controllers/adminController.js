@@ -2,41 +2,35 @@ import Admin from '../models/Admin.js';
 import bcrypt from 'bcrypt';
 import { gerarToken } from '../config/jwtConfig.js';
 
-// Função para validar senha do front-end em relação ao banco
+
 async function verificarSenha(senhaInformada, senhaArmazenada) {
     return await bcrypt.compare(senhaInformada, senhaArmazenada);
 }
 
-// Função para criptografar senha
 async function criptografarSenha(senha) {
     const saltRounds = 12;
     return await bcrypt.hash(senha, saltRounds);
 }
 
-// Função para validar funções dos ADMs
+// Função para validar funções dos ADMs a serem cadastrados
 function validarFuncao(funcao) {
     const funcoesValidas = ['admin', 'seguranca'];
     return funcoesValidas.includes(funcao.toLowerCase());
 }
 
-export async function cadastrarDesenvolvedor() {
+export async function cadastrarDesenvolvedor() { // Cadastrando o usuário desenvolvedor quando o back-end é iniciado
     try {
-        // Definindo as credenciais do desenvolvedor.
-        // O ideal é usar variáveis de ambiente para isso!
         const devNome = process.env.DEV_USER_NOME || 'Lucas Gomes';
         const devSenha = process.env.DEV_USER_SENHA || 'lucasgomes';
         const devFuncao = 'desenvolvedor';
 
-        // 1. Verifica se o usuário já existe (case-insensitive)
         const devExistente = await Admin.findOne({ nome: devNome.toLowerCase() });
 
         if (!devExistente) {
             console.log(`Usuário '${devNome}' não encontrado. Criando...`);
             
-            // 2. Se não existir, criptografa a senha
             const senhaCriptografada = await criptografarSenha(devSenha);
 
-            // 3. Cria o novo usuário no banco de dados
             const novoDev = new Admin({
                 nome: devNome,
                 senha: senhaCriptografada,
@@ -50,15 +44,16 @@ export async function cadastrarDesenvolvedor() {
         }
 
     } catch (error) {
-        console.error('❌ Erro ao tentar criar o usuário desenvolvedor:', error);
-        // Em caso de erro na configuração inicial, é uma boa prática encerrar o processo.
-        process.exit(1);
+        console.error("Erro ao tentar criar o usuário desenvolvedor. O desenvolvedor já foi cadastrado ou um erro desconhecido aconteceu: ", error);
+        // Interrompe o processo em caso de erro. 
+        // No caso
+        // process.exit(1); Descomentar em produção para segurança do back-end
     }
 }
 
 class AdminController {
 
-    // Método de login COM JWT
+    // Método de login gerando o token JWT
     async login(req, res) {
         try {
             const { nome, senha } = req.body;
@@ -123,20 +118,17 @@ class AdminController {
         }
     }
 
-    // Método de cadastro de admins (PROTEGIDA - só o super-usuário e desenvolvedor podem cadastrar)
     async cadastrarAdmin(req, res) {
         try {
             const { nome, senha, funcao } = req.body;
 
-            // Verificar se o usuário autenticado é super-user ou desenvolvedor
             if (req.usuario.funcao !== 'super-usuario' && req.usuario.funcao !== 'desenvolvedor') {
                 return res.status(403).json({
                     success: false,
-                    message: 'Apenas o super usuário pode cadastrar novos Admistradores!'
+                    message: 'Apenas o super-adm ou o desenvolvedor pode cadastrar novos admistradores e seguranças!'
                 });
             }
 
-            // Validações
             if (!nome || !senha || !funcao) {
                 return res.status(400).json({
                     success: false,
@@ -144,7 +136,7 @@ class AdminController {
                 });
             }
 
-            // Validar função
+            // Validar função a ser cadastrada (só pode ser 'admin' ou 'segurança')
             if (!validarFuncao(funcao)) {
                 return res.status(400).json({
                     success: false,
@@ -153,8 +145,6 @@ class AdminController {
             }
 
             const nomeValido = nome;
-
-            // Verificar se nome já existe
             const adminExistente = await Admin.findOne({ nome: nomeValido });
 
             if (adminExistente) {
@@ -164,7 +154,6 @@ class AdminController {
                 });
             }
 
-            // Validar força da senha
             if (senha.length < 8) {
                 return res.status(400).json({
                     success: false,
@@ -172,7 +161,6 @@ class AdminController {
                 });
             }
 
-            // Criptografar senha
             const senhaCriptografada = await criptografarSenha(senha);
 
             const novoAdmin = new Admin({
@@ -216,7 +204,6 @@ class AdminController {
     // Método para verificar token
     async verificarAutenticacao(req, res) {
         try {
-            // Se chegou até aqui, o token é válido
             res.status(200).json({
                 success: true,
                 message: 'Token válido',
@@ -238,24 +225,28 @@ class AdminController {
     // Método de listar admins
     async listarAdmins(req, res) {
         try {
-            const admins = await Admin.find().select('_id nome funcao createdAt');
+            // Buscar todos os admins com os campos necessários
+            const admins = await Admin.find()
+                .select('_id nome funcao createdAt updatedAt')
+                .sort({ createdAt: -1 }); // Ordenar por data de criação (mais recente primeiro)
             
             // Mapear para o formato esperado pelo frontend
             const adminsFormatados = admins.map(admin => ({
                 _id: admin._id,
                 nome: admin.nome,
                 funcao: admin.funcao,
-                dataCadastro: admin.createdAt // Usar createdAt como dataCadastro
+                dataCadastro: admin.createdAt, // Usar createdAt como dataCadastro
+                dataAtualizacao: admin.updatedAt
             }));
             
             res.json(adminsFormatados);
+
         } catch (err) {
             console.error('Erro ao listar admins:', err);
             res.status(500).json({ error: err.message });
         }
     }
 
-    // Remover admins do sistema por nome
     async removerAdmins(req, res) {
         const { nome } = req.params;
 
@@ -267,7 +258,6 @@ class AdminController {
             });
         }
 
-        // Verificar se o usuário autenticado é admin
         if (req.usuario.funcao !== 'super-usuario' && req.usuario.funcao !== 'desenvolvedor') {
             return res.status(403).json({
                 success: false,

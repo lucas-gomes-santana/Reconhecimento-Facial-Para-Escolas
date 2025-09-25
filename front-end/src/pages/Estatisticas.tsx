@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from 'react';
 import { useEstatisticas } from '../hooks/frontend/useEstatisticas';
 import '../styles/index.css';
@@ -20,7 +21,6 @@ function Estatisticas() {
   useEffect(() => {
     // Carrega estatísticas ao montar o componente
     handleRefresh();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleRefresh = async () => {
@@ -106,14 +106,12 @@ function Estatisticas() {
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
-      {/* Header */}
       <header className="bg-blue-500 text-white text-center p-4">
         <h1 className="text-xl md:text-2xl font-bold">📊 Estatísticas do Sistema</h1>
       </header>
 
-      {/* Main Content */}
       <main className="flex-1 p-6 grid grid-cols-1 gap-8">
-        {/* Controls Section */}
+
         <section className="bg-white p-4 rounded-lg shadow-md">
           <h2 className="mb-4 text-lg md:text-xl font-semibold">Controles</h2>
           <div className="flex gap-4 flex-wrap">
@@ -141,7 +139,6 @@ function Estatisticas() {
           </div>
         </section>
 
-        {/* Status Section */}
         <section className="bg-white p-4 rounded-lg shadow-md">
           <div className="font-bold mb-2">
             {loading ? 'Carregando sistema...' : error ? `Erro: ${error}` : 'Sistema pronto'}
@@ -153,7 +150,6 @@ function Estatisticas() {
           )}
         </section>
 
-        {/* Statistics Section */}
         <section className="bg-white p-6 rounded-lg shadow-md">
           <h2 className="mb-4 text-lg md:text-xl font-semibold">Dados do Sistema</h2>
           {error && (
@@ -171,7 +167,6 @@ function Estatisticas() {
         </section>
       </main>
 
-      {/* Footer */}
       <footer className="bg-blue-500 text-white text-center p-4 text-sm">
         <p>Os dados são atualizados automaticamente conforme novos cadastros e verificações são realizados.</p>
       </footer>

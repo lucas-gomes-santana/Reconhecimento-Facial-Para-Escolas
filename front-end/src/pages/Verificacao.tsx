@@ -88,8 +88,8 @@ function Verificacao() {
         }
       }
 
-      // Validar o descriptor
       const validation = validateDescriptor(descriptor, isAtIdealDistance);
+      
       if (!validation.isValid) {
         console.log('Erro na captura biométrica. Tente novamente.');
         showValidationErrors(validation.errors);
@@ -107,7 +107,7 @@ function Verificacao() {
       if (resultado.existe && resultado.dados) {
         console.log('Dados do usuário encontrado:', resultado.dados.usuario); 
       } else {
-        console.log('❌ Usuário não encontrado no sistema.');
+        console.log('Usuário não encontrado no sistema.');
       }
       
     } catch (err) {

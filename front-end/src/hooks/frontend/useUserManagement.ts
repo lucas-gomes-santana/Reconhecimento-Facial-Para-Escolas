@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useCallback, useEffect } from 'react';
 import type { Usuario } from '../../types/user.types';
 import { baseURL } from '../../config/url';
@@ -52,7 +53,6 @@ export const useUserManagement = () => {
     }
   }, [loading]);
 
-  // Remover usuário
   const removerUsuario = useCallback(async (nome: string) => {
     if (!nome) return false;
     
@@ -72,15 +72,12 @@ export const useUserManagement = () => {
       setTodosUsuarios(prev => prev.filter(usuario => usuario.nome !== nome));
       setUsuariosExibidos(prev => prev.filter(usuario => usuario.nome !== nome));
 
-      console.log(`Usuário ${nome} removido do C.E.R.F.`)
-
-      // Notificar outros hooks sobre a mudança (opcional)
+      // Notificar outros componentes sobre a remoção
       window.dispatchEvent(new CustomEvent('userDeleted', { detail: { nome } }));
 
       return true;
       
-    } 
-    catch (err) {
+    } catch (err) {
       console.error('Erro ao remover usuário:', err);
       return false;
     }
@@ -128,7 +125,7 @@ export const useUserManagement = () => {
     setError(null);
   }, []);
 
-  // Formatir data
+  // Formatar data
   const formatarData = useCallback((dateString: string): string => {
     try {
       const date = new Date(dateString);

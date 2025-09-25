@@ -31,7 +31,6 @@ export const useAdminPage = () => {
     const [loadingList, setLoadingList] = useState(false);
     const [message, setMessage] = useState<MessageState>({ texto: '', tipo: 'success' });
 
-    // Hook de autenticação
     const { 
         authenticatedFetch, 
         isAdmin, 
@@ -40,14 +39,7 @@ export const useAdminPage = () => {
         admin 
     } = useAuth();
 
-    // Função para limpar mensagens após um tempo
-    /*const limparMensagem = useCallback(() => {
-        setTimeout(() => {
-            setMessage({ texto: '', tipo: 'success' });
-        }, 8000);
-    }, []);*/
 
-    // Função para limpar o formulário
     const limparFormulario = useCallback(() => {
         setNome('');
         setSenha('');
@@ -61,7 +53,7 @@ export const useAdminPage = () => {
         // Verificar se usuário é super-usuário ou desenvolvedor antes de cadastrar
         if (!isSuperAdmin() && !isDesenvolvedor()) {
             setMessage({ 
-                texto: "Apenas administradores podem cadastrar outros Admins!", 
+                texto: "Apenas o super-admin ou o desenvolvedor podem cadastrar Admins e Seguranças!", 
                 tipo: 'error' 
             });
             return;
@@ -150,19 +142,21 @@ export const useAdminPage = () => {
 
             const data = await response.json();
             
-            // No mapeamento dos dados
+            // CORRIGIDO: Mapeamento dos dados
             const admins = Array.isArray(data) ? data.map(admin => ({
-                _id: admin._id,
+                _id: admin._id, // CORRIGIDO: era "id"
                 nome: admin.nome,
                 funcao: admin.funcao,
-                dataCadastro: admin.createAt ||  new Date().toISOString()
+                // CORRIGIDO: Mantido fallback para compatibilidade
+                dataCadastro: admin.dataCadastro || admin.createdAt
             })) : [];
 
+            console.log('Admins carregados do servidor:', admins); // Debug
+
+            // CORRIGIDO: Lógica simplificada
+            setTodosAdmins(admins);
             if (reset) {
-                setTodosAdmins(admins);
                 setPage(1);
-            } else {
-                setTodosAdmins(admins);
             }
 
         } catch (error) {
@@ -262,12 +256,10 @@ export const useAdminPage = () => {
             return date.toLocaleDateString('pt-BR', {
                 day: '2-digit',
                 month: '2-digit',
-                year: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit'
+                year: 'numeric'
             });
         } catch (error) {
-            console.error("Erro ao formatar data:", error);
+            console.error(error);
             return 'Data inválida';
         }
     }, []);

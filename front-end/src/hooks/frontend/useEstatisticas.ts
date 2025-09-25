@@ -77,6 +77,37 @@ export const useEstatisticas = () => {
     setError(null);
   }, []);
 
+  const decrementarCadastros = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const response = await fetch(`${baseURL}/estatisticas/decrementar-cadastros`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || `Erro HTTP: ${response.status}`);
+      }
+
+      if (data.success) {
+        await carregarEstatisticas(mostrandoDetalhes);
+      } else {
+        throw new Error(data.error || 'Erro ao decrementar cadastros');
+      }
+
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Erro ao decrementar cadastros';
+      setError(message);
+      console.error('Erro ao decrementar cadastros:', message);
+    } finally {
+      setLoading(false);
+    }
+  }, [mostrandoDetalhes, carregarEstatisticas, baseURL]);
+
   const formatarData = useCallback((dateString: string): string => {
     try {
       const date = new Date(dateString);
@@ -115,6 +146,7 @@ export const useEstatisticas = () => {
     resetarEstatisticas,
     toggleDetalhes,
     clearError,
-    formatarData
+    formatarData,
+    decrementarCadastros
   };
 };
