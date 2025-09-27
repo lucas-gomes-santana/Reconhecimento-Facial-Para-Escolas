@@ -1,6 +1,6 @@
 import Admin from '../models/Admin.js';
 import bcrypt from 'bcrypt';
-import { gerarToken, definirTokenCookie } from '../config/jwtConfig.js';
+import { gerarAccessToken, verificarRefreshToken, definirTokens, removerTokens, gerarRefreshToken } from '../config/jwtConfig.js';
 
 
 async function verificarSenha(senhaInformada, senhaArmazenada) {
@@ -84,23 +84,22 @@ class AdminController {
             }
 
             // Gerar token JWT
-            const tokenPayload = {
+            const payload = {
                 id: admin._id,
                 nome: admin.nome,
                 funcao: admin.funcao
             };
 
-            const token = gerarToken(tokenPayload);
+            const accessToken = gerarAccessToken(payload);
+            const refreshToken = gerarRefreshToken(payload);
 
-            // Define o cookie com o token JWT
-            definirTokenCookie(res, token);
+            definirTokens(res, accessToken, refreshToken); // Define o cookie com o token JWT
 
             // Atualizar último login
             await Admin.findByIdAndUpdate(admin._id, { 
                 ultimoLogin: new Date() 
             });
 
-            // Retorna resposta 200 sem o token (agora está no cookie)
             return res.status(200).json({
                 success: true,
                 message: 'Admin encontrado e autenticado',
@@ -120,9 +119,33 @@ class AdminController {
         }
     }
 
+    async refreshToken(req, res) {
+        const refreshToken = req.cookies.refreshToken;
+
+        if (!refreshToken) {
+            return res.status(401).json({ message: "Refresh token não fornecido" });
+        }
+
+        const payload = verificarRefreshToken(refreshToken);
+
+        if (!payload) {
+            removerTokens(res);
+            return res.status(403).json({ message: "Refresh token inválido" });
+        }
+
+        const newAccessToken = gerarAccessToken({
+            id: payload.id,
+            email: payload.email,
+            tipo: payload.tipo
+        });
+
+        res.cookie('jwt', newAccessToken, accessTokenConfig);
+        res.json({ message: "Token atualizado com sucesso" });
+    };
+
     async logout(req, res) {
         try {
-            removerTokenCookie(res);
+            removerTokens(res);
             return res.status(200).json({
                 success: true,
                 message: 'Logout realizado com sucesso'
@@ -242,7 +265,6 @@ class AdminController {
 
     async listarAdmins(req, res) {
         try {
-            // Buscar todos os admins com os campos necessários
             const admins = await Admin.find()
                 .select('_id nome funcao createdAt updatedAt')
                 .sort({ createdAt: -1 }); // Ordenar por data de criação (mais recente primeiro)
@@ -252,7 +274,7 @@ class AdminController {
                 _id: admin._id,
                 nome: admin.nome,
                 funcao: admin.funcao,
-                dataCadastro: admin.createdAt, // Usar createdAt como dataCadastro
+                dataCadastro: admin.createdAt,
                 dataAtualizacao: admin.updatedAt
             }));
             

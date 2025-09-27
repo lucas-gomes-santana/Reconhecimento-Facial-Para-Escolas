@@ -9,7 +9,8 @@ class UsuarioController {
         try {
             const { nome, tipoUsuario, descriptor } = req.body;
             
-            const rostoExistente = await faceRecognitionService.verificarRostoExistente(descriptor, 0.6);
+            const rostoExistente = await faceRecognitionService.verificarRostoExistente(descriptor, 0.8);
+            
             if (rostoExistente) {
                 return res.status(409).json({ 
                     error: 'Rosto já cadastrado',
@@ -49,7 +50,7 @@ class UsuarioController {
 
             console.log('Iniciando verificação facial...');
             
-            const match = await faceRecognitionService.encontrarUsuarioPorSimilaridade(descriptor, 0.6);
+            const match = await faceRecognitionService.encontrarUsuarioPorSimilaridade(descriptor, 0.8);
             
             // Incrementando o contador apenas se o contexto não for 'cadastro'
             if (contexto !== 'cadastro') {

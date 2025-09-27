@@ -14,19 +14,14 @@ interface MessageState {
 }
 
 export const useAdminPage = () => {
-    // Estados do formulário
     const [nome, setNome] = useState('');
     const [senha, setSenha] = useState('');
     const [funcao, setFuncao] = useState('');
-    
-    // Estados da lista dez admins
     const [todosAdmins, setTodosAdmins] = useState<AdminData[]>([]);
     const [adminsExibidos, setAdminsExibidos] = useState<AdminData[]>([]);
     const [searchTerm, setSearchTerm] = useState('');
     const [hasMore, setHasMore] = useState(true);
     const [page, setPage] = useState(1);
-    
-    // Estados para controle de UI
     const [loading, setLoading] = useState(false);
     const [loadingList, setLoadingList] = useState(false);
     const [message, setMessage] = useState<MessageState>({ texto: '', tipo: 'success' });
@@ -46,11 +41,9 @@ export const useAdminPage = () => {
         setFuncao('');
     }, []);
 
-    // Função para cadastrar admin COM JWT
     const handleCadastrarAdmin = useCallback(async (e: React.FormEvent) => {
         e.preventDefault();
         
-        // Verificar se usuário é super-usuário ou desenvolvedor antes de cadastrar
         if (!isSuperAdmin() && !isDesenvolvedor()) {
             setMessage({ 
                 texto: "Apenas o super-admin ou o desenvolvedor podem cadastrar Admins e Seguranças!", 
@@ -77,7 +70,6 @@ export const useAdminPage = () => {
                 funcao
             };
 
-            // Usar authenticatedFetch para incluir automaticamente o token JWT
             const response = await authenticatedFetch(`${baseURL}/admin/cadastrar`, {
                 method: 'POST',
                 body: JSON.stringify(userData),
@@ -91,10 +83,7 @@ export const useAdminPage = () => {
                     tipo: 'success'
                 });
                 
-                // Limpar formulário após sucesso
                 limparFormulario();
-                
-                // Recarregar lista de admins
                 await carregarAdmins(true);
                 
             } else {
@@ -124,7 +113,6 @@ export const useAdminPage = () => {
 
     }, [nome, senha, funcao, authenticatedFetch, isAdmin, limparFormulario]);
 
-    // Função para carregar admins
     const carregarAdmins = useCallback(async (reset: boolean = false) => {
         if (loadingList) return;
 
@@ -142,19 +130,16 @@ export const useAdminPage = () => {
 
             const data = await response.json();
             
-            // CORRIGIDO: Mapeamento dos dados
+            // Mapeamento dos dados
             const admins = Array.isArray(data) ? data.map(admin => ({
-                _id: admin._id, // CORRIGIDO: era "id"
+                _id: admin._id,
                 nome: admin.nome,
                 funcao: admin.funcao,
-                // CORRIGIDO: Mantido fallback para compatibilidade
                 dataCadastro: admin.dataCadastro || admin.createdAt
             })) : [];
 
-            console.log('Admins carregados do servidor:', admins); // Debug
-
-            // CORRIGIDO: Lógica simplificada
             setTodosAdmins(admins);
+
             if (reset) {
                 setPage(1);
             }
@@ -170,7 +155,6 @@ export const useAdminPage = () => {
         }
     }, [loadingList, authenticatedFetch]);
 
-    // Função para remover admin
     const removerAdmin = useCallback(async (nome: string): Promise<boolean> => {
         if (!nome) return false;
 
@@ -249,7 +233,6 @@ export const useAdminPage = () => {
         setPage(1); // Reset da página ao fazer nova busca
     }, []);
 
-    // Função para formatar data
     const formatData = useCallback((dateString: string): string => {
         try {
             const date = new Date(dateString);
@@ -276,34 +259,23 @@ export const useAdminPage = () => {
     }, [todosAdmins, searchTerm]);
 
     return {
-        // Estados do formulário
         nome,
         senha,
         funcao,
         setNome,
         setSenha,
         setFuncao,
-        
-        // Estados de controle
         loading,
         loadingList,
         message,
-        
-        // Dados do usuário autenticado
         admin,
         isAdmin: isAdmin(),
-        
-        // Funções do formulário
         handleCadastrarAdmin,
         limparFormulario,
-        
-        // Estados da lista
         todosAdmins,
         admins: adminsExibidos,
         searchTerm,
         hasMore,
-        
-        // Funções da lista
         carregarAdmins,
         carregarMaisAdmins,
         buscarAdmins,

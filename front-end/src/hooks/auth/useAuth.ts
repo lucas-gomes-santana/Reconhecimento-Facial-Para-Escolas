@@ -70,7 +70,6 @@ export const useAuth = () => {
         clearAuthData();
     }, [clearAuthData]);
 
-    // Função para verificar autenticação
     const verifyToken = useCallback(async () => {
         try {
             const response = await fetch(`${baseURL}/admin/verificar`, {
@@ -102,9 +101,26 @@ export const useAuth = () => {
         }
     }, [saveAuthData, clearAuthData]);
 
-    // Função fetch autenticada
+    const refreshAccessToken = useCallback(async (): Promise<boolean> => {
+        try {
+            const response = await fetch(`${baseURL}/admin/refresh-token`, {
+                method: 'POST',
+                credentials: 'include',
+            });
+
+            if (response.ok) {
+                return true;
+            }
+            return false;
+        } catch (error) {
+            console.error('Erro ao renovar token:', error);
+            return false;
+        }
+    }, []);
+
+    // Função fetch autenticada especial para receber os tokens JWT
     const authenticatedFetch = useCallback(async (url: string, options: RequestInit = {}) => {
-        const response = await fetch(url, {
+        let response = await fetch(url, {
             ...options,
             credentials: 'include',
             headers: {
@@ -113,13 +129,36 @@ export const useAuth = () => {
             },
         });
 
-        if (response.status === 401 || response.status === 403) {
+        // Se receber 403, tenta renovar o token
+        if (response.status === 403) {
+            const refreshSuccess = await refreshAccessToken();
+            
+            if (refreshSuccess) {
+                // Tenta a requisição original novamente
+                response = await fetch(url, {
+                    ...options,
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...options.headers,
+                    },
+                });
+            } else {
+                // Se não conseguiu renovar, faz logout
+                logout();
+                throw new Error('Sessão expirada. Faça login novamente.');
+            }
+        }
+
+        // Se ainda receber 401, força logout
+        if (response.status === 401) {
             logout();
-            throw new Error('Sessão expirada. Faça login novamente.');
+            throw new Error('Não autorizado. Faça login novamente.');
         }
 
         return response;
-    }, [logout]);
+
+    }, [logout, refreshAccessToken]);
 
     // Verificar autenticação ao carregar o hook
     useEffect(() => {
@@ -154,6 +193,7 @@ export const useAuth = () => {
         logout,
         verifyToken,
         authenticatedFetch,
+        refreshAccessToken,
         
         // Utilitários
         isAdmin,

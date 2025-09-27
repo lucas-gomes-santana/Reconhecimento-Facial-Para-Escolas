@@ -1,32 +1,54 @@
 import jwt from "jsonwebtoken";
 
-const secret = process.env.JWT_SECRET || "chave-super-secreta";
+const accessTokenSecret = process.env.JWT_SECRET || "chave-super-secreta";
+const refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET || "chave-refresh-secreta";
 
-const cookieConfig = {
+const accessTokenConfig = {
   httpOnly: true,
-  secure: process.env.NODE_ENV === 'production', // true em produção
+  secure: process.env.NODE_ENV === 'production',
   sameSite: 'strict',
-  maxAge: 3600000 // 1 hora em millisegundos
+  maxAge: 3600000 // 1 hora de duração
 };
 
-export function gerarToken(payload) {
-  return jwt.sign(payload, secret, { expiresIn: "1h" }); // expira em 1 hora
+const refreshTokenConfig = {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === 'production',
+  sameSite: 'strict',
+  maxAge: 7 * 24 * 60 * 60 * 1000 // 7 dias de duração
+};
+
+export function gerarAccessToken(payload) {
+  return jwt.sign(payload, accessTokenSecret, { expiresIn: "1h" });
 }
 
-export function verificarToken(token) {
+export function gerarRefreshToken(payload) {
+  return jwt.sign(payload, refreshTokenSecret, { expiresIn: "7d" });
+}
+
+export function verificarAccessToken(token) {
   try {
-    return jwt.verify(token, secret);
+    return jwt.verify(token, accessTokenSecret);
   } catch (err) {
     return null;
   }
 }
 
-export function definirTokenCookie(res, token) {
-  res.cookie('jwt', token, cookieConfig);
+export function verificarRefreshToken(token) {
+  try {
+    return jwt.verify(token, refreshTokenSecret);
+  } catch (err) {
+    return null;
+  }
 }
 
-export function removerTokenCookie(res) {
+export function definirTokens(res, accessToken, refreshToken) {
+  res.cookie('jwt', accessToken, accessTokenConfig);
+  res.cookie('refreshToken', refreshToken, refreshTokenConfig);
+}
+
+export function removerTokens(res) {
   res.clearCookie('jwt');
+  res.clearCookie('refreshToken');
 }
 
 // Middleware para proteger rotas
@@ -37,9 +59,9 @@ export function autenticarToken(req, res, next) {
     return res.status(401).json({ message: "Token não fornecido" });
   }
 
-  jwt.verify(token, secret, (err, usuario) => {
+  jwt.verify(token, accessTokenSecret, (err, usuario) => {
     if (err) {
-      res.clearCookie('jwt');
+      // Não remove os cookies aqui, deixa o cliente usar o refresh token
       return res.status(403).json({ message: "Token inválido" });
     }
     req.usuario = usuario;

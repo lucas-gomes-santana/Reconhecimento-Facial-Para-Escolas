@@ -1,19 +1,21 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect, useCallback } from 'react';
 import { useFaceDetection } from '../detection/useFaceDetection';
 import { useApi } from '../api/useApi';
 import { useValidation } from '../validation/useValidation';
+import { useAuth } from '../auth/useAuth';
+import { baseURL } from '../../config/url';
 import type { UseCadastroFacialReturn } from '../../types/cadastro.types';
+import type { UsuarioData } from '../../types/user.types';
 
 
 export const useCadastroFacial = (): UseCadastroFacialReturn => {
-  // Estados do formulário
   const [nome, setNome] = useState('');
   const [tipoUsuario, setTipoUsuario] = useState('');
   const [statusMessage, setStatusMessage] = useState('Sistema pronto - Preencha os dados e inicie o reconhecimento');
   const [canSave, setCanSave] = useState(false);
   const [isCameraStarting, setIsCameraStarting] = useState(false);
 
-  // Hooks customizados
   const {
     videoRef,
     canvasRef,
@@ -31,10 +33,12 @@ export const useCadastroFacial = (): UseCadastroFacialReturn => {
 
   const {
     loading: apiLoading,
+    setLoading,
     error: apiError,
-    cadastrarUsuario,
+    setError,
     verificarRosto,
-    clearError
+    clearError,
+    handleApiError
   } = useApi();
 
   const {
@@ -43,6 +47,8 @@ export const useCadastroFacial = (): UseCadastroFacialReturn => {
     getDistanceMessage,
     showValidationErrors
   } = useValidation();
+
+  const { authenticatedFetch } = useAuth();
 
   const isLoading = faceLoading || apiLoading || isVideoLoading || isCameraStarting;
 
@@ -109,14 +115,12 @@ export const useCadastroFacial = (): UseCadastroFacialReturn => {
   const handleSalvarCadastro = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Valida formulário
     const formValidation = validateCadastroForm(nome, tipoUsuario);
     if (!formValidation.isValid) {
       showValidationErrors(formValidation.errors);
       return;
     }
 
-    // Valida descritor
     const descriptorValidation = validateDescriptor(currentDescriptor, isAtIdealDistance);
     if (!descriptorValidation.isValid) {
       showValidationErrors(descriptorValidation.errors);
@@ -131,18 +135,16 @@ export const useCadastroFacial = (): UseCadastroFacialReturn => {
     try {
       setStatusMessage('Verificando se o rosto já está cadastrado...');
       
-      // Verifica se o rosto já existe
-      const verificacao = await verificarRosto(currentDescriptor, 'cadastro');
+      const verificacao = await verificarRosto(currentDescriptor, 'cadastro'); // Verifica se o rosto durante o cadastro
       
       if (verificacao.existe) {
-        const nomeExistente = verificacao.dados?.usuario?.nome || 'Usuário desconhecido';
+        const nomeExistente = (verificacao.dados?.usuario as { nome?: string })?.nome || 'Usuário desconhecido';
         
         setStatusMessage(`Rosto já cadastrado para: ${nomeExistente}`);
         alert(`Este rosto já está cadastrado para: ${nomeExistente}`);
         return;
       }
 
-      // Cadastra o usuário
       setStatusMessage('Salvando cadastro...');
       
       const userData = {
@@ -151,12 +153,11 @@ export const useCadastroFacial = (): UseCadastroFacialReturn => {
         descriptor: currentDescriptor
       };
 
-      const result = await cadastrarUsuario(userData);
+      await cadastrarUsuario(userData);
       
       setStatusMessage('Cadastro realizado com sucesso!');
       alert(`Usuário ${nome} cadastrado com sucesso!`);
       
-      // Limpa o formulário
       setNome('');
       setTipoUsuario('');
       setCanSave(false);
@@ -175,8 +176,56 @@ export const useCadastroFacial = (): UseCadastroFacialReturn => {
     currentDescriptor, 
     isAtIdealDistance, 
     verificarRosto, 
-    cadastrarUsuario
   ]);
+
+  const cadastrarUsuario = useCallback(async (userData: UsuarioData) => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      console.log('Enviando dados para cadastro:', { 
+        nome: userData.nome, 
+        tipoUsuario: userData.tipoUsuario,
+        descriptorLength: userData.descriptor?.length 
+      });
+      
+      const response = await authenticatedFetch(`${baseURL}/usuarios/cadastrar`, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify(userData)
+      });
+
+      const responseText = await response.text();
+      let data;
+      
+      try {
+        data = responseText ? JSON.parse(responseText) : {};
+        
+      } catch (parseError) {
+        console.error('Erro ao parsear resposta:', parseError, 'Resposta:', responseText);
+        throw new Error(`Resposta inválida do servidor: ${response.status} ${response.statusText}`);
+      }
+
+      if (!response.ok) {
+        throw new Error(data.error || data.message || `Erro HTTP: ${response.status}`);
+      }
+
+      console.log('Cadastro realizado com sucesso:', data);
+      return data;
+
+    } catch (err) {
+      const apiError = handleApiError(err);
+      setError(apiError.message);
+      console.error('Erro no cadastro:', apiError);
+      throw apiError;
+      
+    } finally {
+      setLoading(false);
+    }
+  }, [baseURL, handleApiError]);
 
   const handlePararReconhecimento = useCallback(() => {
     stopDetection();

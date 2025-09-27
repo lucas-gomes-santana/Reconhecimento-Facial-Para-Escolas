@@ -26,7 +26,7 @@ export const useUserManagement = () => {
     setError(null);
     
     try {
-      const response = await fetch(`${baseURL}/usuarios/listar`, {
+      const response = await authenticatedFetch(`${baseURL}/usuarios/listar`, {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' }
       });

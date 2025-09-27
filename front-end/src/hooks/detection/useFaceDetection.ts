@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useRef, useCallback, useEffect } from 'react';
 import * as faceapi from 'face-api.js';
 import type { DistanceResult, DistanceConfig } from '../../types/distance.types';
@@ -26,7 +27,6 @@ export const useFaceDetection = () => {
     idealMaxSize: 280
   };
 
-  // Carrega os modelos do face-api.js (sem alterações)
   const loadModels = useCallback(async () => {
     if (modelsLoaded) return;
     setLoading(true);
@@ -53,14 +53,12 @@ export const useFaceDetection = () => {
     }
   }, [modelsLoaded]);
 
-  // Configura o canvas (sem alterações)
   const setupCanvas = useCallback(() => {
     if (!canvasRef.current || !videoRef.current) return;
     canvasRef.current.width = videoRef.current.videoWidth || 640;
     canvasRef.current.height = videoRef.current.videoHeight || 480;
   }, []);
 
-  // Inicia o vídeo da câmera (sem alterações)
   const startVideo = useCallback(async () => {
     if (!videoRef.current) {
       throw new Error('Elemento de vídeo não encontrado');
@@ -82,7 +80,7 @@ export const useFaceDetection = () => {
               console.log('Vídeo iniciado com sucesso');
               setupCanvas();
               const checkVideoReady = () => {
-                if (videoRef.current && videoRef.current.readyState >= 3) { // Use readyState >= 3 for more reliability
+                if (videoRef.current && videoRef.current.readyState >= 3) {
                   setVideoReady(true);
                   setIsVideoLoading(false);
                   console.log('Vídeo pronto para detecção');
@@ -109,18 +107,23 @@ export const useFaceDetection = () => {
     }
   }, [setupCanvas]);
 
-  // Lógica de cálculo e desenho (sem alterações)
+  // Lógica de cálculo e desenho 
   const calculateDistance = useCallback((detection: any): DistanceResult => {
     const faceBox = detection.detection.box;
     const faceSize = Math.sqrt(faceBox.width * faceBox.height);
+
     let status: DistanceResult['status'];
     let isIdeal = false;
+
     if (faceSize < distanceConfig.minFaceSize) status = 'muito_longe';
     else if (faceSize > distanceConfig.maxFaceSize) status = 'muito_perto';
+
     else if (faceSize >= distanceConfig.idealMinSize && faceSize <= distanceConfig.idealMaxSize) {
       status = 'ideal';
       isIdeal = true;
-    } else if (faceSize < distanceConfig.idealMinSize) status = 'longe';
+    } 
+
+    else if (faceSize < distanceConfig.idealMinSize) status = 'longe';
     else status = 'perto';
     return { status, isIdeal, faceSize: Math.round(faceSize) };
   }, [distanceConfig]);
@@ -131,6 +134,7 @@ export const useFaceDetection = () => {
     const colors = { 'muito_longe': '#ff4444', 'longe': '#ff8844', 'ideal': '#44ff44', 'perto': '#ff8844', 'muito_perto': '#ff4444' };
     const messages = { 'muito_longe': 'Aproxime-se mais', 'longe': 'Um pouco mais perto', 'ideal': 'Distância ideal!', 'perto': 'Afaste-se um pouco', 'muito_perto': 'Muito perto, afaste-se' };
     const color = colors[status];
+
     ctx.strokeStyle = color;
     ctx.lineWidth = 3;
     ctx.strokeRect(faceBox.x, faceBox.y, faceBox.width, faceBox.height);
@@ -139,9 +143,7 @@ export const useFaceDetection = () => {
     ctx.fillText(messages[status], faceBox.x, faceBox.y - 10);
   }, []);
 
-  // Função de detecção de face
   const detectFace = useCallback(async () => {
-    // As verificações de `isDetecting` e `videoReady` agora são feitas no useEffect que cria o intervalo
     if (!videoRef.current || !canvasRef.current || videoRef.current.paused || videoRef.current.ended) {
       return;
     }
@@ -181,7 +183,7 @@ export const useFaceDetection = () => {
     }
   }, [calculateDistance, drawDistanceIndicator]);
 
-  // MUDANÇA PRINCIPAL: useEffect para gerenciar o intervalo de detecção
+  // useEffect para gerenciar o intervalo de detecção
   useEffect(() => {
     // Só inicia o intervalo se a detecção estiver ativa e o vídeo pronto
     if (!isDetecting || !videoReady) {
@@ -197,9 +199,8 @@ export const useFaceDetection = () => {
     return () => {
       clearInterval(intervalId);
     };
-  }, [isDetecting, videoReady, detectFace]); // Dependências corretas
-
-  // Função para iniciar a detecção (simplificada)
+  }, [isDetecting, videoReady, detectFace]);
+  
   const startDetection = useCallback(async () => {
     if (isDetecting) return;
 
@@ -207,11 +208,12 @@ export const useFaceDetection = () => {
       if (!modelsLoaded) {
         await loadModels();
       }
+
       setVideoReady(false);
       await startVideo();
-      // Apenas ativa o estado. O useEffect acima cuidará de iniciar o intervalo.
       setIsDetecting(true);
       setError(null);
+
     } catch (err) {
       console.error('Erro ao iniciar detecção:', err);
       setIsDetecting(false); // Garante que não fique em estado de detecção em caso de erro
@@ -219,13 +221,11 @@ export const useFaceDetection = () => {
     }
   }, [isDetecting, modelsLoaded, loadModels, startVideo]);
 
-  // Função para parar a detecção
   const stopDetection = useCallback(() => {
-    // Apenas desativa o estado. O useEffect cuidará de limpar o intervalo.
     setIsDetecting(false);
     setVideoReady(false);
 
-    // MELHORIA: Para a trilha de vídeo para desligar a luz da câmera
+    // Para a trilha de vídeo para desligar a luz da câmera
     if (videoRef.current && videoRef.current.srcObject) {
       const stream = videoRef.current.srcObject as MediaStream;
       stream.getTracks().forEach(track => track.stop());
@@ -241,7 +241,6 @@ export const useFaceDetection = () => {
     setCurrentDescriptor(null);
   }, []);
 
-  // Aguardar descriptor do rosto do usuário cadastrado
   const aguardarDescriptor = useCallback((timeout: number = 15000): Promise<number[]> => {
     return new Promise((resolve, reject) => {
       const startTime = Date.now();
@@ -250,6 +249,7 @@ export const useFaceDetection = () => {
           resolve(currentDescriptor);
           return;
         }
+
         if (Date.now() - startTime > timeout) {
           reject(new Error('Tempo esgotado: não foi possível capturar o rosto na distância ideal.'));
           return;

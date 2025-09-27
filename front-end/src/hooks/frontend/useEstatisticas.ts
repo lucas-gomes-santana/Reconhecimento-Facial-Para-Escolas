@@ -1,6 +1,8 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useCallback, useEffect } from 'react';
 import type { EstatisticasBasicas } from '../../types/estatisticas.types';
 import { baseURL } from '../../config/url';
+import { useApi } from '../api/useApi';
 
 
 export const useEstatisticas = () => {
@@ -8,6 +10,8 @@ export const useEstatisticas = () => {
   const [error, setError] = useState<string | null>(null);
   const [estatisticas, setEstatisticas] = useState<EstatisticasBasicas | null>(null);
   const [mostrandoDetalhes, setMostrandoDetalhes] = useState(false);
+
+  const { handleApiError } = useApi();
 
   const carregarEstatisticas = useCallback(async (detalhadas: boolean = false) => {
     setLoading(true);
@@ -40,6 +44,46 @@ export const useEstatisticas = () => {
     }
   }, []);
 
+  const obterEstatisticas = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const response = await fetch(`${baseURL}/estatisticas`, {
+        method: 'GET',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        }
+      });
+
+      const responseText = await response.text();
+      let data;
+      
+      try {
+        data = responseText ? JSON.parse(responseText) : {};
+      } catch (parseError) {
+        console.error('Erro ao parsear resposta:', parseError, 'Resposta:', responseText);
+        throw new Error(`Resposta inválida do servidor: ${response.status} ${response.statusText}`);
+      }
+
+      if (!response.ok) {
+        throw new Error(data.error || data.message || `Erro HTTP: ${response.status}`);
+      }
+
+      return data;
+      
+    } catch (err) {
+      const apiError = handleApiError(err);
+      setError(apiError.message);
+      console.error('Erro ao obter estatísticas:', apiError);
+
+      throw apiError;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   const resetarEstatisticas = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -67,6 +111,32 @@ export const useEstatisticas = () => {
       setLoading(false);
     }
   }, [carregarEstatisticas, mostrandoDetalhes]);
+
+  const obterEstatisticasDetalhadas = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const response = await fetch(`${baseURL}/estatisticas/detalhadas`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' }
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || `Erro HTTP: ${response.status}`);
+      }
+
+      return data;
+    } catch (err) {
+      const apiError = handleApiError(err);
+      setError(apiError.message);
+      throw apiError;
+    } finally {
+      setLoading(false);
+    }
+  }, [baseURL]);
 
   const toggleDetalhes = useCallback(async () => {
     const novoEstado = !mostrandoDetalhes;
@@ -143,10 +213,13 @@ export const useEstatisticas = () => {
     estatisticas,
     mostrandoDetalhes,
     carregarEstatisticas,
+    obterEstatisticas,
+    obterEstatisticasDetalhadas,
     resetarEstatisticas,
     toggleDetalhes,
     clearError,
     formatarData,
-    decrementarCadastros
+    decrementarCadastros,
   };
 };
+

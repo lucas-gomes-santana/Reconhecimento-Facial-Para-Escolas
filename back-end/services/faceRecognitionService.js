@@ -17,7 +17,7 @@ class FaceRecognitionService {
     }
 
     // Encontra os rostos dos usuários com base em similaridade dos vetores de rostos
-    async encontrarUsuarioPorSimilaridade(descriptorBusca, threshold = 0.6) {
+    async encontrarUsuarioPorSimilaridade(descriptorBusca, threshold = 0.8) {
         const usuarios = await Usuario.find({});
         
         let melhorMatch = null;
@@ -42,7 +42,7 @@ class FaceRecognitionService {
     }
 
     // Verificar o rosto escaneado no front-end com os do banco de dados
-    async verificarRostoExistente(descriptor, threshold = 0.6) {
+    async verificarRostoExistente(descriptor, threshold = 0.8) {
         const match = await this.encontrarUsuarioPorSimilaridade(descriptor, threshold);
         return match ? match.usuario : null;
     }
