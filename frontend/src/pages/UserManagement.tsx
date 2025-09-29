@@ -22,7 +22,6 @@ function UserManagement() {
   const [usuarioParaRemover, setUsuarioParaRemover] = useState<string | null>(null);
   const [removendoUsuario, setRemovendoUsuario] = useState<string | null>(null);
 
-  // Carregar usuários ao montar o componente
   useEffect(() => {
     carregarUsuarios(true);
   }, []);
@@ -40,9 +39,9 @@ function UserManagement() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [carregarMaisUsuarios]);
 
-  const handleRemoverUsuario = async (nome: string) => {
-    setRemovendoUsuario(nome);
-    const sucesso = await removerUsuario(nome);
+  const handleRemoverUsuario = async (_id: string) => {
+    setRemovendoUsuario(_id);
+    const sucesso = await removerUsuario(_id);
     
     if (sucesso) {
       setUsuarioParaRemover(null);
@@ -51,8 +50,8 @@ function UserManagement() {
     setRemovendoUsuario(null);
   };
 
-  const confirmarRemocao = (nome: string) => {
-    setUsuarioParaRemover(nome);
+  const confirmarRemocao = (_id: string) => {
+    setUsuarioParaRemover(_id);
   };
 
   const cancelarRemocao = () => {
@@ -82,7 +81,7 @@ function UserManagement() {
     <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-          {/* Header */}
+          
           <div className="bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-8">
             <div className="flex items-center gap-3 mb-4">
               <Users className="h-8 w-8 text-white" />
@@ -107,7 +106,6 @@ function UserManagement() {
             </div>
           </div>
 
-          {/* Conteúdo Principal */}
           <div className="p-6">
 
             {/* Mensagem de Erro */}
@@ -162,12 +160,12 @@ function UserManagement() {
                       </div>
                       
                       <button
-                        onClick={() => confirmarRemocao(usuario.nome)}
-                        disabled={removendoUsuario === usuario.nome}
+                        onClick={() => confirmarRemocao(usuario._id)}
+                        disabled={removendoUsuario === usuario._id}
                         className="ml-3 p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                         title="Remover usuário"
                       >
-                        {removendoUsuario === usuario.nome ? (
+                        {removendoUsuario === usuario._id ? (
                           <Loader className="h-5 w-5 animate-spin" />
                         ) : (
                           <Trash2 className="h-5 w-5" />
@@ -216,7 +214,7 @@ function UserManagement() {
             </div>
             
             <p className="text-gray-600 mb-6">
-              Tem certeza que deseja remover o usuário <strong>{usuarioParaRemover}</strong>? 
+              Tem certeza que deseja remover o usuário <strong>{usuarios.find(u => u._id === usuarioParaRemover)?.nome}</strong>? 
               Esta ação não pode ser desfeita.
             </p>
             

@@ -1,6 +1,7 @@
 import Usuario from '../models/Usuario.js';
 import Estatistica from '../models/Estatistica.js';
 import faceRecognitionService from '../services/faceRecognitionService.js';
+import mongoose from 'mongoose';
 
 class UsuarioController {
 
@@ -21,10 +22,8 @@ class UsuarioController {
             const novoUsuario = new Usuario({ nome, tipoUsuario, descriptor });
             await novoUsuario.save();
             
-            // Incrementar contador de cadastros nas estatísticas
-            await Estatistica.incrementarCadastros();
-            
             console.log(`Usuário ${nome} cadastrado com sucesso`);
+            await Estatistica.incrementarCadastros();
             
             res.status(201).json({ 
                 success: true,
@@ -91,34 +90,40 @@ class UsuarioController {
         }
     }
 
-    async deletarUsuario(req, res) {
+    async removerUsuario(req, res) {
         try {
-            const { nome } = req.params;
+            const { id } = req.params;
             
-            if (!nome) {
-                return res.status(400).json({ error: 'Nome do usuário é obrigatório' });
+            if (!id) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'ID do usuário é obrigatório!'
+                });
             }
 
-            const usuario = await Usuario.findOneAndDelete({ nome });
+            const usuario = await Usuario.findByIdAndDelete(id);
             
             if (!usuario) {
-                return res.status(404).json({ error: 'Usuário não encontrado' });
+                return res.status(404).json({ 
+                    success: false,
+                    error: 'Usuário não encontrado!' 
+                });
             }
 
             await Estatistica.decrementarCadastros();
+            console.log(`Usuário ${usuario.nome} removido do C.E.R.F com sucesso`);
             
-            console.log(`Usuário ${nome} removido com sucesso`);
-            
-            res.json({ 
-                success: true, 
-                message: `Usuário ${nome} removido com sucesso`,
+            res.json({
+                success: true,
+                message: `Usuário ${usuario.nome} removido com sucesso`,
                 usuarioRemovido: {
+                    id: usuario._id,
                     nome: usuario.nome,
                     tipoUsuario: usuario.tipoUsuario,
                     dataCadastro: usuario.dataCadastro
                 }
             });
-            
+
         } catch (err) {
             console.error('Erro ao remover usuário:', err);
             res.status(500).json({ error: err.message });

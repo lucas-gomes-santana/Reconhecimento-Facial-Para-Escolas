@@ -30,7 +30,6 @@ function AdminPage() {
     const [adminParaRemover, setAdminParaRemover] = useState<string | null>(null);
     const [removendoAdmin, setRemovendoAdmin] = useState<string | null>(null);
 
-    // Carregar admins na inicialização
     useEffect(() => {
         console.log("Carregando Admins...");
         carregarAdmins(true);
@@ -53,10 +52,9 @@ function AdminPage() {
         return () => window.removeEventListener('scroll', handleScroll);
     }, [carregarMaisAdmins, loadingList, hasMore]);
 
-    // Função para remover admin com confirmação
-    const handleRemoverAdmin = async (nome: string) => {
-        setRemovendoAdmin(nome);
-        const sucesso = await removerAdmin(nome);
+    const handleRemoverAdmin = async (_id: string) => {
+        setRemovendoAdmin(_id);
+        const sucesso = await removerAdmin(_id);
 
         if (sucesso) {
             setAdminParaRemover(null);
@@ -65,8 +63,8 @@ function AdminPage() {
         setRemovendoAdmin(null);
     };
 
-    const confirmarRemocao = (nome: string) => {
-        setAdminParaRemover(nome);
+    const confirmarRemocao = (_id: string) => {
+        setAdminParaRemover(_id);
     };
 
     const cancelarRemocao = () => {
@@ -91,7 +89,6 @@ function AdminPage() {
         }
     };
 
-    // ✅ ADICIONE ESTA NOVA FUNÇÃO AQUI
     const formatarFuncao = (funcao: string) => {
         switch (funcao.toLowerCase()) {
             case 'admin':
@@ -111,9 +108,9 @@ function AdminPage() {
 
     return (
         <>
-            {/* Seção de Cadastro */}
             <main className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-6">
                 <div className="max-w-4xl mx-auto">
+
                     {/* Header */}
                     <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
                         <h1 className="text-3xl font-bold text-gray-800 mb-2">
@@ -146,7 +143,7 @@ function AdminPage() {
                     <div className="bg-white rounded-xl shadow-lg p-6">
                         <form onSubmit={handleCadastrarAdmin}>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                {/* Campo Nome */}
+
                                 <div className="md:col-span-2">
                                     <label className="block text-sm font-medium text-gray-700 mb-2">
                                         Nome do Administrador/Segurança:
@@ -162,7 +159,6 @@ function AdminPage() {
                                     />
                                 </div>
 
-                                {/* Campo Senha */}
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 mb-2">
                                         Senha para o Usuário:
@@ -179,7 +175,6 @@ function AdminPage() {
                                     />
                                 </div>
 
-                                {/* Campo Função */}
                                 <div>
                                     <label htmlFor="tipoGestor" className="block text-sm font-medium text-gray-700 mb-2">
                                         Tipo do Usuário:
@@ -199,7 +194,6 @@ function AdminPage() {
                                 </div>
                             </div>
 
-                            {/* Botão de Submit */}
                             <div className="mt-8">
                                 <button
                                     type="submit"
@@ -228,7 +222,7 @@ function AdminPage() {
                             <div className="bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-8">
                                 <div className="flex items-center gap-3 mb-4">
                                     <Users className="h-8 w-8 text-white" />
-                                    <h1 className="text-3xl font-bold text-white">Gerenciamento de Adms</h1>
+                                    <h1 className="text-3xl font-bold text-white">Gerenciamento de Admins</h1>
                                 </div>
                                 <p className="text-blue-100">
                                     {getTotalAdmins() > 0 
@@ -254,7 +248,6 @@ function AdminPage() {
                                 </div>
                             </div>
 
-                            {/* Conteúdo Principal */}
                             <div className="p-6">
                                 {/* Lista de Adms e Seguranças */}
                                 {admins.length === 0 && !loadingList ? (
@@ -272,37 +265,35 @@ function AdminPage() {
                                     </div>
                                 ) : (
                                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                        {admins.map((usuario) => (
+                                        {admins.map((admin) => (
                                             <div
-                                                key={usuario._id}
+                                                key={admin._id}
                                                 className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
                                             >
                                                 <div className="flex items-start justify-between">
 
-                                                    {/* Nome do Adm */}
                                                     <div className="flex-1 min-w-0">
                                                         <h3 className="text-lg font-semibold text-gray-900 truncate">
-                                                            {usuario.nome}
+                                                            {admin.nome}
                                                         </h3>
 
-                                                        {/* Tipo do Adm */}
                                                         <div className="mt-2">
-                                                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getTipoAdminColor(usuario.funcao)}`}>
-                                                                {formatarFuncao(usuario.funcao)}
+                                                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getTipoAdminColor(admin.funcao)}`}>
+                                                                {formatarFuncao(admin.funcao)}
                                                             </span>
                                                         </div>
                                                        <p className="text-sm text-gray-500 mt-2">
-                                                            Cadastrado em {formatData(usuario.dataCadastro)}
+                                                            Cadastrado em {formatData(admin.dataCadastro)}
                                                         </p>
                                                     </div>
                                                     
                                                     <button
-                                                        onClick={() => confirmarRemocao(usuario.nome)}
-                                                        disabled={removendoAdmin === usuario.nome}
+                                                        onClick={() => confirmarRemocao(admin._id)}
+                                                        disabled={removendoAdmin === admin._id}
                                                         className="ml-3 p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                                         title="Remover usuário"
                                                     >
-                                                        {removendoAdmin === usuario.nome ? (
+                                                        {removendoAdmin === admin.nome ? (
                                                             <Loader className="h-5 w-5 animate-spin" />
                                                         ) : (
                                                             <Trash2 className="h-5 w-5" />
@@ -314,7 +305,6 @@ function AdminPage() {
                                     </div>
                                 )}
 
-                                {/* Indicador de Carregamento */}
                                 {loadingList && (
                                     <div className="flex justify-center items-center py-8">
                                         <Loader className="h-6 w-6 animate-spin text-blue-500 mr-2" />
@@ -322,7 +312,6 @@ function AdminPage() {
                                     </div>
                                 )}
 
-                                {/* Indicador de Fim da Lista */}
                                 {!hasMore && admins.length > 0 && (
                                     <div className="text-center py-6">
                                         <p className="text-gray-500">
@@ -351,7 +340,7 @@ function AdminPage() {
                                 </div>
                                 
                                 <p className="text-gray-600 mb-6">
-                                    Tem certeza que deseja remover o usuário <strong>{adminParaRemover}</strong>? 
+                                    Tem certeza que deseja remover o usuário <strong>{admins.find(u => u._id === adminParaRemover)?.nome}</strong>? 
                                     Esta ação não pode ser desfeita.
                                 </p>
                                 

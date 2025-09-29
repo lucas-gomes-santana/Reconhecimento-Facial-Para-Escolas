@@ -13,6 +13,6 @@ router.post('/admin/logout', adminController.logout);
 router.get('/admin/verificar', autenticarToken, adminController.verificarAutenticacao);
 router.post('/admin/cadastrar', autenticarToken, adminController.cadastrarAdmin);
 router.get('/admin/listar', autenticarToken, adminController.listarAdmins);
-router.delete('/admin/remover/:nome', autenticarToken, adminController.removerAdmins);
+router.delete('/admin/remover/:id', autenticarToken, adminController.removerAdmins);
 
 export default router;

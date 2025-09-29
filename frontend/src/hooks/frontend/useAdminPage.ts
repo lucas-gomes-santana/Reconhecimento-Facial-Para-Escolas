@@ -155,47 +155,48 @@ export const useAdminPage = () => {
         }
     }, [loadingList, authenticatedFetch]);
 
-    const removerAdmin = useCallback(async (nome: string): Promise<boolean> => {
-        if (!nome) return false;
-
+    const removerAdmin = useCallback(async (_id: string): Promise<boolean> => {
+        if (!_id) return false;
+        
         try {
-            const response = await authenticatedFetch(`${baseURL}/admin/remover/${encodeURIComponent(nome)}`, {
+            const response = await authenticatedFetch(`${baseURL}/admin/remover/${_id}`, {
                 method: 'DELETE',
                 headers: { 'Content-Type': 'application/json' }
             });
 
             if (response.ok) {
-                // Remover usuário das listas locais
-                setTodosAdmins(prev => prev.filter(admin => admin.nome !== nome));
-                setAdminsExibidos(prev => prev.filter(admin => admin.nome !== nome));
+                const data = await response.json();
                 
-                setMessage({ 
-                    texto: `Usuário ${nome} removido com sucesso!`, 
-                    tipo: 'success' 
+                // Remove o Admim das listas locais
+                setTodosAdmins(prev => prev.filter(admin => admin._id !== _id));
+                setAdminsExibidos(prev => prev.filter(admin => admin._id !== _id));
+                
+                setMessage({
+                    texto: data.message || `Usuário removido com sucesso!`,
+                    tipo: 'success'
                 });
-                
+
                 return true;
 
             } else {
                 const errorData = await response.json();
-                setMessage({ 
-                    texto: errorData.message || "Erro ao remover usuário", 
-                    tipo: 'error' 
+                setMessage({
+                    texto: errorData.message || "Erro ao remover usuário",
+                    tipo: 'error'
                 });
                 return false;
             }
-
         } catch (error) {
             console.error("Erro ao remover admin:", error);
-            setMessage({ 
-                texto: "Erro de conexão ao remover usuário", 
-                tipo: 'error' 
+            setMessage({
+                texto: "Erro de conexão ao remover usuário",
+                tipo: 'error'
             });
+            
             return false;
         }
     }, [authenticatedFetch]);
 
-    // Função para atualizar admins exibidos com paginação
     const atualizarAdminsExibidos = useCallback(() => {
         let adminsFiltrados = todosAdmins;
 
@@ -227,7 +228,6 @@ export const useAdminPage = () => {
         }
     }, [loadingList, hasMore]);
 
-    // Função para buscar admins
     const buscarAdmins = useCallback((termo: string) => {
         setSearchTerm(termo);
         setPage(1); // Reset da página ao fazer nova busca

@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useState, useRef, useCallback, useEffect } from 'react';
 import * as faceapi from 'face-api.js';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import type { DistanceResult, DistanceConfig } from '../../types/distance.types';
 
 
@@ -34,11 +34,13 @@ export const useFaceDetection = () => {
 
     try {
       console.log('Iniciando carregamento dos modelos...');
+
       await Promise.all([
         faceapi.nets.tinyFaceDetector.loadFromUri('/models'),
         faceapi.nets.faceLandmark68Net.loadFromUri('/models'),
         faceapi.nets.faceRecognitionNet.loadFromUri('/models')
       ]);
+      
       setModelsLoaded(true);
       console.log('Modelos carregados com sucesso');
 
@@ -61,26 +63,45 @@ export const useFaceDetection = () => {
 
   const startVideo = useCallback(async () => {
     if (!videoRef.current) {
-      throw new Error('Elemento de vídeo não encontrado');
+      const errorMsg = 'Elemento de vídeo não encontrado. Aguarde o componente carregar.';
+      console.error(errorMsg);
+      throw new Error(errorMsg);
     }
+
     try {
       setIsVideoLoading(true);
+      console.log('Solicitando acesso à câmera...');
+      
       const stream = await navigator.mediaDevices.getUserMedia({ 
         video: { width: 640, height: 480 } 
       });
+
+      if (!videoRef.current) {
+        stream.getTracks().forEach(track => track.stop());
+        throw new Error('Elemento de vídeo foi desmontado durante a inicialização');
+      }
+
       videoRef.current.srcObject = stream;
+
       return new Promise<void>((resolve, reject) => {
         if (!videoRef.current) {
           reject(new Error('Elemento de vídeo não encontrado'));
           return;
         }
+
+        const timeoutId = setTimeout(() => {
+          reject(new Error('Timeout ao iniciar vídeo'));
+        }, 10000);
+
         videoRef.current.onloadedmetadata = () => {
           videoRef.current?.play()
             .then(() => {
               console.log('Vídeo iniciado com sucesso');
               setupCanvas();
+
               const checkVideoReady = () => {
                 if (videoRef.current && videoRef.current.readyState >= 3) {
+                  clearTimeout(timeoutId);
                   setVideoReady(true);
                   setIsVideoLoading(false);
                   console.log('Vídeo pronto para detecção');
@@ -92,17 +113,27 @@ export const useFaceDetection = () => {
               checkVideoReady();
             })
             .catch(err => {
+              clearTimeout(timeoutId);
               console.warn('Autoplay bloqueado:', err);
               setIsVideoLoading(false);
-              resolve();
+              reject(err);
             });
+        };
+
+        videoRef.current.onerror = (err) => {
+          clearTimeout(timeoutId);
+          setIsVideoLoading(false);
+          reject(new Error('Erro ao carregar stream de vídeo'));
         };
       });
     } catch (err) {
-      const errorMsg = 'Erro ao acessar câmera. Verifique as permissões.';
+      const errorMsg = err instanceof Error && err.message.includes('Permission denied') 
+        ? 'Permissão de câmera negada. Por favor, permita o acesso à câmera.'
+        : 'Erro ao acessar câmera. Verifique as permissões e se a câmera está disponível.';
+      
       setError(errorMsg);
       setIsVideoLoading(false);
-      console.error(errorMsg, err);
+      console.error('Erro ao iniciar vídeo:', err);
       throw new Error(errorMsg);
     }
   }, [setupCanvas]);
@@ -185,7 +216,6 @@ export const useFaceDetection = () => {
 
   // useEffect para gerenciar o intervalo de detecção
   useEffect(() => {
-    // Só inicia o intervalo se a detecção estiver ativa e o vídeo pronto
     if (!isDetecting || !videoReady) {
       return;
     }
@@ -194,41 +224,63 @@ export const useFaceDetection = () => {
       detectFace();
     }, 300);
 
-    // Função de limpeza: para o intervalo quando o componente desmontar
-    // ou quando isDetecting/videoReady se tornarem falsos.
     return () => {
       clearInterval(intervalId);
     };
   }, [isDetecting, videoReady, detectFace]);
   
   const startDetection = useCallback(async () => {
-    if (isDetecting) return;
+    if (isDetecting) {
+      console.log('Detecção já está em andamento');
+      return;
+    }
+
+    // CORREÇÃO: Validação antes de iniciar
+    if (!videoRef.current || !canvasRef.current) {
+      const errorMsg = 'Elementos de vídeo ou canvas não estão prontos. Aguarde o componente carregar.';
+      setError(errorMsg);
+      console.error(errorMsg);
+      return;
+    }
 
     try {
+      console.log('Iniciando processo de detecção...');
+      
       if (!modelsLoaded) {
+        console.log('Carregando modelos...');
         await loadModels();
       }
 
       setVideoReady(false);
-      await startVideo();
-      setIsDetecting(true);
       setError(null);
+      
+      console.log('Iniciando vídeo...');
+      await startVideo();
+      
+      setIsDetecting(true);
+      console.log('Detecção iniciada com sucesso');
 
     } catch (err) {
       console.error('Erro ao iniciar detecção:', err);
-      setIsDetecting(false); // Garante que não fique em estado de detecção em caso de erro
-      throw err;
+      setIsDetecting(false);
+      
+      const errorMsg = err instanceof Error ? err.message : 'Erro desconhecido ao iniciar detecção';
+      setError(errorMsg);
     }
   }, [isDetecting, modelsLoaded, loadModels, startVideo]);
 
   const stopDetection = useCallback(() => {
+    console.log('Parando detecção...');
     setIsDetecting(false);
     setVideoReady(false);
 
     // Para a trilha de vídeo para desligar a luz da câmera
     if (videoRef.current && videoRef.current.srcObject) {
       const stream = videoRef.current.srcObject as MediaStream;
-      stream.getTracks().forEach(track => track.stop());
+      stream.getTracks().forEach(track => {
+        track.stop();
+        console.log('Track parada:', track.kind);
+      });
       videoRef.current.srcObject = null;
     }
     
@@ -239,6 +291,8 @@ export const useFaceDetection = () => {
     
     setIsAtIdealDistance(false);
     setCurrentDescriptor(null);
+    setError(null);
+    console.log('Detecção parada');
   }, []);
 
   const aguardarDescriptor = useCallback((timeout: number = 15000): Promise<number[]> => {
@@ -277,6 +331,6 @@ export const useFaceDetection = () => {
     stopDetection,
     aguardarDescriptor,
     getDescriptor: () => isAtIdealDistance ? currentDescriptor : null,
-    isAtCorrectDistance: () => isAtIdealDistance
+    isAtCorrectDistance: () => isAtIdealDistance,
   };
-};
+}

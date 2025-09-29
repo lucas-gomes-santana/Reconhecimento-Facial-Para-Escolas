@@ -18,7 +18,6 @@ export const useUserManagement = () => {
 
   const {authenticatedFetch} = useAuth();
 
-  // Carregar todos os usuários do banco de dados pela Api
   const carregarUsuarios = useCallback(async (reset: boolean = false) => {
     if (loading) return;
     
@@ -53,13 +52,12 @@ export const useUserManagement = () => {
     }
   }, [loading]);
 
-  const removerUsuario = useCallback(async (nome: string) => {
-    if (!nome) return false;
-    
+  const removerUsuario = useCallback(async (_id: string) => {
+    if (!_id) return false;    
     setError(null);
     
     try {
-      const response = await authenticatedFetch(`${baseURL}/usuarios/remover/${encodeURIComponent(nome)}`, {
+      const response = await authenticatedFetch(`${baseURL}/usuarios/remover/${_id}`, {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' }
       });
@@ -69,11 +67,11 @@ export const useUserManagement = () => {
       }
 
       // Remover usuário das listas locais
-      setTodosUsuarios(prev => prev.filter(usuario => usuario.nome !== nome));
-      setUsuariosExibidos(prev => prev.filter(usuario => usuario.nome !== nome));
+      setTodosUsuarios(prev => prev.filter(usuario => usuario._id !== _id));
+      setUsuariosExibidos(prev => prev.filter(usuario => usuario._id !== _id));
 
       // Notificar outros componentes sobre a remoção
-      window.dispatchEvent(new CustomEvent('userDeleted', { detail: { nome } }));
+      window.dispatchEvent(new CustomEvent('userDeleted', { detail: { _id } }));
 
       return true;
       
@@ -83,22 +81,18 @@ export const useUserManagement = () => {
     }
   }, []);
 
-  // Atualizar usuários exibidos baseado na pesquisa e paginação
   const atualizarUsuariosExibidos = useCallback(() => {
     let usuariosFiltrados = todosUsuarios;
 
-    // Aplicar filtro de pesquisa se houver termo
     if (searchTerm.trim()) {
       usuariosFiltrados = todosUsuarios.filter(usuario =>
         usuario.nome.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
-    // Aplicar paginação
     const usuariosParaExibir = usuariosFiltrados.slice(0, page * USERS_PER_PAGE);
     setUsuariosExibidos(usuariosParaExibir);
 
-    // Verificar se há mais usuários para carregar
     setHasMore(usuariosFiltrados.length > usuariosParaExibir.length);
   }, [todosUsuarios, searchTerm, page]);
 
@@ -107,25 +101,21 @@ export const useUserManagement = () => {
     atualizarUsuariosExibidos();
   }, [atualizarUsuariosExibidos]);
 
-  // Carregar mais usuários (aumentar página)
   const carregarMaisUsuarios = useCallback(() => {
     if (!loading && hasMore) {
       setPage(prev => prev + 1);
     }
   }, [loading, hasMore]);
 
-  // Buscar usuários (atualizar termo de pesquisa)
   const buscarUsuarios = useCallback((termo: string) => {
     setSearchTerm(termo);
     setPage(1); // Resetar para primeira página
   }, []);
 
-  // Limpar erro
   const clearError = useCallback(() => {
     setError(null);
   }, []);
 
-  // Formatar data
   const formatarData = useCallback((dateString: string): string => {
     try {
       const date = new Date(dateString);
@@ -141,7 +131,6 @@ export const useUserManagement = () => {
     }
   }, []);
 
-  // Obter total de usuários (considerando filtro)
   const getTotalUsuarios = useCallback(() => {
     if (searchTerm.trim()) {
       return todosUsuarios.filter(usuario =>

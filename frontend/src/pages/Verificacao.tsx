@@ -1,43 +1,41 @@
-import { useEffect, useState } from 'react';
+import { useEffect} from 'react';
 import { useApi } from '../hooks/api/useApi';
 import { useFaceDetection } from '../hooks/detection/useFaceDetection';
 import { useValidation } from '../hooks/validation/useValidation';
+import { useVerificacao } from '../hooks/frontend/useVerificacao';
 import '../styles/index.css';
 
 
 function Verificacao() {
   const { 
-    verificarRosto, 
     loading: apiLoading, 
     error: apiError, 
-    clearError 
   } = useApi();
 
   const {
-    videoRef,
-    canvasRef,
-    isDetecting,
-    currentDescriptor,
-    isAtIdealDistance,
-    distanceStatus,
     loading: faceLoading,
     error: faceError,
-    startDetection,
-    stopDetection,
-    aguardarDescriptor
   } = useFaceDetection();
   
   const { 
-    validateDescriptor, 
     getDistanceMessage, 
-    showValidationErrors 
   } = useValidation();
 
-  const [isInitialized, setIsInitialized] = useState(false);
-  const [verificacaoCompleta, setVerificacaoCompleta] = useState(false);
-  const [resultadoVerificacao, setResultadoVerificacao] = useState<any>(null);
+  const { 
+    verificacaoCompleta,
+    resultadoVerificacao,
+    realizarVerificacao,
+    reiniciarProcesso,
+    pararSistema,
+    iniciarSistema,
+    isInitialized,
+    videoRef,           // usar estas refs
+    canvasRef,          // usar estas refs
+    distanceStatus,     // usar estes estados
+    isAtIdealDistance,  // usar estes estados
+    isDetecting,        // usar estes estados
+  } = useVerificacao();
 
-  // Efeito para limpar erros quando necessário
   useEffect(() => {
     if (apiError) {
       console.log(`Erro: ${apiError}`);
@@ -45,87 +43,6 @@ function Verificacao() {
       console.log(`Erro: ${faceError}`);
     }
   }, [apiError, faceError]);
-
-  const iniciarSistema = async () => {
-    try {
-      clearError();
-      setIsInitialized(true);
-      setVerificacaoCompleta(false);
-      setResultadoVerificacao(null);
-      
-      await startDetection();
-    } catch (err) {
-      console.error('Erro ao iniciar sistema:', err);
-      console.log('Erro ao iniciar sistema. Verifique as permissões da câmera.');
-      setIsInitialized(false);
-    }
-  };
-
-  const realizarVerificacao = async () => {
-    try {
-      clearError();
-      
-      // Validar se está na distância correta
-      if (!isAtIdealDistance) {
-        const errorMessage = 'Posicione-se na distância ideal antes de verificar.';
-        showValidationErrors([errorMessage]);
-        return;
-      }
-
-      console.log('Capturando dados biométricos...');
-      
-      // Aguardar o descriptor estar disponível (com timeout de 5 segundos)
-      let descriptor: number[];
-      
-      if (currentDescriptor && currentDescriptor.length > 0) {
-        descriptor = currentDescriptor;
-      } else {
-        try {
-          descriptor = await aguardarDescriptor(5000);
-        } catch (timeoutError) {
-          console.log('Tempo esgotado. Mantenha-se na posição ideal e tente novamente.', timeoutError);
-          return;
-        }
-      }
-
-      const validation = validateDescriptor(descriptor, isAtIdealDistance);
-      
-      if (!validation.isValid) {
-        console.log('Erro na captura biométrica. Tente novamente.');
-        showValidationErrors(validation.errors);
-        return;
-      }
-
-      console.log('Verificando no banco de dados...');
-      
-      // Realizar a verificação usando a API
-      const resultado = await verificarRosto(descriptor);
-      
-      setResultadoVerificacao(resultado);
-      setVerificacaoCompleta(true);
-
-      if (resultado.existe && resultado.dados) {
-        console.log('Dados do usuário encontrado:', resultado.dados.usuario); 
-      } else {
-        console.log('Usuário não encontrado no sistema.');
-      }
-      
-    } catch (err) {
-      console.error('Erro na verificação:', err);
-    }
-  };
-
-  const reiniciarProcesso = () => {
-    setVerificacaoCompleta(false);
-    setResultadoVerificacao(null);
-  };
-
-  const pararSistema = () => {
-    stopDetection();
-    setIsInitialized(false);
-    setVerificacaoCompleta(false);
-    setResultadoVerificacao(null);
-  };
 
   // Determinar qual botão mostrar
   const renderBotaoAcao = () => {
@@ -239,7 +156,7 @@ function Verificacao() {
           }`}>
             {resultadoVerificacao.existe ? (
               <div className='mt-6'>
-                <h3 className="font-bold text-lg mb-2">✅Rosto encontrado. Acesso autorizado!</h3>
+                <h3 className="font-bold text-lg mb-2">✅ Rosto encontrado. Acesso autorizado!</h3>
                 {resultadoVerificacao.dados?.usuario?.nome && (
                   <p className="text-lg font-medium">
                     Bem-vindo(a), <span className="font-bold">{resultadoVerificacao.dados.usuario.nome}</span>!

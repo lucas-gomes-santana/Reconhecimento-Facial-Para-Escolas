@@ -1,5 +1,6 @@
 import Admin from '../models/Admin.js';
 import bcrypt from 'bcrypt';
+import mongoose from 'mongoose';
 import { gerarAccessToken, verificarRefreshToken, definirTokens, removerTokens, gerarRefreshToken } from '../config/jwtConfig.js';
 
 
@@ -242,7 +243,6 @@ class AdminController {
         }
     }
 
-    // Método para verificar token
     async verificarAutenticacao(req, res) {
         try {
             res.status(200).json({
@@ -287,40 +287,59 @@ class AdminController {
     }
 
     async removerAdmins(req, res) {
-        const { nome } = req.params;
-
-        // Não se pode remover sua própria conta
-        if (req.usuario.nome === nome) {
-            return res.status(403).json({
-                success: false,
-                message: 'Você não pode remover sua própria conta!'
-            });
-        }
-
-        if (req.usuario.funcao !== 'super-usuario' && req.usuario.funcao !== 'desenvolvedor') {
-            return res.status(403).json({
-                success: false,
-                message: 'Apenas o super-usuario pode remover Adms ou Seguranças!'
-            });
-        }
-
-        const admin = await Admin.findOneAndDelete({ nome });
-
-        if (!admin) {
-            return res.status(404).json({ error: `${nome} não encontrado!` });
-        }
-
-        console.log(`${nome} removido com sucesso do C.E.R.F`);
-
-        res.json({
-            success: true,
-            message: `${nome} removido com sucesso do C.E.R.F`,
-            admin: {
-                id: admin._id,
-                nome: admin.nome,
-                funcao: admin.funcao
+        try {
+            const { id } = req.params;
+            
+            if (!id) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'ID do admin é obrigatório!'
+                });
             }
-        });
+
+            if (req.usuario.funcao !== 'super-usuario' && req.usuario.funcao !== 'desenvolvedor') {
+                return res.status(403).json({
+                    success: false,
+                    message: 'Apenas o super-usuario pode remover Adms ou Seguranças!'
+                });
+            }
+
+            if (req.usuario.id.toString() === id.toString()) {
+                return res.status(403).json({
+                    success: false,
+                    message: 'Você não pode remover sua própria conta!'
+                });
+            }
+
+            const admin = await Admin.findByIdAndDelete(id);
+            
+            if (!admin) {
+                return res.status(404).json({ 
+                    success: false,
+                    error: 'Admin não encontrado!' 
+                });
+            }
+
+            console.log(`${admin.nome} removido com sucesso do C.E.R.F`);
+            
+            res.json({
+                success: true,
+                message: `${admin.nome} removido com sucesso do C.E.R.F`,
+                adminRemovido: {
+                    id: admin._id,
+                    nome: admin.nome,
+                    funcao: admin.funcao,
+                    dataRemocao: new Date()
+                }
+            });
+            
+        } catch (err) {
+            console.error('Erro ao remover admin:', err);
+            res.status(500).json({ 
+                success: false,
+                error: 'Erro interno do servidor' 
+            });
+        }
     }
 
 }

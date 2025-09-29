@@ -4,6 +4,7 @@ import { useFaceDetection } from '../detection/useFaceDetection';
 import { useApi } from '../api/useApi';
 import { useValidation } from '../validation/useValidation';
 import { useAuth } from '../auth/useAuth';
+import { useVerificacao } from './useVerificacao';
 import { baseURL } from '../../config/url';
 import type { UseCadastroFacialReturn } from '../../types/cadastro.types';
 import type { UsuarioData } from '../../types/user.types';
@@ -36,7 +37,6 @@ export const useCadastroFacial = (): UseCadastroFacialReturn => {
     setLoading,
     error: apiError,
     setError,
-    verificarRosto,
     clearError,
     handleApiError
   } = useApi();
@@ -49,17 +49,17 @@ export const useCadastroFacial = (): UseCadastroFacialReturn => {
   } = useValidation();
 
   const { authenticatedFetch } = useAuth();
+  const { verificarRosto } = useVerificacao();
 
   const isLoading = faceLoading || apiLoading || isVideoLoading || isCameraStarting;
 
-  // Cleanup ao desmontar
+  // Cleanup ao desmontar o componente
   useEffect(() => {
     return () => {
       stopDetection();
     };
   }, [stopDetection]);
 
-  // Atualiza status baseado na distância
   useEffect(() => {
     if (isDetecting) {
       const message = getDistanceMessage(distanceStatus.status);
@@ -79,7 +79,6 @@ export const useCadastroFacial = (): UseCadastroFacialReturn => {
     }
   }, [faceError, apiError]);
 
-  // Atualiza status quando o vídeo está carregando
   useEffect(() => {
     if (isVideoLoading) {
       setStatusMessage('Iniciando câmera...');
@@ -89,7 +88,6 @@ export const useCadastroFacial = (): UseCadastroFacialReturn => {
   const handleIniciarReconhecimento = useCallback(async () => {
     clearError();
     
-    // Valida formulário primeiro
     const formValidation = validateCadastroForm(nome, tipoUsuario);
     if (!formValidation.isValid) {
       showValidationErrors(formValidation.errors);
@@ -183,12 +181,6 @@ export const useCadastroFacial = (): UseCadastroFacialReturn => {
     setError(null);
     
     try {
-      console.log('Enviando dados para cadastro:', { 
-        nome: userData.nome, 
-        tipoUsuario: userData.tipoUsuario,
-        descriptorLength: userData.descriptor?.length 
-      });
-      
       const response = await authenticatedFetch(`${baseURL}/usuarios/cadastrar`, {
         method: 'POST',
         headers: { 
@@ -213,7 +205,7 @@ export const useCadastroFacial = (): UseCadastroFacialReturn => {
         throw new Error(data.error || data.message || `Erro HTTP: ${response.status}`);
       }
 
-      console.log('Cadastro realizado com sucesso:', data);
+      console.log('Cadastro realizado com sucesso:');
       return data;
 
     } catch (err) {
@@ -234,7 +226,6 @@ export const useCadastroFacial = (): UseCadastroFacialReturn => {
   }, [stopDetection]);
 
   return {
-    // Estados
     nome,
     tipoUsuario,
     statusMessage,
@@ -242,16 +233,10 @@ export const useCadastroFacial = (): UseCadastroFacialReturn => {
     isLoading,
     isDetecting,
     videoReady,
-    
-    // Setters
     setNome,
     setTipoUsuario,
-    
-    // Refs
     videoRef,
     canvasRef,
-    
-    // Funções
     handleIniciarReconhecimento,
     handlePararReconhecimento,
     handleSalvarCadastro

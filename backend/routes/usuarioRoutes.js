@@ -8,6 +8,6 @@ const router = express.Router();
 router.post('/usuarios/cadastrar', autenticarToken, validation.validateCadastroUsuario, usuarioController.cadastrarUsuario);
 router.post('/verificar-rosto', autenticarToken, validation.validateVerificacaoRosto, usuarioController.verificarRosto);
 router.get('/usuarios/listar', autenticarToken, usuarioController.listarUsuarios);
-router.delete('/usuarios/remover/:nome', autenticarToken, usuarioController.deletarUsuario);
+router.delete('/usuarios/remover/:id', autenticarToken, usuarioController.removerUsuario);
 
 export default router;
