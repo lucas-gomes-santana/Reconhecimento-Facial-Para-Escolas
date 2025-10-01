@@ -1,11 +1,6 @@
 import mongoose from 'mongoose';
 
-
 const EstatisticaSchema = new mongoose.Schema({
-    totalCadastros: {
-        type: Number,
-        default: 0
-    },
     totalVerificacoes: {
         type: Number,
         default: 0
@@ -19,17 +14,11 @@ const EstatisticaSchema = new mongoose.Schema({
 // Garantir que só existe um documento de estatísticas
 EstatisticaSchema.statics.getInstance = async function() {
     let estatistica = await this.findOne();
+
     if (!estatistica) {
         estatistica = await this.create({});
     }
-    return estatistica;
-};
-
-EstatisticaSchema.statics.incrementarCadastros = async function() {
-    const estatistica = await this.getInstance();
-    estatistica.totalCadastros += 1;
-    estatistica.ultimaAtualizacao = new Date();
-    await estatistica.save();
+    
     return estatistica;
 };
 
@@ -40,15 +29,5 @@ EstatisticaSchema.statics.incrementarVerificacoes = async function() {
     await estatistica.save();
     return estatistica;
 };
-
-EstatisticaSchema.statics.decrementarCadastros = async function() {
-    const estatistica = await this.getInstance();
-    if (estatistica.totalCadastros > 0) {
-        estatistica.totalCadastros -= 1;
-        estatistica.ultimaAtualizacao = new Date();
-        await estatistica.save();
-    }
-    return estatistica;
-}
 
 export default mongoose.model('Estatistica', EstatisticaSchema);

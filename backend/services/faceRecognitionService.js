@@ -41,7 +41,6 @@ class FaceRecognitionService {
         return melhorMatch;
     }
 
-    // Verificar o rosto escaneado no front-end com os do banco de dados
     async verificarRostoExistente(descriptor, threshold = 0.8) {
         const match = await this.encontrarUsuarioPorSimilaridade(descriptor, threshold);
         return match ? match.usuario : null;

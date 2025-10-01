@@ -5,7 +5,6 @@ import mongoose from 'mongoose';
 
 class UsuarioController {
 
-    // Método de cadastro com reconhecimento facial
     async cadastrarUsuario(req, res) {
         try {
             const { nome, tipoUsuario, descriptor } = req.body;
@@ -23,11 +22,10 @@ class UsuarioController {
             await novoUsuario.save();
             
             console.log(`Usuário ${nome} cadastrado com sucesso`);
-            await Estatistica.incrementarCadastros();
             
             res.status(201).json({ 
                 success: true,
-                usuario: {
+                usuario: {  
                     id: novoUsuario._id,
                     nome: novoUsuario.nome,
                     tipo: novoUsuario.tipoUsuario,
@@ -41,7 +39,6 @@ class UsuarioController {
         }
     }
 
-    // Método de verificação facial
     async verificarRosto(req, res) {
         try {
             // Obtendo o 'contexto' do corpo da requisição
@@ -110,7 +107,6 @@ class UsuarioController {
                 });
             }
 
-            await Estatistica.decrementarCadastros();
             console.log(`Usuário ${usuario.nome} removido do C.E.R.F com sucesso`);
             
             res.json({

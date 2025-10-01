@@ -9,6 +9,7 @@ class DatabaseConfig {
                 useUnifiedTopology: true 
             });
             console.log('Conectado ao MongoDB');
+            
         } catch (error) {
             console.error('Erro ao conectar com o MongoDB:', error);
             process.exit(1);

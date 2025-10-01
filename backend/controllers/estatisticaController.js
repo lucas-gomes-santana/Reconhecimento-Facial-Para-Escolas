@@ -1,18 +1,17 @@
 import Estatistica from '../models/Estatistica.js';
 import Usuario from '../models/Usuario.js';
 
-
 class EstatisticaController {
 
-    // Nétodo para obter estatísticas simples
     async obterEstatisticas(req, res) {
         try {
             const estatistica = await Estatistica.getInstance();
+            const totalCadastros = await Usuario.countDocuments();
             
             res.json({
                 success: true,
                 dados: {
-                    totalCadastros: estatistica.totalCadastros,
+                    totalCadastros: totalCadastros,
                     totalVerificacoes: estatistica.totalVerificacoes,
                     ultimaAtualizacao: estatistica.ultimaAtualizacao
                 }
@@ -23,7 +22,6 @@ class EstatisticaController {
         }
     }
 
-    // Método para reiniciar estatísticas
     async resetarEstatisticas(req, res) {
         try {
             const estatistica = await Estatistica.getInstance();
@@ -42,12 +40,11 @@ class EstatisticaController {
         }
     }
 
-    // Método para obter estatísticas detalhadas
     async obterEstatisticasDetalhadas(req, res) {
         try {
             const estatistica = await Estatistica.getInstance();
+            const totalCadastros = await Usuario.countDocuments();
             
-            // Contar usuários por tipo
             const usuariosPorTipo = await Usuario.aggregate([
                 {
                     $group: {
@@ -57,13 +54,12 @@ class EstatisticaController {
                 }
             ]);
 
-            // Obter data do primeiro cadastro
             const primeiroUsuario = await Usuario.findOne().sort({ dataCadastro: 1 });
             
             res.json({
                 success: true,
                 dados: {
-                    totalCadastros: estatistica.totalCadastros,
+                    totalCadastros: totalCadastros,
                     totalVerificacoes: estatistica.totalVerificacoes,
                     usuariosPorTipo,
                     primeiroCadastro: primeiroUsuario?.dataCadastro,
@@ -75,35 +71,7 @@ class EstatisticaController {
             res.status(500).json({ error: err.message });
         }
     }
-
-    async decrementarCadastros(req, res) {
-        try {
-            const estatistica = await Estatistica.decrementarCadastros();
-            
-            if (estatistica.totalCadastros === 0) {
-                return res.status(400).json({
-                    success: false,
-                    error: "Não é possível decrementar: total de cadastros já está em zero"
-                });
-            }
-
-            res.json({
-                success: true,
-                dados: {
-                    totalCadastros: estatistica.totalCadastros,
-                    totalVerificacoes: estatistica.totalVerificacoes,
-                    ultimaAtualizacao: estatistica.ultimaAtualizacao
-                }
-            });
-
-        } catch (error) {
-            console.error("Erro ao decrementar cadastros:", error);
-            res.status(500).json({ 
-                success: false, 
-                error: error.message 
-            });
-        }
-    }
+    
 }
 
 export default new EstatisticaController();

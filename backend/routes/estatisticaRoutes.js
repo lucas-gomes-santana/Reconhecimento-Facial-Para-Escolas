@@ -10,6 +10,4 @@ router.get('/estatisticas/detalhadas', estatisticaController.obterEstatisticasDe
 
 router.post('/estatisticas/reset', estatisticaController.resetarEstatisticas);
 
-router.post('/estatisticas/decrementar-cadastros', estatisticaController.decrementarCadastros);
-
 export default router;
