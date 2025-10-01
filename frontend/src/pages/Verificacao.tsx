@@ -29,11 +29,11 @@ function Verificacao() {
     pararSistema,
     iniciarSistema,
     isInitialized,
-    videoRef,           // usar estas refs
-    canvasRef,          // usar estas refs
-    distanceStatus,     // usar estes estados
-    isAtIdealDistance,  // usar estes estados
-    isDetecting,        // usar estes estados
+    videoRef,       
+    canvasRef,         
+    distanceStatus,     
+    isAtIdealDistance,  
+    isDetecting,        
   } = useVerificacao();
 
   useEffect(() => {

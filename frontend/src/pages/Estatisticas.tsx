@@ -81,13 +81,16 @@ function Estatisticas() {
         {mostrandoDetalhes && stats.usuariosPorTipo && (
           <div className="bg-gray-50 p-4 rounded-lg mb-4">
             <h3 className="text-lg font-semibold mb-3">Usuários por Tipo</h3>
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+
               {stats.usuariosPorTipo.map((tipo: any, index: number) => (
                 <div key={index} className="flex justify-between p-2 bg-white rounded border">
                   <strong>{tipo._id}:</strong>
                   <span>{tipo.quantidade} usuário(s)</span>
                 </div>
               ))}
+              
             </div>
             {stats.primeiroCadastro && (
               <div className="mt-4 p-3 bg-blue-50 rounded">
