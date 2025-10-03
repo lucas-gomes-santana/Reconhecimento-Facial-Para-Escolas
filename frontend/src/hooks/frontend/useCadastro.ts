@@ -4,7 +4,7 @@ import { useFaceDetection } from '../detection/useFaceDetection';
 import { useApi } from '../api/useApi';
 import { useValidation } from '../validation/useValidation';
 import { useAuth } from '../auth/useAuth';
-import { useVerificacao } from './useVerificacao';
+import { useVerificacao } from '../auth/useVerificacao';
 import { baseURL } from '../../config/url';
 import type { UseCadastroFacialReturn } from '../../types/cadastro.types';
 import type { UsuarioData } from '../../types/user.types';

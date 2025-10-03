@@ -96,7 +96,6 @@ export const useUserManagement = () => {
     setHasMore(usuariosFiltrados.length > usuariosParaExibir.length);
   }, [todosUsuarios, searchTerm, page]);
 
-  // Atualizar usuários exibidos quando dependências mudarem
   useEffect(() => {
     atualizarUsuariosExibidos();
   }, [atualizarUsuariosExibidos]);
@@ -114,21 +113,6 @@ export const useUserManagement = () => {
 
   const clearError = useCallback(() => {
     setError(null);
-  }, []);
-
-  const formatarData = useCallback((dateString: string): string => {
-    try {
-      const date = new Date(dateString);
-      return date.toLocaleDateString('pt-BR', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric'
-      });
-
-    } catch (error) {
-        console.error(error);
-        return 'Data inválida';
-    }
   }, []);
 
   const getTotalUsuarios = useCallback(() => {
@@ -153,6 +137,5 @@ export const useUserManagement = () => {
     carregarMaisUsuarios,
     buscarUsuarios,
     clearError,
-    formatarData
   };
 };

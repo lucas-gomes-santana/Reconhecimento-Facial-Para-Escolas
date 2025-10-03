@@ -146,22 +146,7 @@ export const useEstatisticas = () => {
     setError(null);
   }, []);
 
-  const formatarData = useCallback((dateString: string): string => {
-    try {
-      const date = new Date(dateString);
-      return date.toLocaleString('pt-BR', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit'
-      });
-    } catch (error) {
-      console.error('Erro ao formatar data:', error);
-      return dateString || 'Data não disponível';
-    }
-  }, []);
+  
 
   // Escutar por remoções de usuários para atualizar estatísticas
   useEffect(() => {
@@ -186,7 +171,6 @@ export const useEstatisticas = () => {
     resetarEstatisticas,
     toggleDetalhes,
     clearError,
-    formatarData,
   };
 };
 

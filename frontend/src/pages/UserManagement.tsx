@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import { Trash2, Search, Users, AlertTriangle, Loader } from 'lucide-react';
 import { useUserManagement } from '../hooks/frontend/useUserManagement';
+import { useFormatData } from '../hooks/utils/useFormatData';
 
 function UserManagement() {
   const {
@@ -16,8 +17,9 @@ function UserManagement() {
     carregarMaisUsuarios,
     buscarUsuarios,
     clearError,
-    formatarData
   } = useUserManagement();
+
+  const { formatData } = useFormatData();
 
   const [usuarioParaRemover, setUsuarioParaRemover] = useState<string | null>(null);
   const [removendoUsuario, setRemovendoUsuario] = useState<string | null>(null);
@@ -155,7 +157,7 @@ function UserManagement() {
                           </span>
                         </div>
                         <p className="text-sm text-gray-500 mt-2">
-                          Cadastrado em {formatarData(usuario.dataCadastro)}
+                          Cadastrado em {formatData(usuario.dataCadastro)}
                         </p>
                       </div>
                       

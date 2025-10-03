@@ -2,7 +2,7 @@
 import { useApi } from "../api/useApi";
 import { useFaceDetection } from "../detection/useFaceDetection";
 import { useValidation } from "../validation/useValidation";
-import { useAuth } from "../auth/useAuth";
+import { useAuth } from "./useAuth";
 import { useEffect, useState, useCallback } from "react";
 import { baseURL } from "../../config/url";
 import type { VerificarRostoResponse } from "../../types/face.type";
@@ -98,7 +98,7 @@ export const useVerificacao = () => {
             }
 
             console.log('Verificando no banco de dados...');
-            const resultado = await verificarRosto(descriptor);
+            const resultado = await verificarRosto(descriptor, 'verificacao');
             
             
             setResultadoVerificacao(resultado);
@@ -145,14 +145,22 @@ export const useVerificacao = () => {
             throw new Error(data.error || data.message || `Erro HTTP: ${response.status}`);
           }
     
-          const result = {
+          const result: VerificarRostoResponse = {
             existe: data.encontrado || false,
+            bloqueado: data.bloqueado || false,  // ✅ NOVO
             dados: data.encontrado ? {
-              usuario: data.usuario,
-              similaridade: data.similaridade || 0,
-              distancia: data.distancia || 0
+                usuario: {
+                    id: data.usuario?.id || '',  // ✅ NOVO
+                    nome: data.usuario?.nome || '',
+                    tipoUsuario: data.usuario?.tipoUsuario || '',
+                    dataCadastro: data.usuario?.dataCadastro || '',
+                    status: data.usuario?.status,  // ✅ NOVO
+                    bloqueadoAte: data.usuario?.bloqueadoAte,  // ✅ NOVO
+                },
+                similaridade: data.similaridade || 0,
+                distancia: data.distancia || 0,
             } : null
-          };
+        };
           
           return result;
           
@@ -192,7 +200,11 @@ export const useVerificacao = () => {
         videoRef,     
         canvasRef,    
         distanceStatus,
-        isAtIdealDistance, 
+        isAtIdealDistance,
+        setVerificacaoCompleta,
+        setResultadoVerificacao,
+        currentDescriptor,
+        aguardarDescriptor, 
     }
 }
 

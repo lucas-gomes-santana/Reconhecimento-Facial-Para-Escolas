@@ -1,7 +1,15 @@
 export interface VerificarRostoResponse {
   existe: boolean;
-  dados?: {
-    usuario: unknown;
+  bloqueado?: boolean;  // ✅ ADICIONE
+  dados: {
+    usuario: {
+      id: string;  // ✅ ADICIONE
+      nome: string;
+      tipoUsuario: string;
+      dataCadastro: string;
+      status?: string;  // ✅ ADICIONE
+      bloqueadoAte?: string;  // ✅ ADICIONE
+    };
     similaridade: number;
     distancia: number;
   } | null;

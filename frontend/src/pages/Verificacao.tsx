@@ -2,7 +2,7 @@ import { useEffect} from 'react';
 import { useApi } from '../hooks/api/useApi';
 import { useFaceDetection } from '../hooks/detection/useFaceDetection';
 import { useValidation } from '../hooks/validation/useValidation';
-import { useVerificacao } from '../hooks/frontend/useVerificacao';
+import { useVerificacao } from '../hooks/auth/useVerificacao';
 import '../styles/index.css';
 
 
@@ -140,14 +140,12 @@ function Verificacao() {
           )}
         </div>
         
-        {/* Mostrar erros se houver */}
         {(apiError || faceError) && (
           <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
             {apiError || faceError}
           </div>
         )}
 
-        {/* Mostrar resultado da verificação */}
         {verificacaoCompleta && resultadoVerificacao && (
           <div className={`mb-4 p-4 rounded-lg ${
             resultadoVerificacao.existe 

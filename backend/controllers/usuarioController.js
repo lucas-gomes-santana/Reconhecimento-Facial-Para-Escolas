@@ -41,7 +41,6 @@ class UsuarioController {
 
     async verificarRosto(req, res) {
         try {
-            // Obtendo o 'contexto' do corpo da requisição
             const { descriptor, contexto } = req.body;
 
             console.log('Iniciando verificação facial...');
@@ -55,14 +54,22 @@ class UsuarioController {
             
             if (match) {
                 console.log(`Usuário encontrado: ${match.usuario.nome} (distância: ${match.distancia.toFixed(4)}, similaridade: ${(match.similaridade * 100).toFixed(1)}%)`);
+
+                // Verificar se o usuário pode pegar merenda ou não
+                const estaBloqueado = match.usuario.status === 'bloqueado';
+                const aindaBloqueado = estaBloqueado && match.usuario.bloqueadoAte && new Date(match.usuario.bloqueadoAte) > new Date();
                 
                 return res.json({ 
                     encontrado: true,
                     usuario: {
+                        id: match.usuario._id,
                         nome: match.usuario.nome,
                         tipoUsuario: match.usuario.tipoUsuario,
-                        dataCadastro: match.usuario.dataCadastro
+                        dataCadastro: match.usuario.dataCadastro,
+                        status: match.usuario.status,
+                        bloqueadoAte: match.usuario.bloqueadoAte,
                     },
+                    bloqueado: aindaBloqueado,
                     similaridade: match.similaridade,
                     distancia: match.distancia
                 });
@@ -112,18 +119,65 @@ class UsuarioController {
             res.json({
                 success: true,
                 message: `Usuário ${usuario.nome} removido com sucesso`,
-                usuarioRemovido: {
-                    id: usuario._id,
-                    nome: usuario.nome,
-                    tipoUsuario: usuario.tipoUsuario,
-                    dataCadastro: usuario.dataCadastro
-                }
             });
 
         } catch (err) {
             console.error('Erro ao remover usuário:', err);
             res.status(500).json({ error: err.message });
         }
+    }
+
+    bloquearUsuario = async (req, res) => {
+        try {
+            const { id } = req.params;
+
+            const tempoBloqueio = 60 * 1000; // 1 minuto em milissegundos (ajustar para um tempo maior)
+            const bloqueadoAte = new Date(Date.now() + tempoBloqueio);
+
+            const usuario = await Usuario.findByIdAndUpdate(id, {
+                status: 'bloqueado',
+                bloqueadoAte: bloqueadoAte,
+            }, { new: true }); // Retorna o documento atualizado
+
+            if (!usuario) {
+                return res.status(404).json({
+                    success: false,
+                    message: `Usuário não encontrado!`,
+                });
+            }
+
+            this.agendarDesbloqueio(id, tempoBloqueio);
+
+            console.log(`Usuário ${usuario.nome} proibido de pegar merenda por 1 minuto`)
+
+            return res.json({
+                success: true,
+                message: `Usuário ${usuario.nome} proibido de pegar merenda por 1 minuto`,
+            });
+
+        } catch (error) {
+            console.error("Erro ao bloquear usuário: ", error);
+            return res.status(500).json({ 
+                success: false,
+                error: 'Erro interno do servidor' 
+            });
+        }
+    }
+
+    agendarDesbloqueio = async (usuarioId, tempo) => {
+
+        setTimeout(async () => {
+            try {
+                const usuario = await Usuario.findByIdAndUpdate(usuarioId, {
+                    status: 'liberado',
+                    bloqueadoAte: null,
+                });
+                console.log(`Usuário ${usuario.nome} liberdo para pegar merenda`);
+
+            } catch (error) {
+                console.error("Erro ao desbloquear usuário: ", error);
+            }
+        }, tempo);
     }
 }
 

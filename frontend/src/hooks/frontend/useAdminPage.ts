@@ -34,7 +34,6 @@ export const useAdminPage = () => {
         admin 
     } = useAuth();
 
-
     const limparFormulario = useCallback(() => {
         setNome('');
         setSenha('');
@@ -216,12 +215,10 @@ export const useAdminPage = () => {
         setHasMore(adminsFiltrados.length > adminsParaExibir.length);
     }, [todosAdmins, searchTerm, page]);
 
-    // Effect para atualizar lista quando dependências mudarem
     useEffect(() => {
         atualizarAdminsExibidos();
     }, [atualizarAdminsExibidos]);
 
-    // Função para carregar mais admins (scroll infinito)
     const carregarMaisAdmins = useCallback(() => {
         if (!loadingList && hasMore) {
             setPage(prev => prev + 1);
@@ -233,21 +230,6 @@ export const useAdminPage = () => {
         setPage(1); // Reset da página ao fazer nova busca
     }, []);
 
-    const formatData = useCallback((dateString: string): string => {
-        try {
-            const date = new Date(dateString);
-            return date.toLocaleDateString('pt-BR', {
-                day: '2-digit',
-                month: '2-digit',
-                year: 'numeric'
-            });
-        } catch (error) {
-            console.error(error);
-            return 'Data inválida';
-        }
-    }, []);
-
-    // Função para obter total de admins (com filtro aplicado)
     const getTotalAdmins = useCallback(() => {
         if (searchTerm.trim()) {
             return todosAdmins.filter(admin => 
@@ -280,7 +262,6 @@ export const useAdminPage = () => {
         carregarMaisAdmins,
         buscarAdmins,
         removerAdmin,
-        formatData,
         getTotalAdmins,
     };
 };

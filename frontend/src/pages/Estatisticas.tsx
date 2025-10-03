@@ -1,7 +1,9 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from 'react';
 import { useEstatisticas } from '../hooks/frontend/useEstatisticas';
+import { useFormatData } from '../hooks/utils/useFormatData';
 import '../styles/index.css';
+
 
 function Estatisticas() {
   const {
@@ -13,10 +15,11 @@ function Estatisticas() {
     resetarEstatisticas,
     toggleDetalhes,
     clearError,
-    formatarData
   } = useEstatisticas();
 
-  const [lastRefresh, setLastRefresh] = useState<string>('');
+  const { formatData } = useFormatData();
+
+  const [ lastRefresh, setLastRefresh] = useState<String>('');
 
   useEffect(() => {
     // Carrega estatísticas ao montar o componente
@@ -26,7 +29,7 @@ function Estatisticas() {
   const handleRefresh = async () => {
     try {
       await carregarEstatisticas(mostrandoDetalhes);
-      setLastRefresh(formatarData(new Date().toISOString()));
+      setLastRefresh(formatData(new Date().toISOString()));
     } catch (err) {
       console.error('Erro ao atualizar estatísticas:', err);
     }
@@ -39,7 +42,7 @@ function Estatisticas() {
 
     try {
       await resetarEstatisticas();
-      setLastRefresh(formatarData(new Date().toISOString()));
+      setLastRefresh(formatData(new Date().toISOString()));
       alert('Estatísticas resetadas com sucesso!');
     } catch (err) {
       console.error('Erro ao resetar estatísticas:', err);
@@ -94,14 +97,14 @@ function Estatisticas() {
             </div>
             {stats.primeiroCadastro && (
               <div className="mt-4 p-3 bg-blue-50 rounded">
-                <p><strong>Primeiro cadastro:</strong> {formatarData(stats.primeiroCadastro)}</p>
+                <p><strong>Primeiro cadastro:</strong> {formatData(stats.primeiroCadastro)}</p>
               </div>
             )}
           </div>
         )}
 
-        <div className="text-sm text-gray-500 text-center">
-          <p>Última atualização dos dados: {formatarData(stats.ultimaAtualizacao)}</p>
+        <div className="text-base text-gray-800 text-center">
+          <p>Última atualização dos dados: {formatData(stats.ultimaAtualizacao)}</p>
         </div>
       </div>
     );
@@ -109,8 +112,8 @@ function Estatisticas() {
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
-      <header className="bg-blue-500 text-white text-center p-4">
-        <h1 className="text-xl md:text-2xl font-bold">📊 Estatísticas do Sistema</h1>
+      <header className="bg-blue-500 text-white text-center p-6">
+        <h1 className="text-xl md:text-3xl font-bold">📊 Estatísticas do C.E.R.F</h1>
       </header>
 
       <main className="flex-1 p-6 grid grid-cols-1 gap-8">
@@ -140,17 +143,6 @@ function Estatisticas() {
               🗑️ Excluir Dados
             </button>
           </div>
-        </section>
-
-        <section className="bg-white p-4 rounded-lg shadow-md">
-          <div className="font-bold mb-2">
-            {loading ? 'Carregando sistema...' : error ? `Erro: ${error}` : 'Sistema pronto'}
-          </div>
-          {lastRefresh && (
-            <div className="text-sm text-gray-500">
-              Última atualização: {lastRefresh}
-            </div>
-          )}
         </section>
 
         <section className="bg-white p-6 rounded-lg shadow-md">

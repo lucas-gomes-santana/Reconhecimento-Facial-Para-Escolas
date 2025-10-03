@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import { useAdminPage } from '../hooks/frontend/useAdminPage';
 import { Search, AlertTriangle, Users, Loader, Trash2 } from 'lucide-react';
+import { useFormatData } from '../hooks/utils/useFormatData';
 import '../styles/index.css';
 
 function AdminPage() {
@@ -24,8 +25,9 @@ function AdminPage() {
         searchTerm,
         removerAdmin,
         hasMore,
-        formatData,
     } = useAdminPage();
+
+    const { formatData } = useFormatData();
 
     const [adminParaRemover, setAdminParaRemover] = useState<string | null>(null);
     const [removendoAdmin, setRemovendoAdmin] = useState<string | null>(null);

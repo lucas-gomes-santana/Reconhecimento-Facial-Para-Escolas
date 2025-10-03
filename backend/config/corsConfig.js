@@ -7,7 +7,7 @@ const allowedOrigins = [
 
 const corsOptions = {
   origin: function (origin, callback) {
-    // Em desenvolvimento, permitir Postman
+    // Permite requisições que não vem do navegador. Desativar em produção para segurança do backend
     if (!origin) return callback(null, true);
     
     if (allowedOrigins.includes(origin)) {
@@ -16,7 +16,7 @@ const corsOptions = {
       callback(new Error('Requisição não permitida pelo CORS!'));
     }
   },
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
   exposedHeaders: ['set-cookie'] // Importante para o Postman ver os cookies
