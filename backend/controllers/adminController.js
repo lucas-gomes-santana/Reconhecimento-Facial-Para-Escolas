@@ -1,23 +1,7 @@
 import Admin from '../models/Admin.js';
-import bcrypt from 'bcrypt';
-import mongoose from 'mongoose';
 import { gerarAccessToken, verificarRefreshToken, definirTokens, removerTokens, gerarRefreshToken } from '../config/jwtConfig.js';
+import { criptografarSenha, validarFuncao, validarSenha } from '../utils/utils.js';
 
-
-async function verificarSenha(senhaInformada, senhaArmazenada) {
-    return await bcrypt.compare(senhaInformada, senhaArmazenada);
-}
-
-async function criptografarSenha(senha) {
-    const saltRounds = 12;
-    return await bcrypt.hash(senha, saltRounds);
-}
-
-// Função para validar funções dos ADMs a serem cadastrados
-function validarFuncao(funcao) {
-    const funcoesValidas = ['admin', 'seguranca'];
-    return funcoesValidas.includes(funcao.toLowerCase());
-}
 
 export async function cadastrarDesenvolvedor() { // Cadastrando o usuário desenvolvedor quando o back-end é iniciado
     try {
@@ -59,28 +43,21 @@ class AdminController {
         try {
             const { nome, senha } = req.body;
 
-            if (!nome || !senha) {
-                return res.status(400).json({
-                    success: false,
-                    message: "Nome e senha de administrador são obrigatórios!"
-                });
-            }
-
             const admin = await Admin.findOne({ nome: nome });
 
             if (!admin) {
                 return res.status(404).json({
                     success: false,
-                    message: `Admin ${nome} não encontrado!`
+                    error: `Admin ${nome} não encontrado!`
                 });
             }
 
-            const senhaCorreta = await verificarSenha(senha, admin.senha);
+            const senhaCorreta = await validarSenha(senha, admin.senha);
 
             if (!senhaCorreta) {
                 return res.status(401).json({
                     success: false,
-                    message: `Senha do admin incorreta!`
+                    error: `Senha do admin incorreta!`
                 });
             }
 
@@ -96,7 +73,6 @@ class AdminController {
 
             definirTokens(res, accessToken, refreshToken); // Define o cookie com o token JWT
 
-            // Atualizar último login
             await Admin.findByIdAndUpdate(admin._id, { 
                 ultimoLogin: new Date() 
             });
@@ -167,22 +143,14 @@ class AdminController {
             if (req.usuario.funcao !== 'super-usuario' && req.usuario.funcao !== 'desenvolvedor') {
                 return res.status(403).json({
                     success: false,
-                    message: 'Apenas o super-adm ou o desenvolvedor pode cadastrar novos admistradores e seguranças!'
+                    error: 'Apenas o super-admin ou o desenvolvedor pode cadastrar novos admistradores e seguranças!' 
                 });
             }
 
-            if (!nome || !senha || !funcao) {
-                return res.status(400).json({
-                    success: false,
-                    message: 'Nome, senha e função são obrigatórios!'
-                });
-            }
-
-            // Validar função a ser cadastrada (só pode ser 'admin' ou 'segurança')
             if (!validarFuncao(funcao)) {
                 return res.status(400).json({
                     success: false,
-                    message: 'Função deve ser "admin" ou "seguranca"!'
+                    error: 'Função inválida'
                 });
             }
 
@@ -192,14 +160,7 @@ class AdminController {
             if (adminExistente) {
                 return res.status(409).json({
                     success: false,
-                    message: 'Já existe um administrador com este nome!'
-                });
-            }
-
-            if (senha.length < 8) {
-                return res.status(400).json({
-                    success: false,
-                    message: 'Senha deve ter no mínimo 8 caracteres!'
+                    error: 'Já existe um administrador com este nome!'
                 });
             }
 
@@ -213,7 +174,7 @@ class AdminController {
 
             await novoAdmin.save();
 
-            console.log(`Admin ${nome} de função ${funcao} cadastrado com sucesso por ${req.usuario.nome}!`);
+            console.log(`Gestor ${nome} de função ${funcao} cadastrado com sucesso por ${req.usuario.nome}!`);
 
             res.status(201).json({
                 success: true,
@@ -227,18 +188,101 @@ class AdminController {
 
         } catch (error) {
             console.error(`Erro no cadastro: `, error);
-            
-            // Tratar erro de duplicação do MongoDB
-            if (error.code === 11000) {
-                return res.status(409).json({
-                    success: false,
-                    message: 'Administrador com este nome já existe!'
-                });
-            }
-
             res.status(500).json({
                 success: false,
                 message: 'Erro interno do servidor'
+            });
+        }
+    }
+
+    async cadastrarSuperAdmin(req, res) {
+        try {
+            const { nome, senha, funcao } = req.body;
+
+            if (req.usuario.funcao !== 'desenvolvedor') {
+                return res.status(403).json({
+                    success: false,
+                    message: 'Apenas o desenvolvedor pode cadastrar o super-admin'
+                });
+            }
+
+            if (!validarFuncao(funcao)) {
+                return res.status(400).json({
+                    success: false,
+                    error: 'Função inválida'
+                });
+            }
+
+            const superAdminExistente = await Admin.findOne({
+                funcao: 'super-admin'
+            })
+
+            if (superAdminExistente && funcao.toLowerCase() === 'super-admin') {
+                return res.status(400).json({ 
+                    success: false,
+                    message: 'Já existe um Super-Admin cadastrado no sistema'
+                });
+            }
+            const senhaCriptografada = await criptografarSenha(senha);
+
+            const novoSuperAdmin = new Admin({
+                nome,
+                senha: senhaCriptografada,
+                funcao: funcao.toLowerCase()
+            });
+
+            await novoSuperAdmin.save();
+            console.log(`Super-Admin ${nome} cadastrado com sucesso`);
+
+            res.status(201).json({
+                success: true,
+                message: `Super-Admin ${nome} cadastrado com sucesso`,
+            });
+
+        } catch (error) {
+            console.error('Erro ao cadastrar o Super-Admin: ', error);
+            return res.status(500).json({
+                success: false,
+                message: 'Erro interno do servidor'
+            });
+        }
+    }
+
+    async atualizarSenha(req, res) {
+        try {
+           const { id, novaSenha } = req.body;
+
+            const admin = await Admin.findById(id);
+
+            if (!admin) {
+                return res.status(401).json({
+                    success: false,
+                    message: 'Admin não encontrado'
+                })
+            }
+
+            if (req.usuario.funcao !== 'super-admin' && req.usuario.funcao !== 'desenvolvedor' && req.usuario.id !== id) {
+                return res.status(403).json({
+                    success: false,
+                    message: 'Você não tem permissão para alterar senha de outro usuário'
+                });
+            }
+
+            const novaSenhaCriptografada = await criptografarSenha(novaSenha);
+
+            admin.senha = novaSenhaCriptografada;
+            await admin.save();
+
+            return res.status(200).json({
+                success: true,
+                message: 'Senha alterada com sucesso'
+            });
+
+        } catch (error) {
+            console.error('Erro ao alterar senha', error);
+            res.status(500).json({
+                success: false,
+                error: 'Erro interno do servidor'
             });
         }
     }
@@ -258,7 +302,7 @@ class AdminController {
             console.error('Erro ao verificar autenticação:', error);
             res.status(500).json({
                 success: false,
-                message: 'Erro interno do servidor'
+                error: 'Erro interno do servidor'
             });
         }
     }
@@ -289,13 +333,6 @@ class AdminController {
     async removerAdmins(req, res) {
         try {
             const { id } = req.params;
-            
-            if (!id) {
-                return res.status(400).json({
-                    success: false,
-                    message: 'ID do admin é obrigatório!'
-                });
-            }
 
             if (req.usuario.funcao !== 'super-usuario' && req.usuario.funcao !== 'desenvolvedor') {
                 return res.status(403).json({

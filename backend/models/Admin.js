@@ -17,7 +17,7 @@ const AdminSchema = new mongoose.Schema({
         required: [true, 'Função é obrigatória'],
         enum: {
             values: ['admin', 'seguranca', 'super-admin', 'desenvolvedor'],
-            message: 'Função deve ser "admin" ou "seguranca"'
+            message: 'Função deve ser "admin", "seguranca", "super-admin" ou "desenvolvedor"'
         },
         lowercase: true
     },
@@ -30,7 +30,7 @@ const AdminSchema = new mongoose.Schema({
         default: null
     }
 }, {
-    timestamps: true // Cria automaticamente createdAt e updatedAt
+    timestamps: true
 });
 
 // Índice para melhorar performance na busca por nome

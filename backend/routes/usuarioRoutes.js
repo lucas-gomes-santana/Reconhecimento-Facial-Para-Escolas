@@ -5,10 +5,10 @@ import { autenticarToken } from "../config/jwtConfig.js";
 
 const router = express.Router();
 
-router.post('/usuarios/cadastrar', autenticarToken, validation.validateCadastroUsuario, usuarioController.cadastrarUsuario);
-router.post('/verificar-rosto', autenticarToken, validation.validateVerificacaoRosto, usuarioController.verificarRosto);
+router.post('/usuarios/cadastrar', validation.validateCadastroUsuario, autenticarToken, validation.validateCadastroUsuario, usuarioController.cadastrarUsuario);
+router.post('/verificar-rosto', validation.validateVerificacaoRosto, autenticarToken, validation.validateVerificacaoRosto, usuarioController.verificarRosto);
 router.get('/usuarios/listar', autenticarToken, usuarioController.listarUsuarios);
-router.delete('/usuarios/remover/:id', autenticarToken, usuarioController.removerUsuario);
-router.patch('/usuarios/bloquear/:id', autenticarToken, usuarioController.bloquearUsuario);
+router.delete('/usuarios/remover/:id', validation.validateId, autenticarToken, usuarioController.removerUsuario);
+router.patch('/usuarios/bloquear/:id', validation.validateId, autenticarToken, usuarioController.bloquearUsuario);
 
 export default router;

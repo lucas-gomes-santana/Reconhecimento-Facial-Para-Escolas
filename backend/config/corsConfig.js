@@ -16,7 +16,7 @@ const corsOptions = {
       callback(new Error('Requisição não permitida pelo CORS!'));
     }
   },
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH', 'PUT'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
   exposedHeaders: ['set-cookie'] // Importante para o Postman ver os cookies

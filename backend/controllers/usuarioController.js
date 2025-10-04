@@ -1,14 +1,13 @@
 import Usuario from '../models/Usuario.js';
 import Estatistica from '../models/Estatistica.js';
 import faceRecognitionService from '../services/faceRecognitionService.js';
-import mongoose from 'mongoose';
 
 class UsuarioController {
 
     async cadastrarUsuario(req, res) {
         try {
             const { nome, tipoUsuario, descriptor } = req.body;
-            
+
             const rostoExistente = await faceRecognitionService.verificarRostoExistente(descriptor, 0.8);
             
             if (rostoExistente) {
@@ -47,7 +46,7 @@ class UsuarioController {
             
             const match = await faceRecognitionService.encontrarUsuarioPorSimilaridade(descriptor, 0.8);
             
-            // Incrementando o contador apenas se o contexto não for 'cadastro'
+            // Incrementando o contador de verificações apenas se o contexto não for 'cadastro'
             if (contexto !== 'cadastro') {
                 await Estatistica.incrementarVerificacoes();
             }
@@ -97,13 +96,6 @@ class UsuarioController {
     async removerUsuario(req, res) {
         try {
             const { id } = req.params;
-            
-            if (!id) {
-                return res.status(400).json({
-                    success: false,
-                    message: 'ID do usuário é obrigatório!'
-                });
-            }
 
             const usuario = await Usuario.findByIdAndDelete(id);
             
