@@ -91,20 +91,15 @@ function MenuPage() {
             <div className={clsx(divStyle)}>
               <svg  
                 xmlns="http://www.w3.org/2000/svg"  
-                width="24"  
-                height="24"  
-                viewBox="0 0 24 24"  
                 fill="none"
-                stroke="#ffffff"  
-                stroke-width="1.5"  
-                stroke-linecap="round"  
-                stroke-linejoin="round"  
-                className="w-8 h-8 md:w-10 md:h-10 text-blue-600 transition-all duration-300 group-hover:text-white"
-              >
-                <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                <path d="M4 8h16a1 1 0 0 1 1 1v.5c0 1.5 -2.517 5.573 -4 6.5v1a1 1 0 0 1 -1 1h-8a1 1 0 0 1 -1 -1v-1c-1.687 -1.054 -4 -5 -4 -6.5v-.5a1 1 0 0 1 1 -1z" />
-              </svg>
-
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="currentColor"
+                className={clsx(svgStyle)}
+                >
+                  <path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 15h16a4 4 0 0 1 -4 4h-8a4 4 0 0 1 -4 -4z" />
+                  <path d="M12 4c3.783 0 6.953 2.133 7.786 5h-15.572c.833 -2.867 4.003 -5 7.786 -5z" /><path d="M5 12h14" />
+                </svg>
             </div>
 
             <h3 className={clsx(subtitleStyle)}>

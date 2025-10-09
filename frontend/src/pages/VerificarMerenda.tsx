@@ -4,6 +4,7 @@ import { useFaceDetection } from '../hooks/detection/useFaceDetection';
 import { useVerificacao } from '../hooks/auth/useVerificacao';
 import { useValidation } from '../hooks/validation/useValidation';
 import { useVerificarStatus } from '../hooks/auth/useVerificarStatus';
+import VideoCanvasDetector from '../components/VideoAndCanvas';
 import '../styles/index.css';
 
 function VerificarMerenda() {
@@ -16,7 +17,7 @@ function VerificarMerenda() {
         loading: faceLoading,
         error: faceError,
     } = useFaceDetection();
-    
+
     const { 
         getDistanceMessage, 
     } = useValidation();
@@ -33,10 +34,9 @@ function VerificarMerenda() {
         distanceStatus,     
         isAtIdealDistance,  
         isDetecting,
-        currentDescriptor,
         aguardarDescriptor,
         setResultadoVerificacao,
-        setVerificacaoCompleta
+        setVerificacaoCompleta,
     } = useVerificacao();
 
     const { verificarEBloquear } = useVerificarStatus();
@@ -49,15 +49,8 @@ function VerificarMerenda() {
         }
     }, [apiError, faceError]);
 
-   const realizarVerificacaoMerenda = async () => {
-        try {
-            // ✅ DEBUG: Verificar todos os estados
-            console.log('=== DEBUG INICIAL ===');
-            console.log('isAtIdealDistance:', isAtIdealDistance);
-            console.log('currentDescriptor existe?', !!currentDescriptor);
-            console.log('currentDescriptor length:', currentDescriptor?.length);
-            console.log('isDetecting:', isDetecting);
-            
+    const realizarVerificacaoMerenda = async () => {
+        try { 
             if (!isAtIdealDistance) {
                 console.log('Posicione-se na distância ideal antes de verificar.');
                 return;
@@ -65,18 +58,13 @@ function VerificarMerenda() {
 
             console.log('Capturando dados biométricos...');
             
-            // ✅ TENTAR AGUARDAR com timeout menor e mais informações
             let descriptor: number[];
             
             try {
-                console.log('Tentando aguardar descriptor...');
-                descriptor = await aguardarDescriptor(3000); // Reduzir para 3 segundos para teste
-                console.log('Descriptor capturado com sucesso! Length:', descriptor.length);
+                descriptor = await aguardarDescriptor(3000);
+
             } catch (timeoutError) {
-                console.log('ERRO ao aguardar descriptor:', timeoutError);
-                console.log('Estado no momento do erro:');
-                console.log('- currentDescriptor:', currentDescriptor);
-                console.log('- isAtIdealDistance:', isAtIdealDistance);
+                console.log('Erro ao aguardar descriptor:', timeoutError);
                 return;
             }
 
@@ -203,13 +191,6 @@ function VerificarMerenda() {
         );
     };
   
-    const getBorderColor = () => {
-        if (!isDetecting) return 'border-gray-300';
-        if (distanceStatus.isIdeal) return 'border-green-500';
-        if (distanceStatus.status === 'sem_face') return 'border-red-500';
-        return 'border-yellow-500';
-    };
-  
     return (
         <div className="bg-gray-200 py-8 px-6 flex flex-col items-center justify-center min-h-screen">
             <div className="bg-white p-8 rounded-xl shadow-md w-full max-w-4xl text-center mx-auto">
@@ -217,33 +198,14 @@ function VerificarMerenda() {
                     🍽️ Verificação de Merenda
                 </h1>
           
-                <div className="relative mx-auto my-5 w-full max-w-2xl h-96 md:h-[480px]">
-                    <video 
-                        ref={videoRef}
-                        width="640" 
-                        height="480" 
-                        autoPlay 
-                        muted 
-                        playsInline
-                        className={`absolute top-0 left-0 w-full h-full rounded-lg border-4 object-cover transition-colors duration-300 ${getBorderColor()}`}
-                    />
-                    <canvas 
-                        ref={canvasRef}
-                        className="absolute top-0 left-0 w-full h-full rounded-lg pointer-events-none"
-                    />
-            
-                    {isDetecting && (
-                        <div className="absolute top-4 left-4 right-4">
-                            <div className={`px-3 py-2 rounded-lg text-sm font-medium ${
-                                distanceStatus.isIdeal 
-                                    ? 'bg-green-300 text-green-800 border border-green-300' 
-                                    : 'bg-red-300 text-red-800 border border-yellow-300'
-                            }`}>
-                                {getDistanceMessage(distanceStatus.status)}
-                            </div>
-                        </div>
-                    )}
-                </div>
+                {/* ⬇️ CORRIGIDO: Adicionadas as props corretas */}
+                <VideoCanvasDetector
+                    videoRef={videoRef}
+                    canvasRef={canvasRef}
+                    isDetecting={isDetecting}
+                    distanceStatus={distanceStatus}
+                    getDistanceMessage={getDistanceMessage}
+                />
           
                 {(apiError || faceError) && (
                     <div className="mb-4 p-3 bg-red-100 border border-red-700 text-red-700 rounded">

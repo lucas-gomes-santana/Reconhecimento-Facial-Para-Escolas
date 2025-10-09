@@ -3,8 +3,8 @@ import { useApi } from '../hooks/api/useApi';
 import { useFaceDetection } from '../hooks/detection/useFaceDetection';
 import { useValidation } from '../hooks/validation/useValidation';
 import { useVerificacao } from '../hooks/auth/useVerificacao';
+import VideoCanvasDetector from '../components/VideoAndCanvas';
 import '../styles/index.css';
-
 
 function Verificacao() {
   const { 
@@ -96,14 +96,6 @@ function Verificacao() {
     );
   };
 
-  // Determinar a cor da borda do vídeo baseada no status
-  const getBorderColor = () => {
-    if (!isDetecting) return 'border-gray-300';
-    if (distanceStatus.isIdeal) return 'border-green-500';
-    if (distanceStatus.status === 'sem_face') return 'border-red-500';
-    return 'border-yellow-500';
-  };
-
   return (
     <div className="bg-gray-200 py-8 px-6 flex flex-col items-center justify-center min-h-screen">
       <div className="bg-white p-8 rounded-xl shadow-md w-full max-w-4xl text-center mx-auto">
@@ -111,34 +103,13 @@ function Verificacao() {
           🔍 Verificação de Cadastro
         </h1>
         
-        <div className="relative mx-auto my-5 w-full max-w-2xl h-96 md:h-[480px]">
-          <video 
-            ref={videoRef}
-            width="640" 
-            height="480" 
-            autoPlay 
-            muted 
-            playsInline
-            className={`absolute top-0 left-0 w-full h-full rounded-lg border-4 object-cover transition-colors duration-300 ${getBorderColor()}`}
-          />
-          <canvas 
-            ref={canvasRef}
-            className="absolute top-0 left-0 w-full h-full rounded-lg pointer-events-none"
-          />
-          
-          {/* Indicador de status sobreposto */}
-          {isDetecting && (
-            <div className="absolute top-4 left-4 right-4">
-              <div className={`px-3 py-2 rounded-lg text-sm font-medium ${
-                distanceStatus.isIdeal 
-                  ? 'bg-green-300 text-green-800 border border-green-300' 
-                  : 'bg-red-300 text-red-800 border border-yellow-300'
-              }`}>
-                {getDistanceMessage(distanceStatus.status)}
-              </div>
-            </div>
-          )}
-        </div>
+        <VideoCanvasDetector
+          videoRef={videoRef}
+          canvasRef={canvasRef}
+          isDetecting={isDetecting}
+          distanceStatus={distanceStatus}
+          getDistanceMessage={getDistanceMessage}
+        />
         
         {(apiError || faceError) && (
           <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">

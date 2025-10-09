@@ -15,13 +15,10 @@ app.use(express.json());
 app.use(corsConfig);
 app.use(cookieParser());
 
-
-// Rotas
 app.use("/api", usuarioRoutes);
 app.use("/api", estatisticaRoutes);
 app.use("/api", adminRoutes);
 
-// Inicialização do servidor
 async function startServer() {
   try {
     await databaseConfig.connect(); 

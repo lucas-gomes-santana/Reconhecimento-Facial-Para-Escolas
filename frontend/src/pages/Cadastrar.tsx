@@ -1,4 +1,7 @@
+import VideoCanvasDetector from '../components/VideoAndCanvas';
+import { useVerificacao } from '../hooks/auth/useVerificacao';
 import { useCadastroFacial } from '../hooks/frontend/useCadastro';
+import { useValidation } from '../hooks/validation/useValidation';
 import '../styles/index.css';
 
 
@@ -9,20 +12,21 @@ function Cadastrar() {
     statusMessage,
     canSave,
     isLoading,
-    isDetecting,
-    videoReady,
+    videoRef,
     setNome,
     setTipoUsuario,
-    videoRef,
     canvasRef,
     handleIniciarReconhecimento,
     handlePararReconhecimento,
-    handleSalvarCadastro
+    handleSalvarCadastro,
   } = useCadastroFacial();
+
+  const { distanceStatus, isDetecting } = useVerificacao();
+
+  const { getDistanceMessage } = useValidation();
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-6">
-      {/* Título */}
       <h1 className="text-3xl font-bold text-gray-900 mb-8">
         📝 Cadastro de Usuário
       </h1>
@@ -33,7 +37,6 @@ function Cadastrar() {
         className="bg-white shadow-lg rounded-2xl p-8 w-full max-w-2xl"
         onSubmit={handleSalvarCadastro}
       >
-        {/* Nome */}
         <div className="mb-6">
           <label
             htmlFor="nome"
@@ -53,7 +56,6 @@ function Cadastrar() {
           />
         </div>
 
-        {/* Tipo de Usuário */}
         <div className="mb-6">
           <label
             htmlFor="tipoUsuario"
@@ -77,31 +79,14 @@ function Cadastrar() {
           </select>
         </div>
 
-        {/* Vídeo + Canvas */}
-        <div className="relative mb-6 bg-gray-200 rounded-lg overflow-hidden">
-          <video
-            id="video"
-            width="640"
-            height="480"
-            ref={videoRef}
-            autoPlay
-            muted
-            playsInline
-            className={`w-full ${!videoReady ? 'opacity-0' : 'opacity-100'} transition-opacity`}
-          ></video>
-
-          <canvas
-            ref={canvasRef}
-            id="canvas"
-            className="absolute top-0 left-0 w-full h-full"
-          ></canvas>
-          
-          {!videoReady && (
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="text-gray-600">Carregando câmera...</div>
-            </div>
-          )}
-        </div>
+        <VideoCanvasDetector
+          videoRef={videoRef}
+          canvasRef={canvasRef}
+          isDetecting={isDetecting}
+          distanceStatus={distanceStatus}
+          getDistanceMessage={getDistanceMessage}
+        />
+        
 
         {/* Status */}
         <div id="status" className="text-gray-700 text-center mb-6 font-medium min-h-8">
