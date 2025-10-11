@@ -1,6 +1,7 @@
 import Usuario from '../models/Usuario.js';
 import Estatistica from '../models/Estatistica.js';
 import faceRecognitionService from '../services/faceRecognitionService.js';
+import { NotFoundException } from '../exceptions/AppExceptions.js';
 
 class UsuarioController {
 
@@ -94,70 +95,48 @@ class UsuarioController {
     }
 
     async removerUsuario(req, res) {
-        try {
-            const { id } = req.params;
+        const { id } = req.params;
 
-            const usuario = await Usuario.findByIdAndDelete(id);
-            
-            if (!usuario) {
-                return res.status(404).json({ 
-                    success: false,
-                    error: 'Usuário não encontrado!' 
-                });
-            }
-
-            console.log(`Usuário ${usuario.nome} removido do C.E.R.F com sucesso`);
-            
-            res.json({
-                success: true,
-                message: `Usuário ${usuario.nome} removido com sucesso`,
-            });
-
-        } catch (err) {
-            console.error('Erro ao remover usuário:', err);
-            res.status(500).json({ error: err.message });
+        const usuario = await Usuario.findByIdAndDelete(id);
+        
+        if (!usuario) {
+            throw new NotFoundException(`Usuário ${usuario.nome} não encontrado`);
         }
+
+        console.log(`Usuário ${usuario.nome} removido do C.E.R.F com sucesso`);
+        
+        res.json({
+            success: true,
+            message: `Usuário ${usuario.nome} removido com sucesso`,
+        });
     }
 
     bloquearUsuario = async (req, res) => {
-        try {
-            const { id } = req.params;
+        const { id } = req.params;
 
-            const tempoBloqueio = 60 * 1000; // 1 minuto em milissegundos (ajustar para um tempo maior)
-            const bloqueadoAte = new Date(Date.now() + tempoBloqueio);
+        const tempoBloqueio = 60 * 1000; // 1 minuto em milissegundos (ajustar para um tempo maior em produção)
+        const bloqueadoAte = new Date(Date.now() + tempoBloqueio);
 
-            const usuario = await Usuario.findByIdAndUpdate(id, {
-                status: 'bloqueado',
-                bloqueadoAte: bloqueadoAte,
-            }, { new: true }); // Retorna o documento atualizado
+        const usuario = await Usuario.findByIdAndUpdate(id, {
+            status: 'bloqueado',
+            bloqueadoAte: bloqueadoAte,
+        }, { new: true }); // Retorna o documento atualizado
 
-            if (!usuario) {
-                return res.status(404).json({
-                    success: false,
-                    message: `Usuário não encontrado!`,
-                });
-            }
-
-            this.agendarDesbloqueio(id, tempoBloqueio);
-
-            console.log(`Usuário ${usuario.nome} proibido de pegar merenda por 1 minuto`)
-
-            return res.json({
-                success: true,
-                message: `Usuário ${usuario.nome} proibido de pegar merenda por 1 minuto`,
-            });
-
-        } catch (error) {
-            console.error("Erro ao bloquear usuário: ", error);
-            return res.status(500).json({ 
-                success: false,
-                error: 'Erro interno do servidor' 
-            });
+        if (!usuario) {
+            throw new NotFoundException(`Usuário ${usuario.nome} não encontrado!`);
         }
+
+        this.agendarDesbloqueio(id, tempoBloqueio);
+
+        console.log(`Usuário ${usuario.nome} proibido de pegar merenda por 1 minuto`)
+
+        return res.json({
+            success: true,
+            message: `Usuário ${usuario.nome} proibido de pegar merenda por 1 minuto`,
+        });
     }
 
     agendarDesbloqueio = async (usuarioId, tempo) => {
-
         setTimeout(async () => {
             try {
                 const usuario = await Usuario.findByIdAndUpdate(usuarioId, {

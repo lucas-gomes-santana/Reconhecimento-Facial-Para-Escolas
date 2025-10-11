@@ -15,7 +15,7 @@ router.get('/admin/verificar', autenticarToken, adminController.verificarAutenti
 router.post('/admin/cadastrar', validation.validateCadastroAdmin, autenticarToken, adminController.cadastrarAdmin);
 router.post('/admin/cadastrar/super-admin', validation.validateCadastroAdmin, autenticarToken, adminController.cadastrarSuperAdmin);
 router.get('/admin/listar', autenticarToken, adminController.listarAdmins);
-router.delete('/admin/remover/:id', validation.validateId, autenticarToken, adminController.removerAdmins);
+router.delete('/admin/remover/:id', validation.validateIdParam, autenticarToken, adminController.removerAdmins);
 router.put('/admin/atualizar-senha', validation.validateMudancaDeSenha, autenticarToken, adminController.atualizarSenha);
 
 export default router;

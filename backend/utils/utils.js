@@ -1,6 +1,6 @@
 import bcrypt from 'bcrypt';
 
-export function validarFuncao(funcao) {
+export function validarFuncaoCadastrada(funcao) {
     const funcoesValidas = ['admin', 'seguranca', 'super-admin'];
     return funcoesValidas.includes(funcao.toLowerCase());
 }

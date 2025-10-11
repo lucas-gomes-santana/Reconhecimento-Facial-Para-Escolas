@@ -5,7 +5,7 @@ class ValidationMiddleware {
         const { nome, senha } = req.body;
 
         if (!nome || !senha) {
-            return res.status(400).json({ error: 'Todos os campos são obrigatórios '});
+            return res.status(400).json({ error: 'Todos os campos são obrigatórios'});
         }
 
         next();
@@ -15,7 +15,7 @@ class ValidationMiddleware {
         const { nome, tipoUsuario, descriptor } = req.body;
         
         if (!nome || !tipoUsuario || !descriptor) {
-            return res.status(400).json({ error: 'Dados incompletos.' });
+            return res.status(400).json({ error: 'Dados incompletos' });
         }
 
         next();
@@ -71,6 +71,16 @@ class ValidationMiddleware {
 
     validateId(req, res, next) {
         const { id } = req.body;
+
+        if (!id) {
+            return res.status(400).json({ error: 'Id obrigatório para realizar a operação' });
+        }
+
+        next();
+    }
+
+    validateIdParam(req, res, next) {
+        const { id } = req.params;
 
         if (!id) {
             return res.status(400).json({ error: 'Id obrigatório para realizar a operação' });
