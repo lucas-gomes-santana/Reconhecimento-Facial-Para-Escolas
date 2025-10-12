@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from 'react';
 import { useEstatisticas } from '../hooks/frontend/useEstatisticas';
+import { useGerarRelatorio } from '../hooks/utils/useGerarRelatorio';
 import { useFormatData } from '../hooks/utils/useFormatData';
 import '../styles/index.css';
 
@@ -16,6 +17,12 @@ function Estatisticas() {
     toggleDetalhes,
     clearError,
   } = useEstatisticas();
+
+  const { 
+    gerarRelatorio, 
+    loading: loadingRelatorio, 
+    error: errorRelatorio 
+  } = useGerarRelatorio();
 
   const { formatData } = useFormatData();
 
@@ -54,6 +61,16 @@ function Estatisticas() {
       await toggleDetalhes();
     } catch (err) {
       console.error('Erro ao alternar detalhes:', err);
+    }
+  };
+
+  const handleGerarRelatorio = async () => {
+    try {
+      await gerarRelatorio();
+      alert('Relatório gerado com sucesso!');
+    } catch (err) {
+      console.error('Erro ao gerar relatório:', err);
+      alert(`Erro ao gerar relatório: ${errorRelatorio || 'Erro desconhecido'}`);
     }
   };
 
@@ -134,6 +151,13 @@ function Estatisticas() {
               className="flex-1 min-w-[150px] py-2 px-4 rounded-lg text-white bg-blue-500 hover:bg-blue-600 transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               📋 {mostrandoDetalhes ? 'Ocultar Detalhes' : 'Mostrar Detalhes'}
+            </button>
+            <button 
+              onClick={handleGerarRelatorio}
+              disabled={loading || loadingRelatorio}
+              className="flex-1 min-w-[150px] py-2 px-4 rounded-lg text-white bg-purple-500 hover:bg-purple-600 transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {loadingRelatorio ? '⏳ Gerando...' : '📄 Gerar Relatório'}
             </button>
             <button 
               onClick={handleReset}

@@ -71,6 +71,47 @@ class EstatisticaController {
             res.status(500).json({ error: err.message });
         }
     }
+
+    async gerarRelatorio(req, res) {
+        try {
+            const estatistica = await Estatistica.getInstance();
+            const totalCadastros = await Usuario.countDocuments();
+
+            const usuariosPorTipo = await Usuario.aggregate([
+                {
+                    $group: {
+                        _id: '$tipoUsuario',
+                        quantidade: { $sum: 1 }
+                    }
+                }
+            ]);  
+            
+            const ultimoCadastro = await Usuario.findOne().sort({ dataCadastro: -1 });
+            const primeiroCadastro = await Usuario.findOne().sort({ dataCadastro: 1 });
+
+            res.json({
+                success: true,
+                dados: {
+                    dataRelatorio: new Date(),
+                    totalCadastros,
+                    totalVerificacoes: estatistica.totalVerificacoes,
+                    usuariosPorTipo,
+                    primeiroCadastro: primeiroCadastro?.dataCadastro,
+                    ultimoCadastro: ultimoCadastro?.dataCadastro,
+                    ultimaAtualizacao: estatistica.ultimaAtualizacao
+                }
+            });
+
+        } catch (error) {
+            console.error('Erro ao gerar o relatório: ', error);
+            res.status(500).json({
+                success: false,
+                error: error.message
+            });
+        }
+
+        
+    }
     
 }
 
