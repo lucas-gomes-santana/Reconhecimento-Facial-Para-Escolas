@@ -60,13 +60,13 @@ Com a funcionalidade de reconhecimento facial do C.E.R.F, buscamos controlar o f
    Começando pelo back-end:
 
    ```bash
-   cd back-end && node server.js
+   cd backend && node server.js
    ```
 
    E execute o front-end React:
 
    ```bash
-   cd front-end && pnpm dev
+   cd frontend && pnpm dev
    ```
 
    Copie e cole o link gerado no **front-end** na barra de endereços do seu navegador:
