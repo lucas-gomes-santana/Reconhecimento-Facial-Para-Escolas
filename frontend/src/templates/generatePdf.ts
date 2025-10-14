@@ -1,18 +1,6 @@
 import jsPDF from 'jspdf';
+import type { DadosEstatisticas } from '../types/estatisticas.types';
 
-interface UsuarioPorTipo {
-  _id: string;
-  quantidade: number;
-}
-
-interface DadosEstatisticas {
-  totalCadastros: number;
-  totalVerificacoes: number;
-  usuariosPorTipo?: UsuarioPorTipo[];
-  primeiroCadastro?: string;
-  ultimoCadastro?: string;
-  ultimaAtualizacao: string;
-}
 
 export const gerarRelatorioPdf = (dadosEstatisticas: DadosEstatisticas) => {
   const doc = new jsPDF();
@@ -40,25 +28,25 @@ export const gerarRelatorioPdf = (dadosEstatisticas: DadosEstatisticas) => {
 
   let currentY = layoutConfig.startY;
 
-  // ========== TÍTULO PRINCIPAL ==========
+  // Título principal
   doc.setFontSize(layoutConfig.titleFontSize);
   doc.setFont('helvetica', 'bold');
   doc.text('Relatório de Estatísticas', layoutConfig.marginLeft, currentY);
   currentY += layoutConfig.titleSpacing;
 
-  // ========== DATA DO RELATÓRIO ==========
+  // Data do relatório
   doc.setFontSize(layoutConfig.normalFontSize);
   doc.setFont('helvetica', 'normal');
   const dataAtual = new Date().toLocaleString('pt-BR');
   doc.text(`Gerado em: ${dataAtual}`, layoutConfig.marginLeft, currentY);
   currentY += layoutConfig.sectionSpacing;
 
-  // ========== LINHA DIVISÓRIA ==========
+  // Linha divisória
   doc.setLineWidth(0.5);
   doc.line(layoutConfig.marginLeft, currentY, layoutConfig.pageWidth - layoutConfig.marginRight, currentY);
   currentY += layoutConfig.sectionSpacing;
 
-  // ========== ESTATÍSTICAS GERAIS ==========
+  // Estatísticas gerais
   doc.setFontSize(layoutConfig.sectionTitleFontSize);
   doc.setFont('helvetica', 'bold');
   doc.text('Estatísticas Gerais', layoutConfig.marginLeft, currentY);
@@ -85,7 +73,7 @@ export const gerarRelatorioPdf = (dadosEstatisticas: DadosEstatisticas) => {
   
   currentY += 20;
 
-  // ========== USUÁRIOS POR TIPO ==========
+  // Usuários por tipo
   if (dadosEstatisticas.usuariosPorTipo && dadosEstatisticas.usuariosPorTipo.length > 0) {
     doc.setFontSize(layoutConfig.sectionTitleFontSize);
     doc.setFont('helvetica', 'bold');
@@ -114,7 +102,59 @@ export const gerarRelatorioPdf = (dadosEstatisticas: DadosEstatisticas) => {
     currentY += layoutConfig.smallSpacing;
   }
 
-  // ========== INFORMAÇÕES ADICIONAIS ==========
+  // Lista dos 
+  if (dadosEstatisticas.usuariosOrganizados && dadosEstatisticas.usuariosOrganizados.length > 0) {
+    // Verificar se precisa adicionar nova página
+    if (currentY > 200) {
+      doc.addPage();
+      currentY = layoutConfig.startY;
+    }
+
+    doc.setFontSize(layoutConfig.sectionTitleFontSize);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Lista Completa de Usuários', layoutConfig.marginLeft, currentY);
+    currentY += layoutConfig.sectionSpacing;
+
+    dadosEstatisticas.usuariosOrganizados.forEach((grupo) => {
+      // Verificar espaço antes de cada grupo
+      if (currentY > 250) {
+        doc.addPage();
+        currentY = layoutConfig.startY;
+      }
+
+      // Título do tipo
+      doc.setFontSize(12);
+      doc.setFont('helvetica', 'bold');
+      doc.setFillColor(240, 240, 240);
+      doc.rect(layoutConfig.marginLeft, currentY - 4, 180, 8, 'F');
+      doc.text(`${grupo.tipo} (${grupo.quantidade})`, layoutConfig.marginLeft + 3, currentY);
+      currentY += 10;
+
+      // Lista de nomes
+      doc.setFontSize(layoutConfig.normalFontSize);
+      doc.setFont('helvetica', 'normal');
+
+      grupo.usuarios.forEach((nome, index) => {
+        // Verificar se precisa de nova página
+        if (currentY > 280) {
+          doc.addPage();
+          currentY = layoutConfig.startY;
+        }
+
+        // Numeração e nome
+        doc.text(`${index + 1}. ${nome}`, layoutConfig.marginLeft + 5, currentY);
+        currentY += layoutConfig.lineHeight;
+      });
+
+      currentY += layoutConfig.smallSpacing;
+    });
+
+    currentY += layoutConfig.sectionSpacing;
+  }
+
+
+
+  // Informações adicionais
   doc.setFontSize(layoutConfig.sectionTitleFontSize);
   doc.setFont('helvetica', 'bold');
   doc.text('Informações Adicionais', layoutConfig.marginLeft, currentY);
@@ -139,7 +179,7 @@ export const gerarRelatorioPdf = (dadosEstatisticas: DadosEstatisticas) => {
   doc.text(`Última Atualização: ${dataAtualizacao}`, layoutConfig.marginLeft, currentY);
   currentY += layoutConfig.sectionSpacing;
 
-  // ========== RODAPÉ ==========
+  // Rodapé
   const pageHeight = 297;
   doc.setFontSize(8);
   doc.setFont('helvetica', 'italic');
@@ -151,7 +191,6 @@ export const gerarRelatorioPdf = (dadosEstatisticas: DadosEstatisticas) => {
     { align: 'center' }
   );
 
-  // ========== SALVAR PDF ==========
   const nomeArquivo = `relatorio-estatisticas-${new Date().toISOString().split('T')[0]}.pdf`;
   doc.save(nomeArquivo);
 };

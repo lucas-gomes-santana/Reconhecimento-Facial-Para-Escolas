@@ -5,37 +5,29 @@ import { AlreadyExistsException, InvalidFunctionException, NotFoundException, Pe
 
 
 export async function cadastrarDesenvolvedor() { // Cadastrando o usuário desenvolvedor quando o back-end é iniciado
-    try {
-        // Remover o fallback em produção
-        const devNome = process.env.DEV_USER_NOME || 'Lucas Gomes';
-        const devSenha = process.env.DEV_USER_SENHA || 'lucasgomes';
-        const devFuncao = 'desenvolvedor';
+    // Remover o fallback em produção
+    const devNome = process.env.DEV_USER_NOME || 'Lucas Gomes';
+    const devSenha = process.env.DEV_USER_SENHA || 'lucasgomes';
+    const devFuncao = 'desenvolvedor';
 
-        const devExistente = await Admin.findOne({ nome: devNome.toLowerCase() });
+    const devExistente = await Admin.findOne({ nome: devNome });
 
-        if (!devExistente) {
-            console.log(`Usuário '${devNome}' não encontrado. Criando...`);
-            
-            const senhaCriptografada = await criptografarSenha(devSenha);
+    if (!devExistente) {
+        console.log(`Usuário '${devNome}' não encontrado. Criando...`);
+        
+        const senhaCriptografada = await criptografarSenha(devSenha);
 
-            const novoDev = new Admin({
-                nome: devNome,
-                senha: senhaCriptografada,
-                funcao: devFuncao
-            });
+        const novoDev = new Admin({
+            nome: devNome,
+            senha: senhaCriptografada,
+            funcao: devFuncao
+        });
 
-            await novoDev.save();
-            console.log(`Usuário '${devNome}' criado com sucesso!`);
+        await novoDev.save();
+        console.log(`Usuário '${devNome}' criado com sucesso!`);
 
-        } else {
-            console.log(`Usuário '${devNome}' já existe. Nenhuma ação necessária.`);
-        }
-
-    } catch (error) {
-        console.error("Erro ao tentar criar o usuário desenvolvedor. O desenvolvedor já foi cadastrado ou um erro desconhecido aconteceu: ", error);
-        // Interrompe o processo em caso de erro. 
-        // Está apontando erro pois foi configurado no model para existir apenas um usuário do tipo 'desenvolvedor' na collection admins
-        // process.exit(1); Descomentar em produção para segurança do back-end
+    } else {
+        console.log(`Usuário '${devNome}' já existe. Nenhuma ação necessária.`);
     }
 }
 

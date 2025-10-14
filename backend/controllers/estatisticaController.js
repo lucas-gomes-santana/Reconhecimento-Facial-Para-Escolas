@@ -89,6 +89,24 @@ class EstatisticaController {
             const ultimoCadastro = await Usuario.findOne().sort({ dataCadastro: -1 });
             const primeiroCadastro = await Usuario.findOne().sort({ dataCadastro: 1 });
 
+            const todosUsuarios = await Usuario.find({}, 'nome tipoUsuario')
+                .sort({ nome: 1 })
+                .lean(); // Retorna objetos Javscript puros ao invés do documento MongoDB inteiro, ideal para métodos de leitura
+
+            const ordemTipos = ['Aluno', 'Professor', 'Funcionario', 'Outro'];
+
+            const usuariosOrganizados = ordemTipos.map(tipo => {
+                const usuarios = todosUsuarios
+                    .filter(u => u.tipoUsuario === tipo)
+                    .map(u => u.nome);
+
+                return {
+                    tipo,
+                    usuarios,
+                    quantidade: usuarios.length
+                }
+            }).filter(grupo => grupo.quantidade > 0); // Remove tipos de usuários do relatório caso não haja nenhum cadastrado
+
             res.json({
                 success: true,
                 dados: {
@@ -96,6 +114,7 @@ class EstatisticaController {
                     totalCadastros,
                     totalVerificacoes: estatistica.totalVerificacoes,
                     usuariosPorTipo,
+                    usuariosOrganizados,
                     primeiroCadastro: primeiroCadastro?.dataCadastro,
                     ultimoCadastro: ultimoCadastro?.dataCadastro,
                     ultimaAtualizacao: estatistica.ultimaAtualizacao

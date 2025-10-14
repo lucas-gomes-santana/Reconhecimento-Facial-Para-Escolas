@@ -10,3 +10,14 @@ export interface Usuario {
   tipoUsuario: string;
   dataCadastro: string;
 } 
+
+export interface UsuarioPorTipo { 
+  _id: string;
+  quantidade: number;
+}
+
+export interface UsuariosOrganizados {
+  tipo: string;
+  usuarios: string[];
+  quantidade: number;
+}

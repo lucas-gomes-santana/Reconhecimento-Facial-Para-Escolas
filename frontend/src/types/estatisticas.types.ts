@@ -1,3 +1,5 @@
+import type { UsuarioPorTipo, UsuariosOrganizados } from "./user.types";
+
 export interface EstatisticasBasicas {
   totalCadastros: number;
   totalVerificacoes: number;
@@ -10,4 +12,14 @@ export interface EstatisticasDetalhadas extends EstatisticasBasicas {
     quantidade: number;
   }>;
   primeiroCadastro?: string;
+}
+
+export interface DadosEstatisticas {
+  totalCadastros: number;
+  totalVerificacoes: number;
+  usuariosPorTipo?: UsuarioPorTipo[];
+  usuariosOrganizados?: UsuariosOrganizados[]; // ← ADICIONAR ESTA LINHA
+  primeiroCadastro?: string;
+  ultimoCadastro?: string;
+  ultimaAtualizacao: string;
 }
