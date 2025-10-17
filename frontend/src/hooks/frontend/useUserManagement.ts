@@ -13,6 +13,7 @@ export const useUserManagement = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
+  const [removendo, setRemovendo] = useState(false);
 
   const USERS_PER_PAGE = 30;
 
@@ -81,6 +82,38 @@ export const useUserManagement = () => {
     }
   }, []);
 
+  const removerTodosOsUsuarios = useCallback(async () => {
+    const confirmar = window.confirm("Tem certeza que deseja remover TODOS os usuários do C.E.R.F?");
+    if (!confirmar) return;
+
+    setRemovendo(true);
+
+    try {
+      const response = await authenticatedFetch(`${baseURL}/usuarios/remover-todos`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Erro ao remover os usuários.');
+      }
+
+      const data = await response.json();
+      console.log('Usuários removidos:', data);
+      window.dispatchEvent(new CustomEvent('allUsersDeleted'));
+
+    } catch (error: any) {
+      console.error('Erro ao remover os usuários:', error.message);
+      alert('Erro ao remover os usuários: ' + error.message);
+
+    } finally {
+      setRemovendo(false);
+    }
+  }, [baseURL, authenticatedFetch]);
+
   const atualizarUsuariosExibidos = useCallback(() => {
     let usuariosFiltrados = todosUsuarios;
 
@@ -134,8 +167,11 @@ export const useUserManagement = () => {
     totalUsuarios: getTotalUsuarios(),
     carregarUsuarios,
     removerUsuario,
+    removerTodosOsUsuarios,
     carregarMaisUsuarios,
     buscarUsuarios,
     clearError,
+    removendo,
+    setRemovendo
   };
 };

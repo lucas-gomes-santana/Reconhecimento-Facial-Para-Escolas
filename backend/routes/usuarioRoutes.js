@@ -9,6 +9,7 @@ router.post('/usuarios/cadastrar', validation.validateCadastroUsuario, autentica
 router.post('/verificar-rosto', validation.validateVerificacaoRosto, autenticarToken, validation.validateVerificacaoRosto, usuarioController.verificarRosto);
 router.get('/usuarios/listar', autenticarToken, usuarioController.listarUsuarios);
 router.delete('/usuarios/remover/:id', validation.validateIdParam, autenticarToken, usuarioController.removerUsuario);
+router.delete('/usuarios/remover-todos', autenticarToken, usuarioController.removerTodosOsUsuarios);
 router.patch('/usuarios/bloquear/:id', validation.validateIdParam, autenticarToken, usuarioController.bloquearUsuario);
 
 export default router;

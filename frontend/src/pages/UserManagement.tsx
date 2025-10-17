@@ -14,6 +14,8 @@ function UserManagement() {
     totalUsuarios,
     carregarUsuarios,
     removerUsuario,
+    removerTodosOsUsuarios,
+    removendo,
     carregarMaisUsuarios,
     buscarUsuarios,
     clearError,
@@ -92,6 +94,19 @@ function UserManagement() {
             <p className="text-blue-100">
               {totalUsuarios > 0 ? `${totalUsuarios} usuários cadastrados` : 'Nenhum usuário cadastrado'}
             </p>
+           <button
+              onClick={removerTodosOsUsuarios}
+              disabled={removendo}
+              className="p-2 text-white bg-red-600 hover:bg-red-700 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              title="Remover todos os usuários"
+            >
+              {removendo ? (
+                <Loader className="h-5 w-5 animate-spin" />
+              ) : (
+                <Trash2 className="h-5 w-5" />
+              )}
+            </button>
+
           </div>
 
           {/* Barra de Pesquisa */}
