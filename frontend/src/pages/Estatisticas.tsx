@@ -43,16 +43,16 @@ function Estatisticas() {
   };
 
   const handleReset = async () => {
-    const confirmacao = confirm('Tem certeza que deseja resetar todas as estatísticas? Esta ação não pode ser desfeita.');
+    const confirmacao = confirm('Tem certeza que deseja reiniciar o contador de verificações? Esta ação não pode ser desfeita.');
     
     if (!confirmacao) return;
 
     try {
       await resetarEstatisticas();
       setLastRefresh(formatData(new Date().toISOString()));
-      alert('Estatísticas resetadas com sucesso!');
+      alert('Quantidade de verificações reiniciadas com sucesso!');
     } catch (err) {
-      console.error('Erro ao resetar estatísticas:', err);
+      console.error('Erro ao reiniciar verificações:', err);
     }
   };
 
@@ -164,7 +164,7 @@ function Estatisticas() {
               disabled={loading}
               className="flex-1 min-w-[150px] py-2 px-4 rounded-lg text-white bg-red-500 hover:bg-red-600 transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              🗑️ Excluir Dados
+              🔄 Reiniciar Verificações
             </button>
           </div>
         </section>

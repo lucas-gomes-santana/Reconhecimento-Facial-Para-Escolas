@@ -22,20 +22,20 @@ class EstatisticaController {
         }
     }
 
-    async resetarEstatisticas(req, res) {
+    async reiniciarVerificacoes(req, res) {
         try {
             const estatistica = await Estatistica.getInstance();
-            estatistica.totalCadastros = 0;
             estatistica.totalVerificacoes = 0;
             estatistica.ultimaAtualizacao = new Date();
             await estatistica.save();
             
             res.json({
                 success: true,
-                message: 'Estatísticas resetadas com sucesso'
+                message: 'Quantidade de verificações reiniciadas com sucesso'
             });
+            
         } catch (err) {
-            console.error('Erro ao resetar estatísticas:', err);
+            console.error('Erro ao reiniciar verificações:', err);
             res.status(500).json({ error: err.message });
         }
     }

@@ -9,7 +9,7 @@ router.get('/estatisticas', estatisticaController.obterEstatisticas);
 
 router.get('/estatisticas/detalhadas', estatisticaController.obterEstatisticasDetalhadas);
 
-router.post('/estatisticas/reset', autenticarToken,estatisticaController.resetarEstatisticas);
+router.post('/estatisticas/reset', autenticarToken,estatisticaController.reiniciarVerificacoes);
 
 router.post('/estatisticas/relatorio', autenticarToken, estatisticaController.gerarRelatorio);
 
