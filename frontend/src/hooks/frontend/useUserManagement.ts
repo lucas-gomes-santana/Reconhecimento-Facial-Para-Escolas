@@ -83,7 +83,7 @@ export const useUserManagement = () => {
   }, []);
 
   const removerTodosOsUsuarios = useCallback(async () => {
-    const confirmar = window.confirm("Tem certeza que deseja remover TODOS os usuários do C.E.R.F?");
+    const confirmar = window.confirm("Tem certeza que deseja remover TODOS os usuários do C.E.R.F? Esta ação não poderá ser desfeita");
     if (!confirmar) return;
 
     setRemovendo(true);
@@ -96,19 +96,20 @@ export const useUserManagement = () => {
         },
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Erro ao remover os usuários.');
-      }
-
       const data = await response.json();
-      console.log('Usuários removidos:', data);
+
+      setTodosUsuarios([]);
+      setUsuariosExibidos([]);
+      setPage(1);
+      setHasMore(false);
+      setError(data.message);
+
+      console.log('Resposta do servidor:', data);
       window.dispatchEvent(new CustomEvent('allUsersDeleted'));
 
     } catch (error: any) {
-      console.error('Erro ao remover os usuários:', error.message);
-      alert('Erro ao remover os usuários: ' + error.message);
-
+      console.error('Erro ao remover os usuários:', error);
+      setError('Erro ao remover os usuários. Tente novamente.');
     } finally {
       setRemovendo(false);
     }
@@ -141,7 +142,7 @@ export const useUserManagement = () => {
 
   const buscarUsuarios = useCallback((termo: string) => {
     setSearchTerm(termo);
-    setPage(1); // Resetar para primeira página
+    setPage(1); 
   }, []);
 
   const clearError = useCallback(() => {

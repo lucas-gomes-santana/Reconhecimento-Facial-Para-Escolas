@@ -114,13 +114,13 @@ class UsuarioController {
     async removerTodosOsUsuarios (req, res) {
         const usuario = await Usuario.deleteMany({});
 
-        if (usuario.deletedCount === 0) {
-            throw new NotFoundException('Nenhum usuário a remover no sistema');
-        }
+        const mensagem = usuario.deletedCount === 0
+            ? "Não há usuários cadastrados no sistema para remover."
+            : "Todos os usuários foram removidos com sucesso!";
 
         res.status(200).json({
             success: true,
-            message: "Todos os usuários da collection usuarios foram removidos com sucesso!"
+            message: mensagem
         });
     }
 

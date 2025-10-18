@@ -97,7 +97,7 @@ function UserManagement() {
            <button
               onClick={removerTodosOsUsuarios}
               disabled={removendo}
-              className="p-2 text-white bg-red-600 hover:bg-red-700 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="p-2 text-white bg-red-600 hover:bg-red-700 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed mt-5"
               title="Remover todos os usuários"
             >
               {removendo ? (
