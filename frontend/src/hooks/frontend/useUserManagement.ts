@@ -102,14 +102,17 @@ export const useUserManagement = () => {
       setUsuariosExibidos([]);
       setPage(1);
       setHasMore(false);
-      setError(data.message);
 
-      console.log('Resposta do servidor:', data);
+      if (!response.ok) {
+        setError(data.message);
+      }
+
       window.dispatchEvent(new CustomEvent('allUsersDeleted'));
 
     } catch (error: any) {
       console.error('Erro ao remover os usuários:', error);
       setError('Erro ao remover os usuários. Tente novamente.');
+
     } finally {
       setRemovendo(false);
     }
