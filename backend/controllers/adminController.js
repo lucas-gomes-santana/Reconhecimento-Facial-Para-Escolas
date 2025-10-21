@@ -1,11 +1,10 @@
-import Admin from '../models/Admin.js';
 import { gerarAccessToken, verificarRefreshToken, definirTokens, removerTokens, gerarRefreshToken } from '../config/jwtConfig.js';
 import { criptografarSenha, validarFuncaoCadastrada, validarSenha } from '../utils/utils.js';
 import { AlreadyExistsException, InvalidFunctionException, NotFoundException, PermissionDeniedException } from '../exceptions/AppExceptions.js';
+import Admin from '../models/Admin.js';
 
-
-export async function cadastrarDesenvolvedor() { // Cadastrando o usuário desenvolvedor quando o back-end é iniciado
-    // Remover o fallback em produção
+export async function cadastrarDesenvolvedor(Admin) { 
+    // Remover os fallbacks em produção
     const devNome = process.env.DEV_USER_NOME || 'Lucas Gomes';
     const devSenha = process.env.DEV_USER_SENHA || 'lucasgomes';
     const devFuncao = 'desenvolvedor';
@@ -31,12 +30,16 @@ export async function cadastrarDesenvolvedor() { // Cadastrando o usuário desen
     }
 }
 
-class AdminController {
+export class AdminController {
+
+    constructor (adminModel) {
+        this.Admin = adminModel;
+    }
 
     async login(req, res) {
         const { nome, senha } = req.body;
 
-        const admin = await Admin.findOne({ nome: nome });
+        const admin = await this.Admin.findOne({ nome: nome });
 
         if (!admin) {
             throw new NotFoundException(`Admin ${nome} não encontrado!`)
@@ -60,7 +63,7 @@ class AdminController {
 
         definirTokens(res, accessToken, refreshToken); // Define o cookie com o token JWT
 
-        await Admin.findByIdAndUpdate(admin._id, { 
+        await this.Admin.findByIdAndUpdate(admin._id, { 
             ultimoLogin: new Date() 
         });
 
@@ -95,7 +98,7 @@ class AdminController {
             tipo: payload.tipo
         });
 
-        res.cookie('jwt', newAccessToken, accessTokenConfig);
+        res.cookie('jwt', newAccessToken, { httpOnly: true, sameSite: 'strict' });
         res.json({ message: "Token atualizado com sucesso" });
     };
 
@@ -128,7 +131,7 @@ class AdminController {
         }
 
         const nomeValido = nome;
-        const adminExistente = await Admin.findOne({ nome: nomeValido });
+        const adminExistente = await this.Admin.findOne({ nome: nomeValido });
 
         if (adminExistente) {
             throw new AlreadyExistsException(`O gestor ${nome} já existe no sistema`);
@@ -136,7 +139,7 @@ class AdminController {
 
         const senhaCriptografada = await criptografarSenha(senha);
 
-        const novoAdmin = new Admin({
+        const novoAdmin = new this.Admin({
             nome,
             senha: senhaCriptografada,
             funcao: funcao.toLowerCase()
@@ -168,7 +171,7 @@ class AdminController {
             throw new InvalidFunctionException(`Função ${funcao} inválida`);
         }
 
-        const superAdminExistente = await Admin.findOne({
+        const superAdminExistente = await this.Admin.findOne({
             funcao: 'super-admin'
         })
 
@@ -178,7 +181,7 @@ class AdminController {
 
         const senhaCriptografada = await criptografarSenha(senha);
 
-        const novoSuperAdmin = new Admin({
+        const novoSuperAdmin = new this.Admin({
             nome,
             senha: senhaCriptografada,
             funcao: funcao.toLowerCase()
@@ -196,7 +199,7 @@ class AdminController {
     async atualizarSenha(req, res) {
         const { id, novaSenha } = req.body;
 
-        const admin = await Admin.findById(id);
+        const admin = await this.Admin.findById(id);
 
         if (!admin) {
             throw new NotFoundException(`Gestor ${admin.nome} não encontrado`);
@@ -239,7 +242,7 @@ class AdminController {
 
     async listarAdmins(req, res) {
         try {
-            const admins = await Admin.find()
+            const admins = await this.Admin.find()
                 .select('_id nome funcao createdAt updatedAt')
                 .sort({ createdAt: -1 }); // Ordenar por data de criação (mais recente primeiro)
             
@@ -271,7 +274,7 @@ class AdminController {
             throw new PermissionDeniedException('Você não pode remover sua própria conta!');
         }
 
-        const admin = await Admin.findByIdAndDelete(id);
+        const admin = await this.Admin.findByIdAndDelete(id);
         
         if (!admin) {
             throw new NotFoundException(`Gestor ${admin.nome} não encontrado!`);
@@ -293,5 +296,3 @@ class AdminController {
     }
 
 }
-
-export default new AdminController();

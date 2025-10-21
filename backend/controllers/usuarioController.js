@@ -1,15 +1,20 @@
 import Usuario from '../models/Usuario.js';
-import Estatistica from '../models/Estatistica.js';
-import faceRecognitionService from '../services/faceRecognitionService.js';
 import { NotFoundException } from '../exceptions/AppExceptions.js';
 
-class UsuarioController {
+export class UsuarioController {
+
+    constructor (faceRecognitionService, estatisticaModel) {
+        this.faceRecognitionService = faceRecognitionService;
+        this.Estatistica = estatisticaModel;
+        this.Usuario = Usuario;
+    }
+
 
     async cadastrarUsuario(req, res) {
         try {
             const { nome, tipoUsuario, descriptor } = req.body;
 
-            const rostoExistente = await faceRecognitionService.verificarRostoExistente(descriptor, 0.8);
+            const rostoExistente = await this.faceRecognitionService.verificarRostoExistente(descriptor, 0.8);
             
             if (rostoExistente) {
                 return res.status(409).json({ 
@@ -45,11 +50,11 @@ class UsuarioController {
 
             console.log('Iniciando verificação facial...');
             
-            const match = await faceRecognitionService.encontrarUsuarioPorSimilaridade(descriptor, 0.8);
+            const match = await this.faceRecognitionService.encontrarUsuarioPorSimilaridade(descriptor, 0.8);
             
             // Incrementando o contador de verificações apenas se o contexto não for 'cadastro'
             if (contexto !== 'cadastro') {
-                await Estatistica.incrementarVerificacoes();
+                await this.Estatistica.incrementarVerificacoes();
             }
             
             if (match) {
@@ -112,7 +117,7 @@ class UsuarioController {
     }
 
     async removerTodosOsUsuarios (req, res) {
-        const usuario = await Usuario.deleteMany({});
+        const usuario = await this.Usuario.deleteMany({});
 
         const mensagem = usuario.deletedCount === 0
             ? "Não há usuários cadastrados no sistema para remover."
@@ -165,4 +170,3 @@ class UsuarioController {
     }
 }
 
-export default new UsuarioController();

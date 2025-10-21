@@ -1,12 +1,14 @@
-import Estatistica from '../models/Estatistica.js';
-import Usuario from '../models/Usuario.js';
+export class EstatisticaController {
 
-class EstatisticaController {
+    constructor (estatisticaModel, usuarioModel) {
+        this.Estatistica = estatisticaModel;
+        this.Usuario = usuarioModel;
+    }
 
     async obterEstatisticas(req, res) {
         try {
-            const estatistica = await Estatistica.getInstance();
-            const totalCadastros = await Usuario.countDocuments();
+            const estatistica = await this.Estatistica.getInstance();
+            const totalCadastros = await this.Usuario.countDocuments();
             
             res.json({
                 success: true,
@@ -24,7 +26,7 @@ class EstatisticaController {
 
     async reiniciarVerificacoes(req, res) {
         try {
-            const estatistica = await Estatistica.getInstance();
+            const estatistica = await this.Estatistica.getInstance();
             estatistica.totalVerificacoes = 0;
             estatistica.ultimaAtualizacao = new Date();
             await estatistica.save();
@@ -42,10 +44,10 @@ class EstatisticaController {
 
     async obterEstatisticasDetalhadas(req, res) {
         try {
-            const estatistica = await Estatistica.getInstance();
-            const totalCadastros = await Usuario.countDocuments();
+            const estatistica = await this.Estatistica.getInstance();
+            const totalCadastros = await this.Usuario.countDocuments();
             
-            const usuariosPorTipo = await Usuario.aggregate([
+            const usuariosPorTipo = await this.Usuario.aggregate([
                 {
                     $group: {
                         _id: '$tipoUsuario',
@@ -54,7 +56,7 @@ class EstatisticaController {
                 }
             ]);
 
-            const primeiroUsuario = await Usuario.findOne().sort({ dataCadastro: 1 });
+            const primeiroUsuario = await this.Usuario.findOne().sort({ dataCadastro: 1 });
             
             res.json({
                 success: true,
@@ -74,10 +76,10 @@ class EstatisticaController {
 
     async gerarRelatorio(req, res) {
         try {
-            const estatistica = await Estatistica.getInstance();
-            const totalCadastros = await Usuario.countDocuments();
+            const estatistica = await this.Estatistica.getInstance();
+            const totalCadastros = await this.Usuario.countDocuments();
 
-            const usuariosPorTipo = await Usuario.aggregate([
+            const usuariosPorTipo = await this.Usuario.aggregate([
                 {
                     $group: {
                         _id: '$tipoUsuario',
@@ -86,10 +88,10 @@ class EstatisticaController {
                 }
             ]);  
             
-            const ultimoCadastro = await Usuario.findOne().sort({ dataCadastro: -1 });
-            const primeiroCadastro = await Usuario.findOne().sort({ dataCadastro: 1 });
+            const ultimoCadastro = await this.Usuario.findOne().sort({ dataCadastro: -1 });
+            const primeiroCadastro = await this.Usuario.findOne().sort({ dataCadastro: 1 });
 
-            const todosUsuarios = await Usuario.find({}, 'nome tipoUsuario')
+            const todosUsuarios = await this.Usuario.find({}, 'nome tipoUsuario')
                 .sort({ nome: 1 })
                 .lean(); // Retorna objetos Javscript puros ao invés do documento MongoDB inteiro, ideal para métodos de leitura
 
@@ -127,11 +129,7 @@ class EstatisticaController {
                 success: false,
                 error: error.message
             });
-        }
-
-        
+        }   
     }
     
 }
-
-export default new EstatisticaController();

@@ -1,6 +1,6 @@
 import Usuario from "../models/Usuario.js";
 
-class FaceRecognitionService {
+export class FaceRecognitionService {
     
     // Escanea rostos com base em distância euclidiana
     calcularDistanciaEuclidiana(descriptor1, descriptor2) {
@@ -47,4 +47,3 @@ class FaceRecognitionService {
     }
 }
 
-export default new FaceRecognitionService();

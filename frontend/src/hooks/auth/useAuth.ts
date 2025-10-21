@@ -9,19 +9,16 @@ export const useAuth = () => {
     const [admin, setAdmin] = useState<AdminData | null>(null);
     const [loading, setLoading] = useState(true);
 
-    // Função para salvar dados de autenticação
     const saveAuthData = useCallback((adminData: AdminData) => {
         setIsAuthenticated(true);
         setAdmin(adminData);
     }, []);
 
-    // Função para limpar dados de autenticação
     const clearAuthData = useCallback(() => {
         setIsAuthenticated(false);
         setAdmin(null);
     }, []);
 
-    // Função de login
     const login = useCallback(async (nome: string, senha: string): Promise<LoginResponse> => {
         try {
             const response = await fetch(`${baseURL}/admin/login`, {
@@ -42,12 +39,14 @@ export const useAuth = () => {
                     message: 'Login realizado com sucesso',
                     admin: data.admin
                 };
+
             } else {
                 return {
                     success: false,
                     message: data.message || 'Erro na autenticação'
                 };
             }
+
         } catch (error) {
             console.error('Erro no login:', error);
             return {
@@ -57,7 +56,6 @@ export const useAuth = () => {
         }
     }, [saveAuthData]);
 
-    // Função de logout
     const logout = useCallback(async () => {
         try {
             await fetch(`${baseURL}/admin/logout`, {
@@ -143,8 +141,8 @@ export const useAuth = () => {
                         ...options.headers,
                     },
                 });
+                
             } else {
-                // Se não conseguiu renovar, faz logout
                 logout();
                 throw new Error('Sessão expirada. Faça login novamente.');
             }

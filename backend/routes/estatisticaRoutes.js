@@ -1,16 +1,20 @@
 import express from 'express';
-import estatisticaController from "../controllers/estatisticaController.js";
 import { autenticarToken } from "../config/jwtConfig.js";
+import { EstatisticaController } from "../controllers/estatisticaController.js";
+import Estatistica from '../models/Estatistica.js';
+import Usuario from '../models/Usuario.js';
 
 
 const router = express.Router();
 
-router.get('/estatisticas', estatisticaController.obterEstatisticas);
+const estatisticaController = new EstatisticaController(Estatistica, Usuario);
 
-router.get('/estatisticas/detalhadas', estatisticaController.obterEstatisticasDetalhadas);
+router.get('/estatisticas', estatisticaController.obterEstatisticas.bind(estatisticaController));
 
-router.post('/estatisticas/reset', autenticarToken,estatisticaController.reiniciarVerificacoes);
+router.get('/estatisticas/detalhadas', estatisticaController.obterEstatisticasDetalhadas.bind(estatisticaController));
 
-router.post('/estatisticas/relatorio', autenticarToken, estatisticaController.gerarRelatorio);
+router.post('/estatisticas/reset', autenticarToken,estatisticaController.reiniciarVerificacoes.bind(estatisticaController));
+
+router.post('/estatisticas/relatorio', autenticarToken, estatisticaController.gerarRelatorio.bind(estatisticaController));
 
 export default router;

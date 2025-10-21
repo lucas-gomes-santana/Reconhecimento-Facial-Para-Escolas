@@ -173,7 +173,7 @@ function AdminPage() {
                                         placeholder="Crie uma senha segura"
                                         required
                                         disabled={loading}
-                                        minLength={6}
+                                        minLength={8}
                                     />
                                 </div>
 

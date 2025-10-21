@@ -71,7 +71,6 @@ export const useUserManagement = () => {
       setTodosUsuarios(prev => prev.filter(usuario => usuario._id !== _id));
       setUsuariosExibidos(prev => prev.filter(usuario => usuario._id !== _id));
 
-      // Notificar outros componentes sobre a remoção
       window.dispatchEvent(new CustomEvent('userDeleted', { detail: { _id } }));
 
       return true;
