@@ -1,6 +1,12 @@
 import Usuario from "../models/Usuario.js";
 
+let threshold = 0.5; // Calibração de similaridade para reconhecimento facial (quanto menor mais rigoroso)
+
 export class FaceRecognitionService {
+
+    constructor() {
+        this.threshold = threshold;
+    }
     
     // Escanea rostos com base em distância euclidiana
     calcularDistanciaEuclidiana(descriptor1, descriptor2) {
@@ -17,7 +23,7 @@ export class FaceRecognitionService {
     }
 
     // Encontra os rostos dos usuários com base em similaridade dos vetores de rostos
-    async encontrarUsuarioPorSimilaridade(descriptorBusca, threshold = 0.8) {
+    async encontrarUsuarioPorSimilaridade(descriptorBusca, threshold) {
         const usuarios = await Usuario.find({});
         
         let melhorMatch = null;
@@ -41,7 +47,7 @@ export class FaceRecognitionService {
         return melhorMatch;
     }
 
-    async verificarRostoExistente(descriptor, threshold = 0.8) {
+    async verificarRostoExistente(descriptor, threshold) {
         const match = await this.encontrarUsuarioPorSimilaridade(descriptor, threshold);
         return match ? match.usuario : null;
     }

@@ -1,12 +1,15 @@
 import Usuario from '../models/Usuario.js';
 import { NotFoundException } from '../exceptions/AppExceptions.js';
 
+let threshold = 0.5; // Calibração de similaridade para reconhecimento facial (quanto menor mais rigoroso)
+
 export class UsuarioController {
 
     constructor (faceRecognitionService, estatisticaModel) {
         this.faceRecognitionService = faceRecognitionService;
         this.Estatistica = estatisticaModel;
         this.Usuario = Usuario;
+        this.threshold = threshold;
     }
 
 
@@ -14,7 +17,7 @@ export class UsuarioController {
         try {
             const { nome, tipoUsuario, descriptor } = req.body;
 
-            const rostoExistente = await this.faceRecognitionService.verificarRostoExistente(descriptor, 0.8);
+            const rostoExistente = await this.faceRecognitionService.verificarRostoExistente(descriptor, threshold);
             
             if (rostoExistente) {
                 return res.status(409).json({ 
@@ -50,7 +53,7 @@ export class UsuarioController {
 
             console.log('Iniciando verificação facial...');
             
-            const match = await this.faceRecognitionService.encontrarUsuarioPorSimilaridade(descriptor, 0.8);
+            const match = await this.faceRecognitionService.encontrarUsuarioPorSimilaridade(descriptor, threshold);
             
             // Incrementando o contador de verificações apenas se o contexto não for 'cadastro'
             if (contexto !== 'cadastro') {
