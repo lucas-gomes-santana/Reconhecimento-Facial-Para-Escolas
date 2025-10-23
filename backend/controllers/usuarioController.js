@@ -1,7 +1,7 @@
 import Usuario from '../models/Usuario.js';
 import { NotFoundException } from '../exceptions/AppExceptions.js';
 
-let threshold = 0.5; // Calibração de similaridade para reconhecimento facial (quanto menor mais rigoroso)
+let threshold = 0.9; // Calibração de similaridade mínima aceita(quanto maior mais rigoroso)
 
 export class UsuarioController {
 
@@ -61,8 +61,8 @@ export class UsuarioController {
             }
             
             if (match) {
-                console.log(`Usuário encontrado: ${match.usuario.nome} (distância: ${match.distancia.toFixed(4)}, similaridade: ${(match.similaridade * 100).toFixed(1)}%)`);
-
+                console.log(`Usuário encontrado: ${match.usuario.nome} (similaridade: ${(match.similaridade * 100).toFixed(1)}%)`);
+                
                 // Verificar se o usuário pode pegar merenda ou não
                 const estaBloqueado = match.usuario.status === 'bloqueado';
                 const aindaBloqueado = estaBloqueado && match.usuario.bloqueadoAte && new Date(match.usuario.bloqueadoAte) > new Date();
@@ -79,7 +79,6 @@ export class UsuarioController {
                     },
                     bloqueado: aindaBloqueado,
                     similaridade: match.similaridade,
-                    distancia: match.distancia
                 });
             } else {
                 console.log('Nenhum usuário similar encontrado');
