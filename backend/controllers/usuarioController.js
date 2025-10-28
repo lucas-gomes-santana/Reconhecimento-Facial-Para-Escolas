@@ -1,12 +1,15 @@
 import Usuario from '../models/Usuario.js';
 import { NotFoundException } from '../exceptions/AppExceptions.js';
 
+let threshold = 0.9; // Calibração de similaridade mínima aceita(quanto maior mais rigoroso)
+
 export class UsuarioController {
 
     constructor (faceRecognitionService, estatisticaModel) {
         this.faceRecognitionService = faceRecognitionService;
         this.Estatistica = estatisticaModel;
         this.Usuario = Usuario;
+        this.threshold = threshold;
     }
 
 
@@ -14,7 +17,7 @@ export class UsuarioController {
         try {
             const { nome, tipoUsuario, descriptor } = req.body;
 
-            const rostoExistente = await this.faceRecognitionService.verificarRostoExistente(descriptor, 0.8);
+            const rostoExistente = await this.faceRecognitionService.verificarRostoExistente(descriptor, threshold);
             
             if (rostoExistente) {
                 return res.status(409).json({ 
@@ -50,7 +53,7 @@ export class UsuarioController {
 
             console.log('Iniciando verificação facial...');
             
-            const match = await this.faceRecognitionService.encontrarUsuarioPorSimilaridade(descriptor, 0.8);
+            const match = await this.faceRecognitionService.encontrarUsuarioPorSimilaridade(descriptor, threshold);
             
             // Incrementando o contador de verificações apenas se o contexto não for 'cadastro'
             if (contexto !== 'cadastro') {
@@ -58,8 +61,8 @@ export class UsuarioController {
             }
             
             if (match) {
-                console.log(`Usuário encontrado: ${match.usuario.nome} (distância: ${match.distancia.toFixed(4)}, similaridade: ${(match.similaridade * 100).toFixed(1)}%)`);
-
+                console.log(`Usuário encontrado: ${match.usuario.nome} (similaridade: ${(match.similaridade * 100).toFixed(1)}%)`);
+                
                 // Verificar se o usuário pode pegar merenda ou não
                 const estaBloqueado = match.usuario.status === 'bloqueado';
                 const aindaBloqueado = estaBloqueado && match.usuario.bloqueadoAte && new Date(match.usuario.bloqueadoAte) > new Date();
@@ -76,7 +79,6 @@ export class UsuarioController {
                     },
                     bloqueado: aindaBloqueado,
                     similaridade: match.similaridade,
-                    distancia: match.distancia
                 });
             } else {
                 console.log('Nenhum usuário similar encontrado');
