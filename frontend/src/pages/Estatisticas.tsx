@@ -26,7 +26,7 @@ function Estatisticas() {
 
   const { formatData } = useFormatData();
 
-  const [ lastRefresh, setLastRefresh] = useState<String>('');
+  const [ lastRefresh, setLastRefresh] = useState<string>('');
 
   useEffect(() => {
     // Carrega estatísticas ao montar o componente
@@ -128,8 +128,8 @@ function Estatisticas() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
-      <header className="bg-blue-500 text-white text-center p-6">
+    <div className="min-h-screen flex flex-col bg-[#D9E021]">
+      <header className="bg-[#1E3A8A]  text-white text-center p-6">
         <h1 className="text-xl md:text-3xl font-bold">📊 Estatísticas do C.E.R.F</h1>
       </header>
 

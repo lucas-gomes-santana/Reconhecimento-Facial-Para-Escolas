@@ -5,6 +5,7 @@ import { useVerificacao } from '../hooks/auth/useVerificacao';
 import { useValidation } from '../hooks/validation/useValidation';
 import { useVerificarStatus } from '../hooks/auth/useVerificarStatus';
 import VideoCanvasDetector from '../components/VideoAndCanvas';
+import { Camera, CheckCircle, XCircle, AlertTriangle, Scan } from 'lucide-react';
 import '../styles/index.css';
 
 function VerificarMerenda() {
@@ -95,47 +96,62 @@ function VerificarMerenda() {
 
         if (!resultadoVerificacao.existe) {
             return (
-                <div className="mb-4 p-4 rounded-lg bg-red-100 border border-red-400">
-                    <h3 className="font-bold text-lg mb-2 text-red-800">
-                        ❌ Usuário não encontrado
-                    </h3>
-                    <p className="text-red-700">
-                        Realize o cadastro antes de retirar merenda.
-                    </p>
+                <div className="p-6 rounded-lg bg-red-500/90 border-2 border-red-500">
+                    <div className="text-center space-y-3">
+                        <div className="flex items-center justify-center gap-2">
+                            <XCircle className="w-8 h-8 text-white" />
+                            <h3 className="font-bold text-lg text-white">
+                                Usuário não encontrado
+                            </h3>
+                        </div>
+                        <p className="text-white">
+                            Realize o cadastro antes de retirar merenda.
+                        </p>
+                    </div>
                 </div>
             );
         }
 
         if (resultadoVerificacao.bloqueado) {
             return (
-                <div className="mb-4 p-4 rounded-lg bg-red-200 border border-yellow-400">
-                    <h3 className="font-bold text-lg mb-2 text-yellow-800">
-                        ⚠️ Acesso Negado
-                    </h3>
-                    <p className="text-yellow-800">
-                        <span className="font-bold">{resultadoVerificacao.dados?.usuario?.nome}</span>, 
-                        você já retirou merenda!
-                    </p>
-                    {resultadoVerificacao.mensagem && (
-                        <p className="text-sm mt-2 text-yellow-600">
-                            {resultadoVerificacao.mensagem}
+                <div className="p-6 rounded-lg bg-yellow-500/90 border-2 border-yellow-500">
+                    <div className="text-center space-y-3">
+                        <div className="flex items-center justify-center gap-2">
+                            <AlertTriangle className="w-8 h-8 text-white" />
+                            <h3 className="font-bold text-lg text-white">
+                                Acesso Negado
+                            </h3>
+                        </div>
+                        <p className="text-white">
+                            <span className="font-bold">{resultadoVerificacao.dados?.usuario?.nome}</span>, 
+                            você já retirou merenda!
                         </p>
-                    )}
+                        {resultadoVerificacao.mensagem && (
+                            <p className="text-sm text-white/90">
+                                {resultadoVerificacao.mensagem}
+                            </p>
+                        )}
+                    </div>
                 </div>
             );
         }
 
         return (
-            <div className="mb-4 p-4 rounded-lg bg-green-100 border border-green-400">
-                <h3 className="font-bold text-lg mb-2 text-green-800">
-                    ✅ Merenda Liberada!
-                </h3>
-                <p className="text-green-700">
-                    Bem-vindo(a), <span className="font-bold">{resultadoVerificacao.dados?.usuario?.nome}</span>!
-                </p>
-                <p className="text-sm mt-2 text-green-600">
-                    Você poderá retirar merenda novamente em 1 minuto.
-                </p>
+            <div className="p-6 rounded-lg bg-[#1E3A8A] border-2 border-[#00E676]">
+                <div className="text-center space-y-3">
+                    <div className="flex items-center justify-center gap-2">
+                        <CheckCircle className="w-8 h-8 text-white" />
+                        <h3 className="font-bold text-lg text-white">
+                            Merenda Liberada!
+                        </h3>
+                    </div>
+                    <p className="text-white">
+                        Bem-vindo(a), <span className="font-bold">{resultadoVerificacao.dados?.usuario?.nome}</span>!
+                    </p>
+                    <p className="text-sm text-white/90">
+                        Você poderá retirar merenda novamente em 1 minuto.
+                    </p>
+                </div>
             </div>
         );
     };
@@ -146,8 +162,9 @@ function VerificarMerenda() {
                 <button 
                     onClick={iniciarSistema}
                     disabled={faceLoading}
-                    className="bg-blue-500 text-white border-none py-3 px-5 rounded cursor-pointer text-base mt-8 w-full max-w-xs mx-auto transition-colors duration-300 hover:bg-blue-600 disabled:bg-gray-400 disabled:cursor-not-allowed"
+                    className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg shadow-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
+                    <Camera className="w-5 h-5" />
                     {faceLoading ? 'Carregando...' : 'Iniciar Verificação'}
                 </button>
             );
@@ -155,16 +172,17 @@ function VerificarMerenda() {
   
         if (verificacaoCompleta) {
             return (
-                <div className="flex flex-col sm:flex-row gap-4 mt-8 justify-center">
+                <div className="flex flex-col sm:flex-row gap-4 w-full">
                     <button 
                         onClick={reiniciarProcesso}
-                        className="bg-green-500 text-white border-none py-3 px-5 rounded cursor-pointer text-base transition-colors duration-300 hover:bg-green-600"
+                        className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg shadow-md transition-colors"
                     >
+                        <Camera className="w-5 h-5" />
                         Nova Verificação
                     </button>
                     <button 
                         onClick={pararSistema}
-                        className="bg-red-500 text-white border-none py-3 px-5 rounded cursor-pointer text-base transition-colors duration-300 hover:bg-red-600"
+                        className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-lg shadow-md transition-colors"
                     >
                         Finalizar
                     </button>
@@ -173,17 +191,18 @@ function VerificarMerenda() {
         }
   
         return (
-            <div className="flex flex-col sm:flex-row gap-4 mt-8 justify-center">
+            <div className="flex flex-col sm:flex-row gap-4 w-full">
                 <button 
                     onClick={realizarVerificacaoMerenda}
                     disabled={!isAtIdealDistance || apiLoading}
-                    className="bg-green-500 text-white border-none py-3 px-5 rounded cursor-pointer text-base transition-colors duration-300 hover:bg-green-600 disabled:bg-gray-400 disabled:cursor-not-allowed"
+                    className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-lg shadow-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
+                    <CheckCircle className="w-5 h-5" />
                     {apiLoading ? 'Verificando...' : 'Verificar e Liberar'}
                 </button>
                 <button 
                     onClick={pararSistema}
-                    className="bg-red-500 text-white border-none py-3 px-5 rounded cursor-pointer text-base transition-colors duration-300 hover:bg-red-600"
+                    className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-lg shadow-md transition-colors"
                 >
                     Cancelar
                 </button>
@@ -192,30 +211,43 @@ function VerificarMerenda() {
     };
   
     return (
-        <div className="bg-gray-200 py-8 px-6 flex flex-col items-center justify-center min-h-screen">
-            <div className="bg-white p-8 rounded-xl shadow-md w-full max-w-4xl text-center mx-auto">
-                <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-8">
-                    🍽️ Verificação de Merenda
-                </h1>
+        <div className="min-h-screen flex items-center justify-center p-8 bg-[#D4E800]">
+            <div className="w-full max-w-2xl bg-white border-none shadow-2xl rounded-2xl">
+                {/* Header com ícones */}
+                <div className="px-8 pt-8 pb-4">
+                    <h1 className="text-center text-3xl font-semibold text-[#1E3A8A] flex items-center justify-center gap-3">
+                        <div className="relative">
+                            <Camera className="w-10 h-10" />
+                        </div>
+                        Verificação de Merenda
+                    </h1>
+                </div>
           
-                {/* ⬇️ CORRIGIDO: Adicionadas as props corretas */}
-                <VideoCanvasDetector
-                    videoRef={videoRef}
-                    canvasRef={canvasRef}
-                    isDetecting={isDetecting}
-                    distanceStatus={distanceStatus}
-                    getDistanceMessage={getDistanceMessage}
-                />
+                {/* Conteúdo */}
+                <div className="px-8 pb-8 space-y-6">
+                    {/* Video Canvas Detector */}
+                    <VideoCanvasDetector
+                        videoRef={videoRef}
+                        canvasRef={canvasRef}
+                        isDetecting={isDetecting}
+                        distanceStatus={distanceStatus}
+                        getDistanceMessage={getDistanceMessage}
+                    />
           
-                {(apiError || faceError) && (
-                    <div className="mb-4 p-3 bg-red-100 border border-red-700 text-red-700 rounded">
-                        {apiError || faceError}
-                    </div>
-                )}
+                    {/* Mensagens de Erro */}
+                    {(apiError || faceError) && (
+                        <div className="p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg flex items-start gap-2">
+                            <XCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
+                            <span className="text-sm">{apiError || faceError}</span>
+                        </div>
+                    )}
   
-                {renderResultado()}
+                    {/* Resultado da Verificação */}
+                    {renderResultado()}
           
-                {renderBotaoAcao()}
+                    {/* Botões de Ação */}
+                    {renderBotaoAcao()}
+                </div>
             </div>
         </div>
     );

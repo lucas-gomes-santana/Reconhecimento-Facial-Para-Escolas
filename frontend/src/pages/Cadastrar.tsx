@@ -2,8 +2,8 @@ import VideoCanvasDetector from '../components/VideoAndCanvas';
 import { useVerificacao } from '../hooks/auth/useVerificacao';
 import { useCadastroFacial } from '../hooks/frontend/useCadastro';
 import { useValidation } from '../hooks/validation/useValidation';
+import { Camera, Save } from 'lucide-react';
 import '../styles/index.css';
-
 
 function Cadastrar() {
   const {
@@ -22,108 +22,125 @@ function Cadastrar() {
   } = useCadastroFacial();
 
   const { distanceStatus, isDetecting } = useVerificacao();
-
   const { getDistanceMessage } = useValidation();
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-6">
-      <h1 className="text-3xl font-bold text-gray-900 mb-8">
-        📝 Cadastro de Usuário
-      </h1>
-
-      {/* Formulário */}
-      <form
-        id="cadastroForm"
-        className="bg-white shadow-lg rounded-2xl p-8 w-full max-w-2xl"
-        onSubmit={handleSalvarCadastro}
-      >
-        <div className="mb-6">
-          <label
-            htmlFor="nome"
-            className="block text-gray-800 font-semibold mb-2"
-          >
-            Nome Completo*
-          </label>
-
-          <input
-            type="text"
-            id="nome"
-            value={nome}
-            onChange={(e) => setNome(e.target.value)}
-            required
-            placeholder="Digite seu nome completo"
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
-          />
-        </div>
-
-        <div className="mb-6">
-          <label
-            htmlFor="tipoUsuario"
-            className="block text-gray-800 font-semibold mb-2"
-          >
-            Tipo de Usuário*
-          </label>
-
-          <select
-            id="tipoUsuario"
-            value={tipoUsuario}
-            onChange={(e) => setTipoUsuario(e.target.value)} 
-            required
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
-          >
-            <option value="">Selecione...</option>
-            <option value="Professor">Professor</option>
-            <option value="Aluno">Aluno</option>
-            <option value="Funcionario">Funcionário</option>
-            <option value="Outro">Outro</option>
-          </select>
-        </div>
-
-        <VideoCanvasDetector
-          videoRef={videoRef}
-          canvasRef={canvasRef}
-          isDetecting={isDetecting}
-          distanceStatus={distanceStatus}
-          getDistanceMessage={getDistanceMessage}
-        />
-        
-
-        {/* Status */}
-        <div id="status" className="text-gray-700 text-center mb-6 font-medium min-h-8">
-          {statusMessage}
-        </div>
-
-        <div className="flex justify-center gap-4">
-          {!isDetecting ? (
-            <button
-              onClick={handleIniciarReconhecimento}
-              type="button"
-              disabled={isLoading}
-              className="px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition-colors disabled:opacity-50"
-            >
-              {isLoading ? 'Carregando...' : 'Iniciar Reconhecimento'}
-            </button>
-          ) : (
-            <button
-              onClick={handlePararReconhecimento}
-              type="button"
-              disabled={isLoading}
-              className="px-6 py-3 bg-red-600 text-white font-semibold rounded-lg shadow-md hover:bg-red-700 transition-colors disabled:opacity-50"
-            >
-              Parar Reconhecimento
-            </button>
-          )}
-
-          <button
-            type="submit"
-            disabled={!canSave || isLoading}
-            className="px-6 py-3 bg-green-600 text-white font-semibold rounded-lg shadow-md hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {isLoading ? 'Salvando...' : 'Salvar Cadastro'}
-          </button>
+    <div className="min-h-screen flex items-center justify-center p-8 bg-[#E8F534]">
+      <div className="w-full max-w-xl bg-white border-none shadow-xl rounded-lg">
+        {/* Header */}
+        <div className="px-6 pt-6 pb-4">
+          <h1 className="text-center text-2xl font-semibold text-blue-700">
+            Cadastro de Usuário
+          </h1>
+          <p className="text-center text-blue-600 text-sm mt-2">
+            Sistema de Reconhecimento Facial
+          </p>
         </div>
         
-      </form>
+        {/* Formulário */}
+        <form
+          id="cadastroForm"
+          className="px-6 pb-6 space-y-6"
+          onSubmit={handleSalvarCadastro}
+        >
+          {/* Nome Completo */}
+          <div className="space-y-2">
+            <label
+              htmlFor="nome"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Nome Completo
+            </label>
+            <input
+              type="text"
+              id="nome"
+              value={nome}
+              onChange={(e) => setNome(e.target.value)}
+              required
+              placeholder="Digite seu nome completo"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
+
+          {/* Tipo de Usuário */}
+          <div className="space-y-2">
+            <label
+              htmlFor="tipoUsuario"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Tipo de Usuário
+            </label>
+            <select
+              id="tipoUsuario"
+              value={tipoUsuario}
+              onChange={(e) => setTipoUsuario(e.target.value)} 
+              required
+              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value="">Selecione o tipo de usuário</option>
+              <option value="Professor">Professor</option>
+              <option value="Aluno">Aluno</option>
+              <option value="Funcionario">Funcionário</option>
+              <option value="Outro">Outros</option>
+            </select>
+          </div>
+
+          {/* Captura Facial */}
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700">
+              Captura Facial
+            </label>
+            <VideoCanvasDetector
+              videoRef={videoRef}
+              canvasRef={canvasRef}
+              isDetecting={isDetecting}
+              distanceStatus={distanceStatus}
+              getDistanceMessage={getDistanceMessage}
+            />
+          </div>
+
+          {/* Mensagem do Sistema */}
+          <div className="bg-blue-700 rounded-lg p-4 text-center">
+            <p className="text-white text-sm">
+              {statusMessage || 'Sistema pronto - Preencha os dados e inicie o reconhecimento'}
+            </p>
+          </div>
+
+          {/* Botões de Ação */}
+          <div className="grid grid-cols-2 gap-4">
+            {!isDetecting ? (
+              <button
+                onClick={handleIniciarReconhecimento}
+                type="button"
+                disabled={isLoading}
+                className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg shadow-md transition-colors disabled:opacity-50"
+              >
+                <Camera className="w-4 h-4" />
+                Iniciar Reconhecimento
+              </button>
+            ) : (
+              <button
+                onClick={handlePararReconhecimento}
+                type="button"
+                disabled={isLoading}
+                className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg shadow-md transition-colors disabled:opacity-50"
+              >
+                <Camera className="w-4 h-4" />
+                Parar Reconhecimento
+              </button>
+            )}
+
+            <button
+              type="submit"
+              disabled={!canSave || isLoading}
+              className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-blue-700 hover:bg-blue-800 text-white font-semibold rounded-lg shadow-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <Save className="w-4 h-4" />
+              {isLoading ? 'Salvando...' : 'Salvar Cadastro'}
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }

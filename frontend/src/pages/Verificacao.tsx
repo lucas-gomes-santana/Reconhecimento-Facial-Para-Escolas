@@ -1,9 +1,10 @@
-import { useEffect} from 'react';
+import { useEffect } from 'react';
 import { useApi } from '../hooks/api/useApi';
 import { useFaceDetection } from '../hooks/detection/useFaceDetection';
 import { useValidation } from '../hooks/validation/useValidation';
 import { useVerificacao } from '../hooks/auth/useVerificacao';
 import VideoCanvasDetector from '../components/VideoAndCanvas';
+import { Camera, CheckCircle, XCircle } from 'lucide-react';
 import '../styles/index.css';
 
 function Verificacao() {
@@ -51,8 +52,9 @@ function Verificacao() {
         <button 
           onClick={iniciarSistema}
           disabled={faceLoading}
-          className="bg-blue-500 text-white border-none py-3 px-5 rounded cursor-pointer text-base mt-8 w-full max-w-xs mx-auto transition-colors duration-300 hover:bg-blue-600 disabled:bg-gray-400 disabled:cursor-not-allowed"
+          className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg shadow-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
+          <Camera className="w-5 h-5" />
           {faceLoading ? 'Carregando...' : 'Iniciar Verificação'}
         </button>
       );
@@ -60,16 +62,17 @@ function Verificacao() {
 
     if (verificacaoCompleta) {
       return (
-        <div className="flex flex-col sm:flex-row gap-4 mt-8 justify-center">
+        <div className="flex flex-col sm:flex-row gap-4 w-full">
           <button 
             onClick={reiniciarProcesso}
-            className="bg-green-500 text-white border-none py-3 px-5 rounded cursor-pointer text-base transition-colors duration-300 hover:bg-green-600"
+            className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg shadow-md transition-colors"
           >
+            <Camera className="w-5 h-5" />
             Nova Verificação
           </button>
           <button 
             onClick={pararSistema}
-            className="bg-red-500 text-white border-none py-3 px-5 rounded cursor-pointer text-base transition-colors duration-300 hover:bg-red-600"
+            className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-lg shadow-md transition-colors"
           >
             Finalizar
           </button>
@@ -78,17 +81,18 @@ function Verificacao() {
     }
 
     return (
-      <div className="flex flex-col sm:flex-row gap-4 mt-8 justify-center">
+      <div className="flex flex-col sm:flex-row gap-4 w-full">
         <button 
           onClick={realizarVerificacao}
           disabled={!isAtIdealDistance || apiLoading}
-          className="bg-green-500 text-white border-none py-3 px-5 rounded cursor-pointer text-base transition-colors duration-300 hover:bg-green-600 disabled:bg-gray-400 disabled:cursor-not-allowed"
+          className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg shadow-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
+          <CheckCircle className="w-5 h-5" />
           {apiLoading ? 'Verificando...' : 'Verificar Identidade'}
         </button>
         <button 
           onClick={pararSistema}
-          className="bg-red-500 text-white border-none py-3 px-5 rounded cursor-pointer text-base transition-colors duration-300 hover:bg-red-600"
+          className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-lg shadow-md transition-colors"
         >
           Cancelar
         </button>
@@ -97,50 +101,72 @@ function Verificacao() {
   };
 
   return (
-    <div className="bg-gray-200 py-8 px-6 flex flex-col items-center justify-center min-h-screen">
-      <div className="bg-white p-8 rounded-xl shadow-md w-full max-w-4xl text-center mx-auto">
-        <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-8">
-          🔍 Verificação de Cadastro
-        </h1>
+    <div className="min-h-screen flex items-center justify-center p-8 bg-[#E8F534]">
+      <div className="w-full max-w-xl bg-white border-none shadow-xl rounded-lg">
+        {/* Header */}
+        <div className="px-6 pt-6 pb-4">
+          <h1 className="text-center text-2xl font-semibold text-[#3F51B5] flex items-center justify-center gap-2">
+            <Camera className="w-6 h-6" />
+            Verificação de Cadastro
+          </h1>
+        </div>
         
-        <VideoCanvasDetector
-          videoRef={videoRef}
-          canvasRef={canvasRef}
-          isDetecting={isDetecting}
-          distanceStatus={distanceStatus}
-          getDistanceMessage={getDistanceMessage}
-        />
-        
-        {(apiError || faceError) && (
-          <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
-            {apiError || faceError}
-          </div>
-        )}
+        {/* Conteúdo */}
+        <div className="px-6 pb-6 space-y-6">
+          {/* Video Canvas Detector */}
+          <VideoCanvasDetector
+            videoRef={videoRef}
+            canvasRef={canvasRef}
+            isDetecting={isDetecting}
+            distanceStatus={distanceStatus}
+            getDistanceMessage={getDistanceMessage}
+          />
+          
+          {/* Mensagens de Erro */}
+          {(apiError || faceError) && (
+            <div className="p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg flex items-start gap-2">
+              <XCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
+              <span className="text-sm">{apiError || faceError}</span>
+            </div>
+          )}
 
-        {verificacaoCompleta && resultadoVerificacao && (
-          <div className={`mb-4 p-4 rounded-lg ${
-            resultadoVerificacao.existe 
-              ? 'bg-green-100 border border-green-400 text-green-700' 
-              : 'bg-red-100 border border-red-400 text-red-700'
-          }`}>
-            {resultadoVerificacao.existe ? (
-              <div className='mt-6'>
-                <h3 className="font-bold text-lg mb-2">✅ Rosto encontrado. Acesso autorizado!</h3>
-                {resultadoVerificacao.dados?.usuario?.nome && (
-                  <p className="text-lg font-medium">
-                    Bem-vindo(a), <span className="font-bold">{resultadoVerificacao.dados.usuario.nome}</span>!
-                  </p>
-                )}
-              </div>
-            ) : (
-              <div>
-                <h3 className="font-bold text-lg mb-2">❌Rosto não encontrado. Acesso negado!</h3>
-              </div>
-            )}
-          </div>
-        )}
-        
-        {renderBotaoAcao()}
+          {/* Resultado da Verificação */}
+          {verificacaoCompleta && resultadoVerificacao && (
+            <div className={`p-6 rounded-lg ${
+              resultadoVerificacao.existe 
+                ? 'bg-[#00E676]/90 border-2 border-[#00E676]' 
+                : 'bg-red-500/90 border-2 border-red-500'
+            }`}>
+              {resultadoVerificacao.existe ? (
+                <div className="text-center space-y-3">
+                  <div className="flex items-center justify-center gap-2">
+                    <CheckCircle className="w-8 h-8 text-white" />
+                    <h3 className="font-bold text-lg text-white">
+                      Rosto encontrado. Acesso autorizado!
+                    </h3>
+                  </div>
+                  {resultadoVerificacao.dados?.usuario?.nome && (
+                    <p className="text-lg font-medium text-white">
+                      Bem-vindo(a), <span className="font-bold">{resultadoVerificacao.dados.usuario.nome}</span>!
+                    </p>
+                  )}
+                </div>
+              ) : (
+                <div className="text-center">
+                  <div className="flex items-center justify-center gap-2">
+                    <XCircle className="w-8 h-8 text-white" />
+                    <h3 className="font-bold text-lg text-white">
+                      Rosto não encontrado. Acesso negado!
+                    </h3>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+          
+          {/* Botões de Ação */}
+          {renderBotaoAcao()}
+        </div>
       </div>
     </div>
   );

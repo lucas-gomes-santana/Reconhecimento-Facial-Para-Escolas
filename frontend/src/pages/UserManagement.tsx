@@ -64,53 +64,53 @@ function UserManagement() {
 
   const getTipoUsuarioColor = (tipo: string) => {
     switch (tipo.toLowerCase()) {
-
       case 'professor':
-        return 'bg-blue-100 text-blue-800 border-blue-200';
-
+        return 'bg-blue-100 text-blue-800 border border-blue-200';
       case 'aluno':
-        return 'bg-green-100 text-green-800 border-green-200';
-
+        return 'bg-green-100 text-green-800 border border-green-200';
       case 'funcionário':
       case 'funcionario':
-        return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-
+        return 'bg-yellow-100 text-yellow-800 border border-yellow-200';
       default:
-        return 'bg-gray-100 text-gray-800 border-gray-200';
+        return 'bg-gray-100 text-gray-800 border border-gray-200';
     }
   };
-  
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-[#D4E157] to-[#C5D232] flex h-screen justify-center items-center">
       <div className="max-w-7xl mx-auto">
-        <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+        <div className="bg-white rounded-2xl shadow-2xl overflow-hidden">
           
-          <div className="bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-8">
-            <div className="flex items-center gap-3 mb-4">
-              <Users className="h-8 w-8 text-white" />
-              <h1 className="text-3xl font-bold text-white">Gerenciamento de Usuários</h1>
+          {/* Header com gradiente azul */}
+          <div className="bg-gradient-to-r from-[#0D47A1] to-[#1565C0] px-8 py-8 ">
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="flex items-center gap-3 mb-2">
+                  <Users className="h-8 w-8 text-white" />
+                  <h1 className="text-3xl font-bold text-white">Gerenciamento de Usuários</h1>
+                </div>
+                <p className="text-[#D4E157]">
+                  {totalUsuarios > 0 ? `${totalUsuarios} usuários cadastrados` : 'Nenhum usuário cadastrado'}
+                </p>
+              </div>
+              
+              <button
+                onClick={removerTodosOsUsuarios}
+                disabled={removendo}
+                className="p-3 text-white bg-red-600 hover:bg-red-700 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
+                title="Remover todos os usuários"
+              >
+                {removendo ? (
+                  <Loader className="h-5 w-5 animate-spin" />
+                ) : (
+                  <Trash2 className="h-5 w-5" />
+                )}
+              </button>
             </div>
-            <p className="text-blue-100">
-              {totalUsuarios > 0 ? `${totalUsuarios} usuários cadastrados` : 'Nenhum usuário cadastrado'}
-            </p>
-           <button
-              onClick={removerTodosOsUsuarios}
-              disabled={removendo}
-              className="p-2 text-white bg-red-600 hover:bg-red-700 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed mt-5"
-              title="Remover todos os usuários"
-            >
-              {removendo ? (
-                <Loader className="h-5 w-5 animate-spin" />
-              ) : (
-                <Trash2 className="h-5 w-5" />
-              )}
-            </button>
-
           </div>
 
-          {/* Barra de Pesquisa */}
-          <div className="p-6 border-b border-gray-200">
+          {/* Barra de Pesquisa com fundo branco */}
+          <div className="p-6 bg-white border-b border-gray-200">
             <div className="relative max-w-md">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
               <input
@@ -118,26 +118,24 @@ function UserManagement() {
                 placeholder="Pesquisar por nome..."
                 value={searchTerm}
                 onChange={(e) => buscarUsuarios(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0D47A1] focus:border-[#0D47A1] transition-all"
               />
             </div>
           </div>
 
-          <div className="p-6">
+          <div className="p-6 bg-white">
 
             {/* Mensagem de Erro */}
             {error && (
               <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-center gap-3">
-
                 <AlertTriangle className="h-5 w-5 text-red-500 flex-shrink-0" />
                 <div className="flex-1">
                   <p className="text-red-800 font-medium">Erro</p>
                   <p className="text-red-700 text-sm">{error}</p>
                 </div>
-                
                 <button
                   onClick={clearError}
-                  className="text-red-500 hover:text-red-700 transition-colors"
+                  className="text-red-500 hover:text-red-700 transition-colors text-xl font-bold"
                 >
                   ×
                 </button>
@@ -147,19 +145,22 @@ function UserManagement() {
             {/* Lista de Usuários */}
             {usuarios.length === 0 && !loading ? (
               <div className="text-center py-12">
-                <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                <Users className="h-16 w-16 text-gray-300 mx-auto mb-4" />
                 <h3 className="text-lg font-medium text-gray-900 mb-2">
                   {searchTerm ? 'Nenhum usuário encontrado' : 'Nenhum usuário cadastrado'}
                 </h3>
+                <p className="text-gray-500 text-sm">
+                  {searchTerm
+                    ? 'Tente ajustar os termos de busca'
+                    : 'Clique em "Adicionar Usuário" para cadastrar o primeiro usuário'}
+                </p>
               </div>
-
             ) : (
-
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {usuarios.map((usuario) => (
                   <div
                     key={usuario._id}
-                    className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
+                    className="bg-white border-2 border-gray-200 rounded-lg p-4 hover:shadow-lg hover:border-[#0D47A1]/30 transition-all"
                   >
                     <div className="flex items-start justify-between">
                       <div className="flex-1 min-w-0">
@@ -167,7 +168,7 @@ function UserManagement() {
                           {usuario.nome}
                         </h3>
                         <div className="mt-2">
-                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getTipoUsuarioColor(usuario.tipoUsuario)}`}>
+                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getTipoUsuarioColor(usuario.tipoUsuario)}`}>
                             {usuario.tipoUsuario}
                           </span>
                         </div>
@@ -197,7 +198,7 @@ function UserManagement() {
             {/* Indicador de Carregamento */}
             {loading && (
               <div className="flex justify-center items-center py-8">
-                <Loader className="h-6 w-6 animate-spin text-blue-500 mr-2" />
+                <Loader className="h-6 w-6 animate-spin text-[#0D47A1] mr-2" />
                 <span className="text-gray-600">Carregando usuários...</span>
               </div>
             )}
@@ -205,7 +206,7 @@ function UserManagement() {
             {/* Indicador de Fim da Lista */}
             {!hasMore && usuarios.length > 0 && (
               <div className="text-center py-6">
-                <p className="text-gray-500">
+                <p className="text-gray-500 text-sm">
                   {searchTerm 
                     ? 'Todos os resultados foram carregados'
                     : 'Todos os usuários foram carregados'
@@ -220,12 +221,12 @@ function UserManagement() {
       {/* Modal de Confirmação de Remoção */}
       {usuarioParaRemover && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg max-w-md w-full p-6">
+          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl">
             <div className="flex items-center gap-3 mb-4">
-              <div className="flex-shrink-0 w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
-                <AlertTriangle className="h-5 w-5 text-red-600" />
+              <div className="flex-shrink-0 w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
+                <AlertTriangle className="h-6 w-6 text-red-600" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-900">
+              <h3 className="text-xl font-semibold text-gray-900">
                 Confirmar Remoção
               </h3>
             </div>
@@ -238,14 +239,14 @@ function UserManagement() {
             <div className="flex justify-end gap-3">
               <button
                 onClick={cancelarRemocao}
-                className="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+                className="px-5 py-2.5 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors font-medium"
               >
                 Cancelar
               </button>
               <button
                 onClick={() => handleRemoverUsuario(usuarioParaRemover)}
                 disabled={removendoUsuario === usuarioParaRemover}
-                className="px-4 py-2 bg-red-600 text-white hover:bg-red-700 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                className="px-5 py-2.5 bg-red-600 text-white hover:bg-red-700 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 font-medium"
               >
                 {removendoUsuario === usuarioParaRemover ? (
                   <>
