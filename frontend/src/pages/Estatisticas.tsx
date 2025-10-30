@@ -133,7 +133,7 @@ function Estatisticas() {
         <h1 className="text-xl md:text-3xl font-bold">📊 Estatísticas do C.E.R.F</h1>
       </header>
 
-      <main className="flex-1 p-6 grid grid-cols-1 gap-8">
+      <main className="flex-1 p-7 grid grid-cols-1 gap-8">
 
         <section className="bg-white p-4 rounded-lg shadow-md">
           <h2 className="mb-4 text-lg md:text-xl font-semibold">Controles</h2>
@@ -170,7 +170,7 @@ function Estatisticas() {
         </section>
 
         <section className="bg-white p-6 rounded-lg shadow-md">
-          <h2 className="mb-4 text-lg md:text-xl font-semibold">Dados do Sistema</h2>
+          <h2 className="mb-5 text-lg md:text-xl font-semibold">Dados do Sistema</h2>
           {error && (
             <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
               <p className="text-red-700">⚠️ Erro: {error}</p>
@@ -186,7 +186,7 @@ function Estatisticas() {
         </section>
       </main>
 
-      <footer className="bg-blue-500 text-white text-center p-4 text-sm">
+      <footer className="bg-[#1E3A8A] text-white text-center p-4 text-sm">
         <p>Os dados são atualizados automaticamente conforme novos cadastros e verificações são realizados.</p>
       </footer>
     </div>
