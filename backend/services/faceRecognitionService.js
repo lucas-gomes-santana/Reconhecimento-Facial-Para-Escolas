@@ -1,6 +1,6 @@
 import Usuario from "../models/Usuario.js";
 
-let threshold = 0.9; // Calibração de similaridade mínima aceita(quanto maior mais rigoroso)
+let threshold = 0.96; // Percentual mínimo de 96% de similaridade para sucesso na autenticação facial
 
 export class FaceRecognitionService {
 
