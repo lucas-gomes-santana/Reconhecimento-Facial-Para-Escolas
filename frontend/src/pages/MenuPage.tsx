@@ -43,7 +43,7 @@ function MenuPage() {
   ];
 
   return (
-    <main className="min-h-screen flex items-center justify-center p-8 bg-[#D9E021]">
+    <main className="min-h-screen flex items-center justify-center p-8">
       <div className="w-full max-w-5xl">
         {/* Header com Logo */}
         <div className="flex items-center justify-center gap-4 mb-8">

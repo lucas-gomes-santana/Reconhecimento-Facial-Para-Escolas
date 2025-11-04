@@ -147,15 +147,15 @@ export const useVerificacao = () => {
     
           const result: VerificarRostoResponse = {
             existe: data.encontrado || false,
-            bloqueado: data.bloqueado || false,  // ✅ NOVO
+            bloqueado: data.bloqueado || false,  
             dados: data.encontrado ? {
                 usuario: {
-                    id: data.usuario?.id || '',  // ✅ NOVO
+                    id: data.usuario?.id || '',
                     nome: data.usuario?.nome || '',
                     tipoUsuario: data.usuario?.tipoUsuario || '',
                     dataCadastro: data.usuario?.dataCadastro || '',
-                    status: data.usuario?.status,  // ✅ NOVO
-                    bloqueadoAte: data.usuario?.bloqueadoAte,  // ✅ NOVO
+                    status: data.usuario?.status, 
+                    bloqueadoAte: data.usuario?.bloqueadoAte, 
                 },
                 similaridade: data.similaridade || 0,
                 distancia: data.distancia || 0,

@@ -101,7 +101,7 @@ function Verificacao() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-8 bg-[#E8F534]">
+    <div className="min-h-screen flex items-center justify-center p-8 bg-[#D9E021]">
       <div className="w-full max-w-xl bg-white border-none shadow-xl rounded-lg">
         {/* Header */}
         <div className="px-6 pt-6 pb-4">
@@ -134,8 +134,8 @@ function Verificacao() {
           {verificacaoCompleta && resultadoVerificacao && (
             <div className={`p-6 rounded-lg ${
               resultadoVerificacao.existe 
-                ? 'bg-[#00E676]/90 border-2 border-[#00E676]' 
-                : 'bg-red-500/90 border-2 border-red-500'
+                ? 'bg-[#09ad5e]' 
+                : 'bg-red-500'
             }`}>
               {resultadoVerificacao.existe ? (
                 <div className="text-center space-y-3">

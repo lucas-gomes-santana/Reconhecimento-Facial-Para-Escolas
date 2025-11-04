@@ -25,7 +25,7 @@ function Cadastrar() {
   const { getDistanceMessage } = useValidation();
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-8 bg-[#E8F534]">
+    <div className="min-h-screen flex items-center justify-center p-8">
       <div className="w-full max-w-xl bg-white border-none shadow-xl rounded-lg">
         {/* Header */}
         <div className="px-6 pt-6 pb-4">

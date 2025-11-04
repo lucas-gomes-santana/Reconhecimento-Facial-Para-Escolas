@@ -106,7 +106,7 @@ function AdminPage() {
     };
 
     return (
-        <main className="min-h-screen bg-[#E8F534] p-8">
+        <main className="min-h-screen p-8">
             <div className="max-w-3xl mx-auto space-y-6">
 
                 {/* Card de Cadastro */}
@@ -249,7 +249,7 @@ function AdminPage() {
                                 {admins.map((admin) => (
                                     <div
                                         key={admin._id}
-                                        className="flex items-start justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+                                        className="flex items-start justify-between p-4 border border-gray-200 rounded-lg hover:shadow-lg hover:border-[#0D47A1]/30 transition-colors"
                                     >
                                         <div className="flex-1">
                                             <div className="flex items-center gap-3 mb-2">
@@ -268,7 +268,7 @@ function AdminPage() {
                                         <button
                                             onClick={() => confirmarRemocao(admin._id)}
                                             disabled={removendoAdmin === admin._id}
-                                            className="ml-3 p-2 text-gray-400 hover:text-[#5B21B6] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                            className="ml-3 p-2 text-gray-400  hover:text-red-600 hover:bg-red-100 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                             title="Remover usuário"
                                         >
                                             {removendoAdmin === admin._id ? (

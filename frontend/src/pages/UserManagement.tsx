@@ -77,8 +77,8 @@ function UserManagement() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#D4E157] to-[#C5D232] flex h-screen justify-center items-center">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen flex h-screen justify-center items-center">
+      <div className="min-w-4xl mx-auto">
         <div className="bg-white rounded-2xl shadow-2xl overflow-hidden">
           
           {/* Header com gradiente azul */}
@@ -180,7 +180,7 @@ function UserManagement() {
                       <button
                         onClick={() => confirmarRemocao(usuario._id)}
                         disabled={removendoUsuario === usuario._id}
-                        className="ml-3 p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="ml-3 p-2 text-gray-400 hover:text-red-600 hover:bg-red-100 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                         title="Remover usuário"
                       >
                         {removendoUsuario === usuario._id ? (

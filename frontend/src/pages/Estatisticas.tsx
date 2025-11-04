@@ -87,7 +87,7 @@ function Estatisticas() {
 
     return (
       <div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-9">
           <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
             <h3 className="text-lg font-semibold text-blue-800">Total de Cadastros</h3>
             <span className="text-3xl font-bold text-blue-600">{stats.totalCadastros}</span>
@@ -128,12 +128,12 @@ function Estatisticas() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#D9E021]">
+    <div className="min-h-screen flex flex-col">
       <header className="bg-[#1E3A8A]  text-white text-center p-6">
         <h1 className="text-xl md:text-3xl font-bold">📊 Estatísticas do C.E.R.F</h1>
       </header>
 
-      <main className="flex-1 p-7 grid grid-cols-1 gap-8">
+      <main className="flex-1 p-10 grid grid-cols-1 gap-8">
 
         <section className="bg-white p-4 rounded-lg shadow-md">
           <h2 className="mb-4 text-lg md:text-xl font-semibold">Controles</h2>

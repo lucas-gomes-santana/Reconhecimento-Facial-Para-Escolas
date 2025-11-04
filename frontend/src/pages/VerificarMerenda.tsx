@@ -124,20 +124,15 @@ function VerificarMerenda() {
                         </div>
                         <p className="text-white">
                             <span className="font-bold">{resultadoVerificacao.dados?.usuario?.nome}</span>, 
-                            você já retirou merenda!
+                             {resultadoVerificacao.mensagem}
                         </p>
-                        {resultadoVerificacao.mensagem && (
-                            <p className="text-sm text-white/90">
-                                {resultadoVerificacao.mensagem}
-                            </p>
-                        )}
                     </div>
                 </div>
             );
         }
 
         return (
-            <div className="p-6 rounded-lg bg-[#1E3A8A] border-2 border-[#00E676]">
+            <div className="p-6 rounded-lg bg-[#09ad5e]">
                 <div className="text-center space-y-3">
                     <div className="flex items-center justify-center gap-2">
                         <CheckCircle className="w-8 h-8 text-white" />
@@ -211,7 +206,7 @@ function VerificarMerenda() {
     };
   
     return (
-        <div className="min-h-screen flex items-center justify-center p-8 bg-[#D4E800]">
+        <div className="min-h-screen flex items-center justify-center p-8]">
             <div className="w-full max-w-2xl bg-white border-none shadow-2xl rounded-2xl">
                 {/* Header com ícones */}
                 <div className="px-8 pt-8 pb-4">
