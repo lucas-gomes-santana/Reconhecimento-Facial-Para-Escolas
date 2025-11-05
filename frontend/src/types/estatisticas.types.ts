@@ -18,7 +18,7 @@ export interface DadosEstatisticas {
   totalCadastros: number;
   totalVerificacoes: number;
   usuariosPorTipo?: UsuarioPorTipo[];
-  usuariosOrganizados?: UsuariosOrganizados[]; // ← ADICIONAR ESTA LINHA
+  usuariosOrganizados?: UsuariosOrganizados[];
   primeiroCadastro?: string;
   ultimoCadastro?: string;
   ultimaAtualizacao: string;

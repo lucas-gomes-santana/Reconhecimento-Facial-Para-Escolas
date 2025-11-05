@@ -102,7 +102,7 @@ export const gerarRelatorioPdf = (dadosEstatisticas: DadosEstatisticas) => {
     currentY += layoutConfig.smallSpacing;
   }
 
-  // Lista dos 
+  // Lista completa de usuários com data de cadastro
   if (dadosEstatisticas.usuariosOrganizados && dadosEstatisticas.usuariosOrganizados.length > 0) {
     // Verificar se precisa adicionar nova página
     if (currentY > 200) {
@@ -130,19 +130,33 @@ export const gerarRelatorioPdf = (dadosEstatisticas: DadosEstatisticas) => {
       doc.text(`${grupo.tipo} (${grupo.quantidade})`, layoutConfig.marginLeft + 3, currentY);
       currentY += 10;
 
-      // Lista de nomes
+      // Lista de nomes com data de cadastro
       doc.setFontSize(layoutConfig.normalFontSize);
       doc.setFont('helvetica', 'normal');
 
-      grupo.usuarios.forEach((nome, index) => {
+      grupo.usuarios.forEach((usuario, index) => {
         // Verificar se precisa de nova página
         if (currentY > 280) {
           doc.addPage();
           currentY = layoutConfig.startY;
         }
 
-        // Numeração e nome
-        doc.text(`${index + 1}. ${nome}`, layoutConfig.marginLeft + 5, currentY);
+        // Formatar data de cadastro
+        const dataCadastro = usuario.dataCadastro 
+          ?  new Date(usuario.dataCadastro).toLocaleDateString('pt-BR')
+          : 'Data não disponível';
+
+        // Numeração, nome e data
+        doc.setFont('helvetica', 'normal');
+        doc.text(`${index + 1}. ${usuario.nome}`, layoutConfig.marginLeft + 5, currentY);
+        
+        // Data de cadastro alinhada à direita
+        doc.setFont('helvetica', 'italic');
+        doc.setTextColor(40, 40, 40);
+        doc.text("Data de Cadastro: ", layoutConfig.pageWidth - layoutConfig.marginRight - 60, currentY);
+        doc.text(dataCadastro, layoutConfig.pageWidth - layoutConfig.marginRight - 30, currentY);
+        doc.setTextColor(0, 0, 0); // Resetar cor para preto
+        
         currentY += layoutConfig.lineHeight;
       });
 
@@ -151,8 +165,6 @@ export const gerarRelatorioPdf = (dadosEstatisticas: DadosEstatisticas) => {
 
     currentY += layoutConfig.sectionSpacing;
   }
-
-
 
   // Informações adicionais
   doc.setFontSize(layoutConfig.sectionTitleFontSize);

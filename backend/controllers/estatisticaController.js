@@ -91,16 +91,20 @@ export class EstatisticaController {
             const ultimoCadastro = await this.Usuario.findOne().sort({ dataCadastro: -1 });
             const primeiroCadastro = await this.Usuario.findOne().sort({ dataCadastro: 1 });
 
-            const todosUsuarios = await this.Usuario.find({}, 'nome tipoUsuario')
+            // Buscar usuários com nome, tipo E data de cadastro
+            const todosUsuarios = await this.Usuario.find({}, 'nome tipoUsuario dataCadastro')
                 .sort({ nome: 1 })
-                .lean(); // Retorna objetos Javscript puros ao invés do documento MongoDB inteiro, ideal para métodos de leitura
+                .lean(); // Retorna objetos Javascript puros ao invés do documento MongoDB inteiro, ideal para métodos de leitura
 
             const ordemTipos = ['Aluno', 'Professor', 'Funcionario', 'Outro'];
 
             const usuariosOrganizados = ordemTipos.map(tipo => {
                 const usuarios = todosUsuarios
                     .filter(u => u.tipoUsuario === tipo)
-                    .map(u => u.nome);
+                    .map(u => ({
+                        nome: u.nome,
+                        dataCadastro: u.dataCadastro
+                    }));
 
                 return {
                     tipo,
