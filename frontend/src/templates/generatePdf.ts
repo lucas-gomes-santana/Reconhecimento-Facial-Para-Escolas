@@ -143,7 +143,7 @@ export const gerarRelatorioPdf = (dadosEstatisticas: DadosEstatisticas) => {
 
         // Formatar data de cadastro
         const dataCadastro = usuario.dataCadastro 
-          ?  new Date(usuario.dataCadastro).toLocaleDateString('pt-BR')
+          ?  new Date(usuario.dataCadastro).toLocaleString('pt-BR')
           : 'Data não disponível';
 
         // Numeração, nome e data
@@ -153,8 +153,8 @@ export const gerarRelatorioPdf = (dadosEstatisticas: DadosEstatisticas) => {
         // Data de cadastro alinhada à direita
         doc.setFont('helvetica', 'italic');
         doc.setTextColor(40, 40, 40);
-        doc.text("Data de Cadastro: ", layoutConfig.pageWidth - layoutConfig.marginRight - 60, currentY);
-        doc.text(dataCadastro, layoutConfig.pageWidth - layoutConfig.marginRight - 30, currentY);
+        doc.text("Data de Cadastro: ", layoutConfig.pageWidth - layoutConfig.marginRight - 70, currentY);
+        doc.text(dataCadastro, layoutConfig.pageWidth - layoutConfig.marginRight - 40, currentY);
         doc.setTextColor(0, 0, 0); // Resetar cor para preto
         
         currentY += layoutConfig.lineHeight;
@@ -192,10 +192,10 @@ export const gerarRelatorioPdf = (dadosEstatisticas: DadosEstatisticas) => {
   currentY += layoutConfig.sectionSpacing;
 
   // Rodapé
-  const pageHeight = 297;
-  doc.setFontSize(8);
+  const pageHeight = 295;
+  doc.setFontSize(10);
   doc.setFont('helvetica', 'italic');
-  doc.setTextColor(128, 128, 128);
+  doc.setTextColor(100, 100, 100);
   doc.text(
     'C.E.R.F - Sistema de Reconhecimento Facial',
     layoutConfig.pageWidth / 2,
