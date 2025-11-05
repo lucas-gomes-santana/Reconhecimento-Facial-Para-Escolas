@@ -1,7 +1,6 @@
 import { gerarAccessToken, verificarRefreshToken, definirTokens, removerTokens, gerarRefreshToken } from '../config/jwtConfig.js';
 import { criptografarSenha, validarFuncaoCadastrada, validarSenha } from '../utils/utils.js';
-import { AlreadyExistsException, InvalidFunctionException, NotFoundException, PermissionDeniedException } from '../exceptions/AppExceptions.js';
-import Admin from '../models/Admin.js';
+
 
 export async function cadastrarDesenvolvedor(Admin) { 
     // Remover os fallbacks em produção
@@ -42,13 +41,13 @@ export class AdminController {
         const admin = await this.Admin.findOne({ nome: nome });
 
         if (!admin) {
-            throw new NotFoundException(`Admin ${nome} não encontrado!`)
-;       }
+            return res.status(404).json({ message: `Gestor ${nome} não encontrado` });
+        }
 
         const senhaCorreta = await validarSenha(senha, admin.senha);
 
         if (!senhaCorreta) {
-            throw new PermissionDeniedException(`Senha do admin incorreta!`);
+            return res.status(401).json({ message: 'Senha incorreta' });
         }
 
         // Gerar token JWT
@@ -123,18 +122,18 @@ export class AdminController {
         const { nome, senha, funcao } = req.body;
 
         if (req.usuario.funcao !== 'super-admin' && req.usuario.funcao !== 'desenvolvedor') {
-            throw new PermissionDeniedException('Apenas o super-admin ou o desenvolvedor podem cadastrar novos admins e seguranças.')
+            return res.status(401).json({ message: 'Apenas o super-admin ou o desenvolvedor podem cadastrar novos admins e seguranças.' });
         }
 
         if (!validarFuncaoCadastrada(funcao)) {
-            throw new InvalidFunctionException(`Função ${funcao} inválida`);
+            return res.status(400).json({ message: `Função ${funcao} inválida!` });
         }
 
         const nomeValido = nome;
         const adminExistente = await this.Admin.findOne({ nome: nomeValido });
 
         if (adminExistente) {
-            throw new AlreadyExistsException(`O gestor ${nome} já existe no sistema`);
+            return res.status(409).json({ message: `O gestor ${nome} já existe no sistema` });
         }
 
         const senhaCriptografada = await criptografarSenha(senha);
@@ -164,11 +163,11 @@ export class AdminController {
         const { nome, senha, funcao } = req.body;
 
         if (req.usuario.funcao !== 'desenvolvedor') {
-            throw new PermissionDeniedException('Apenas o desenvolvedor pode cadastrar o super-admin');
+            return res.status(403).json({ message: 'Apenas o desenvolvedor pode cadastrar o super-admin' });
         }
 
         if (!validarFuncaoCadastrada(funcao)) {
-            throw new InvalidFunctionException(`Função ${funcao} inválida`);
+            return res.status(400).json({ message: `Função ${funcao} inválida` });
         }
 
         const superAdminExistente = await this.Admin.findOne({
@@ -176,7 +175,7 @@ export class AdminController {
         })
 
         if (superAdminExistente) {
-            throw new AlreadyExistsException('Já existe um Super-Admin cadastrado no sistema');
+            return res.status(409).json({ message: 'Já existe um Super-Admin cadastrado no sistema' });
         }
 
         const senhaCriptografada = await criptografarSenha(senha);
@@ -202,11 +201,11 @@ export class AdminController {
         const admin = await this.Admin.findById(id);
 
         if (!admin) {
-            throw new NotFoundException(`Gestor ${admin.nome} não encontrado`);
+            return res.status(404).json({ message: `Gestor ${admin.nome} não encontrado` });
         }
 
         if (req.usuario.funcao !== 'super-admin' && req.usuario.funcao !== 'desenvolvedor' && req.usuario.id !== id){
-            throw new PermissionDeniedException('Você não tem permissão para alterar senha de outro usuário!');
+            return res.status(403).json({ message: 'Você não tem permissão para alterar senha de outro usuário!' });
         }
 
         const novaSenhaCriptografada = await criptografarSenha(novaSenha);
@@ -267,17 +266,17 @@ export class AdminController {
         const { id } = req.params;
 
         if (req.usuario.funcao !== 'super-usuario' && req.usuario.funcao !== 'desenvolvedor') {
-            throw new PermissionDeniedException('Apenas o super-admin pode remover Adms ou Seguranças!');
+            return res.status(403).json({ message: 'Apenas o super-admin pode remover Adms ou Seguranças!' });
         }
 
         if (req.usuario.id.toString() === id.toString()) {
-            throw new PermissionDeniedException('Você não pode remover sua própria conta!');
+            return res.status(403).json({ message: 'Você não pode remover sua própria conta!' });
         }
 
         const admin = await this.Admin.findByIdAndDelete(id);
         
         if (!admin) {
-            throw new NotFoundException(`Gestor ${admin.nome} não encontrado!`);
+            return res.status(400).json({ message: `Gestor ${admin.nome} não encontrado!` });
         }
 
         console.log(`Gestor ${admin.nome} removido com sucesso do C.E.R.F`);

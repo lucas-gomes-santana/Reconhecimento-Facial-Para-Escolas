@@ -1,5 +1,4 @@
 import Usuario from '../models/Usuario.js';
-import { NotFoundException } from '../exceptions/AppExceptions.js';
 
 let threshold = 0.96; // Percentual mínimo de 96% de similaridade para sucesso na autenticação facial
 
@@ -107,15 +106,12 @@ export class UsuarioController {
         const usuario = await Usuario.findByIdAndDelete(id);
         
         if (!usuario) {
-            throw new NotFoundException(`Usuário ${usuario.nome} não encontrado`);
+            return res.status(404).json({ message: `Usuário ${usuario.nome} não encontrado` });
         }
 
         console.log(`Usuário ${usuario.nome} removido do C.E.R.F com sucesso`);
         
-        res.json({
-            success: true,
-            message: `Usuário ${usuario.nome} removido com sucesso`,
-        });
+        res.json({ message: `Usuário ${usuario.nome} removido com sucesso` });
     }
 
     async removerTodosOsUsuarios (req, res) {
@@ -143,7 +139,7 @@ export class UsuarioController {
         }, { new: true }); // Retorna o documento atualizado
 
         if (!usuario) {
-            throw new NotFoundException(`Usuário ${usuario.nome} não encontrado!`);
+            return res.status(409).json({ message: `Usuário ${usuario.nome} não encontrado!` });
         }
 
         this.agendarDesbloqueio(id, tempoBloqueio);

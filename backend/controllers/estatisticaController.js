@@ -20,7 +20,7 @@ export class EstatisticaController {
             });
         } catch (err) {
             console.error('Erro ao obter estatísticas:', err);
-            res.status(500).json({ error: err.message });
+            res.status(500).json({ message: err.message });
         }
     }
 
@@ -38,7 +38,7 @@ export class EstatisticaController {
             
         } catch (err) {
             console.error('Erro ao reiniciar verificações:', err);
-            res.status(500).json({ error: err.message });
+            res.status(500).json({ message: err.message });
         }
     }
 
@@ -70,7 +70,7 @@ export class EstatisticaController {
             });
         } catch (err) {
             console.error('Erro ao obter estatísticas detalhadas:', err);
-            res.status(500).json({ error: err.message });
+            res.status(500).json({ message: err.message });
         }
     }
 
@@ -125,10 +125,7 @@ export class EstatisticaController {
 
         } catch (error) {
             console.error('Erro ao gerar o relatório: ', error);
-            res.status(500).json({
-                success: false,
-                error: error.message
-            });
+            res.status(500).json({ message: error.message });
         }   
     }
     
