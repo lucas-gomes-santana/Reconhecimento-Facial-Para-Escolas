@@ -8,3 +8,11 @@ export interface ApiResponse {
     };
     error?: string;
 }
+
+// api.types.ts - Adicione esta interface
+export interface ErrorMessages {
+  error: string;
+  setError: (error: string) => void;
+  clearError: () => void;
+  handleBackendError: (error: string) => void;
+}

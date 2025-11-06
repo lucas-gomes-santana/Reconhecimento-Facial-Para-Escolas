@@ -103,12 +103,6 @@ export const useVerificacao = () => {
             
             setResultadoVerificacao(resultado);
             setVerificacaoCompleta(true);
-
-            if (resultado.existe && resultado.dados) {
-                console.log('Dados do usuário encontrado:', resultado.dados.usuario); 
-            } else {
-                console.log('Usuário não encontrado no sistema.');
-            }
             
         } catch (err) {
             console.error('Erro na verificação:', err);

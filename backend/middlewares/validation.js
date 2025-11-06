@@ -5,7 +5,7 @@ class ValidationMiddleware {
         const { nome, senha } = req.body;
 
         if (!nome || !senha) {
-            return res.status(400).json({ error: 'Todos os campos são obrigatórios'});
+            return res.status(400).json({ message: 'Todos os campos são obrigatórios'});
         }
 
         next();
@@ -15,7 +15,7 @@ class ValidationMiddleware {
         const { nome, tipoUsuario, descriptor } = req.body;
         
         if (!nome || !tipoUsuario || !descriptor) {
-            return res.status(400).json({ error: 'Dados incompletos' });
+            return res.status(400).json({ message: 'Dados incompletos' });
         }
 
         next();
@@ -38,10 +38,7 @@ class ValidationMiddleware {
         }
 
         if (errors.length > 0) {
-            return res.status(400).json({
-                success: false,
-                errors: errors
-            });
+            return res.status(400).json({ message: errors });
         }
 
         next();
@@ -61,8 +58,7 @@ class ValidationMiddleware {
 
         if (errors.length > 0) {
             return res.status(400).json({
-                success: false,
-                errors: errors
+                message: errors
             });
         }
 
@@ -73,7 +69,7 @@ class ValidationMiddleware {
         const { id } = req.body;
 
         if (!id) {
-            return res.status(400).json({ error: 'Id obrigatório para realizar a operação' });
+            return res.status(400).json({ message: 'Id obrigatório para realizar a operação' });
         }
 
         next();
@@ -83,7 +79,7 @@ class ValidationMiddleware {
         const { id } = req.params;
 
         if (!id) {
-            return res.status(400).json({ error: 'Id obrigatório para realizar a operação' });
+            return res.status(400).json({ message: 'Id obrigatório para realizar a operação' });
         }
 
         next();
@@ -106,10 +102,7 @@ class ValidationMiddleware {
         }
 
         if (errors.length > 0) {
-            return res.status(400).json({
-                success: false,
-                errors: errors
-            });
+            return res.status(400).json({ message: errors });
         }
 
         next();

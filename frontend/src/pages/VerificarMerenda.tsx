@@ -5,7 +5,7 @@ import { useVerificacao } from '../hooks/auth/useVerificacao';
 import { useValidation } from '../hooks/validation/useValidation';
 import { useVerificarStatus } from '../hooks/auth/useVerificarStatus';
 import VideoCanvasDetector from '../components/VideoAndCanvas';
-import { Camera, CheckCircle, XCircle, AlertTriangle, Scan } from 'lucide-react';
+import { Camera, CheckCircle, XCircle, AlertTriangle, Salad } from 'lucide-react';
 import '../styles/index.css';
 
 function VerificarMerenda() {
@@ -212,7 +212,7 @@ function VerificarMerenda() {
                 <div className="px-8 pt-8 pb-4">
                     <h1 className="text-center text-3xl font-semibold text-[#1E3A8A] flex items-center justify-center gap-3">
                         <div className="relative">
-                            <Camera className="w-10 h-10" />
+                            <Salad className="w-10 h-10" />
                         </div>
                         Verificação de Merenda
                     </h1>

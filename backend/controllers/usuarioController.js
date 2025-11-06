@@ -1,5 +1,4 @@
 import Usuario from '../models/Usuario.js';
-import { NotFoundException } from '../exceptions/AppExceptions.js';
 
 let threshold = 0.96; // Percentual mínimo de 96% de similaridade para sucesso na autenticação facial
 
@@ -93,8 +92,21 @@ export class UsuarioController {
 
     async listarUsuarios(req, res) {
         try {
-            const usuarios = await Usuario.find({}, { descriptor: 0 }).sort({ dataCadastro: -1 }); // Listando os usuários cadastrados mais recentemente primeiro
+            const { nome } = req.query;
+            
+            // Se foi passado um nome específico na query, filtra por ele (case-insensitive)
+            if (nome && nome.trim() !== '') {
+                const usuarios = await Usuario.find({ 
+                    nome: { $regex: new RegExp(nome.trim(), 'i') } 
+                }, { descriptor: 0 }).sort({ dataCadastro: -1 });
+                
+                return res.json(usuarios);
+            }
+
+            // Se não foi passado nome, retorna todos os usuários
+            const usuarios = await Usuario.find({}, { descriptor: 0 }).sort({ dataCadastro: -1 });
             res.json(usuarios);
+            
         } catch (err) {
             console.error('Erro ao listar usuários:', err);
             res.status(500).json({ error: err.message });
@@ -107,15 +119,12 @@ export class UsuarioController {
         const usuario = await Usuario.findByIdAndDelete(id);
         
         if (!usuario) {
-            throw new NotFoundException(`Usuário ${usuario.nome} não encontrado`);
+            return res.status(404).json({ message: `Usuário ${usuario.nome} não encontrado` });
         }
 
         console.log(`Usuário ${usuario.nome} removido do C.E.R.F com sucesso`);
         
-        res.json({
-            success: true,
-            message: `Usuário ${usuario.nome} removido com sucesso`,
-        });
+        res.json({ message: `Usuário ${usuario.nome} removido com sucesso` });
     }
 
     async removerTodosOsUsuarios (req, res) {
@@ -143,7 +152,7 @@ export class UsuarioController {
         }, { new: true }); // Retorna o documento atualizado
 
         if (!usuario) {
-            throw new NotFoundException(`Usuário ${usuario.nome} não encontrado!`);
+            return res.status(409).json({ message: `Usuário ${usuario.nome} não encontrado!` });
         }
 
         this.agendarDesbloqueio(id, tempoBloqueio);
