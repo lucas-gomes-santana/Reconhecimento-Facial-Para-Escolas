@@ -112,7 +112,7 @@ export const useCadastroFacial = (): UseCadastroFacialReturn => {
 
   const handleSalvarCadastro = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     const formValidation = validateCadastroForm(nome, tipoUsuario);
     if (!formValidation.isValid) {
       showValidationErrors(formValidation.errors);
@@ -131,15 +131,37 @@ export const useCadastroFacial = (): UseCadastroFacialReturn => {
     }
 
     try {
-      setStatusMessage('Verificando se o rosto já está cadastrado...');
+      setStatusMessage('Verificando se o nome já está cadastrado...');
       
-      const verificacao = await verificarRosto(currentDescriptor, 'cadastro'); // Verifica se o rosto durante o cadastro
+      const verificacao = await verificarRosto(currentDescriptor, 'cadastro');
       
       if (verificacao.existe) {
         const nomeExistente = (verificacao.dados?.usuario as { nome?: string })?.nome || 'Usuário desconhecido';
         
         setStatusMessage(`Rosto já cadastrado para: ${nomeExistente}`);
         alert(`Este rosto já está cadastrado para: ${nomeExistente}`);
+        return;
+      }
+
+      const response = await authenticatedFetch(`${baseURL}/usuarios/listar?nome=${encodeURIComponent(nome.trim())}`, {
+        method: 'GET',
+        headers: { 
+          'Accept': 'application/json'
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error(`Erro ao verificar nome: ${response.status}`);
+      }
+
+      const usuarios = await response.json();
+      const nomeJaExiste = Array.isArray(usuarios) && usuarios.some(usuario => 
+        usuario.nome.toLowerCase() === nome.trim().toLowerCase()
+      );
+
+      if (nomeJaExiste) {
+        setStatusMessage(`Nome "${nome}" já cadastrado no sistema`);
+        alert(`Já existe um usuário com o nome "${nome}"`);
         return;
       }
 
@@ -162,6 +184,7 @@ export const useCadastroFacial = (): UseCadastroFacialReturn => {
       
     } catch (error) {
       console.error('Erro no cadastro:', error);
+      handleApiError(error);
       const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
       setStatusMessage(`Erro no cadastro: ${errorMessage}`);
     }
@@ -173,12 +196,16 @@ export const useCadastroFacial = (): UseCadastroFacialReturn => {
     validateDescriptor, 
     currentDescriptor, 
     isAtIdealDistance, 
-    verificarRosto, 
+    verificarRosto,
+    clearError,
+    handleApiError,
+    authenticatedFetch, // ← Não esqueça de adicionar esta dependência
+    baseURL // ← E esta também
   ]);
 
   const cadastrarUsuario = useCallback(async (userData: UsuarioData) => {
     setLoading(true);
-    setError(null);
+    setError('');
     
     try {
       const response = await authenticatedFetch(`${baseURL}/usuarios/cadastrar`, {
@@ -208,8 +235,8 @@ export const useCadastroFacial = (): UseCadastroFacialReturn => {
       console.log('Cadastro realizado com sucesso:');
       return data;
 
-    } catch (err) {
-      const apiError = handleApiError(err);
+    } catch (error) {
+      const apiError = handleApiError(error);
       setError(apiError.message);
       console.error('Erro no cadastro:', apiError);
       throw apiError;
@@ -239,6 +266,6 @@ export const useCadastroFacial = (): UseCadastroFacialReturn => {
     canvasRef,
     handleIniciarReconhecimento,
     handlePararReconhecimento,
-    handleSalvarCadastro
+    handleSalvarCadastro,
   };
 };

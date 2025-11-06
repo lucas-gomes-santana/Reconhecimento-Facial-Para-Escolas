@@ -23,14 +23,16 @@ function Cadastrar() {
 
   const { distanceStatus, isDetecting } = useVerificacao();
   const { getDistanceMessage } = useValidation();
+  
 
   return (
     <div className="min-h-screen flex items-center justify-center p-8">
       <div className="w-full max-w-xl bg-white border-none shadow-xl rounded-lg">
+
         {/* Header */}
         <div className="px-6 pt-6 pb-4">
           <h1 className="text-center text-2xl font-semibold text-blue-700">
-            Cadastro de Usuário
+            Cadastro de Usuários
           </h1>
           <p className="text-center text-blue-600 text-sm mt-2">
             Sistema de Reconhecimento Facial

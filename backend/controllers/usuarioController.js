@@ -92,8 +92,21 @@ export class UsuarioController {
 
     async listarUsuarios(req, res) {
         try {
-            const usuarios = await Usuario.find({}, { descriptor: 0 }).sort({ dataCadastro: -1 }); // Listando os usuários cadastrados mais recentemente primeiro
+            const { nome } = req.query;
+            
+            // Se foi passado um nome específico na query, filtra por ele (case-insensitive)
+            if (nome && nome.trim() !== '') {
+                const usuarios = await Usuario.find({ 
+                    nome: { $regex: new RegExp(nome.trim(), 'i') } 
+                }, { descriptor: 0 }).sort({ dataCadastro: -1 });
+                
+                return res.json(usuarios);
+            }
+
+            // Se não foi passado nome, retorna todos os usuários
+            const usuarios = await Usuario.find({}, { descriptor: 0 }).sort({ dataCadastro: -1 });
             res.json(usuarios);
+            
         } catch (err) {
             console.error('Erro ao listar usuários:', err);
             res.status(500).json({ error: err.message });
