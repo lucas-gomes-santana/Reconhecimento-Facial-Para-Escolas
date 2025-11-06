@@ -1,5 +1,4 @@
 import VideoCanvasDetector from '../components/VideoAndCanvas';
-import { useVerificacao } from '../hooks/auth/useVerificacao';
 import { useCadastroFacial } from '../hooks/frontend/useCadastro';
 import { useValidation } from '../hooks/validation/useValidation';
 import { Camera, Save } from 'lucide-react';
@@ -19,9 +18,10 @@ function Cadastrar() {
     handleIniciarReconhecimento,
     handlePararReconhecimento,
     handleSalvarCadastro,
+    distanceStatus,
+    isDetecting
   } = useCadastroFacial();
 
-  const { distanceStatus, isDetecting } = useVerificacao();
   const { getDistanceMessage } = useValidation();
   
 

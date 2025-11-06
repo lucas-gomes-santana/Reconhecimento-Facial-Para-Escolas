@@ -1,14 +1,14 @@
 export interface VerificarRostoResponse {
   existe: boolean;
-  bloqueado?: boolean;  // ✅ ADICIONE
+  bloqueado?: boolean;  
   dados: {
     usuario: {
-      id: string;  // ✅ ADICIONE
+      id: string;  
       nome: string;
       tipoUsuario: string;
       dataCadastro: string;
-      status?: string;  // ✅ ADICIONE
-      bloqueadoAte?: string;  // ✅ ADICIONE
+      status?: string; 
+      bloqueadoAte?: string;  
     };
     similaridade: number;
     distancia: number;

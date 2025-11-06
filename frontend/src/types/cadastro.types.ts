@@ -1,3 +1,5 @@
+import type { DistanceResult } from "./distance.types";
+
 export interface UseCadastroFacialReturn {
   nome: string;
   tipoUsuario: string;
@@ -6,6 +8,9 @@ export interface UseCadastroFacialReturn {
   isLoading: boolean;
   isDetecting: boolean;
   videoReady: boolean;
+
+  distanceStatus: DistanceResult,
+  isAtIdealDistance: boolean
   
   setNome: (nome: string) => void;
   setTipoUsuario: (tipo: string) => void;

@@ -264,6 +264,8 @@ export const useCadastroFacial = (): UseCadastroFacialReturn => {
     setTipoUsuario,
     videoRef,
     canvasRef,
+    distanceStatus,
+    isAtIdealDistance,
     handleIniciarReconhecimento,
     handlePararReconhecimento,
     handleSalvarCadastro,
