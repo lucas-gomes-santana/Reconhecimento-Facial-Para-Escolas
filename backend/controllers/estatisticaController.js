@@ -57,6 +57,7 @@ export class EstatisticaController {
             ]);
 
             const primeiroUsuario = await this.Usuario.findOne().sort({ dataCadastro: 1 });
+            const ultimoCadastro = await this.Usuario.findOne().sort({ dataCadastro: -1 });
             
             res.json({
                 success: true,
@@ -65,6 +66,7 @@ export class EstatisticaController {
                     totalVerificacoes: estatistica.totalVerificacoes,
                     usuariosPorTipo,
                     primeiroCadastro: primeiroUsuario?.dataCadastro,
+                    ultimoCadastro: ultimoCadastro?.dataCadastro,
                     ultimaAtualizacao: estatistica.ultimaAtualizacao
                 }
             });

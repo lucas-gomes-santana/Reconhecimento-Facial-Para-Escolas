@@ -117,6 +117,11 @@ function Estatisticas() {
                 <p><strong>Primeiro cadastro:</strong> {formatData(stats.primeiroCadastro)}</p>
               </div>
             )}
+            {stats.ultimoCadastro && (
+              <div className="mt-4 p-3 bg-blue-50 rounded">
+                <p><strong>Último cadastro:</strong> {formatData(stats.ultimoCadastro)}</p>
+              </div>
+            )}
           </div>
         )}
 

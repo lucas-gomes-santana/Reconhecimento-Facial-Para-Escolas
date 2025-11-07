@@ -122,7 +122,8 @@ export const useUserManagement = () => {
 
     if (searchTerm.trim()) {
       usuariosFiltrados = todosUsuarios.filter(usuario =>
-        usuario.nome.toLowerCase().includes(searchTerm.toLowerCase())
+        usuario.nome.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        usuario.tipoUsuario.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
