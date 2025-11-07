@@ -40,8 +40,9 @@ function VerificarMerenda() {
         setVerificacaoCompleta,
     } = useVerificacao();
 
-    const { verificarEBloquear } = useVerificarStatus();
+    const { verificarEBloquear, status } = useVerificarStatus();
   
+
     useEffect(() => {
         if (apiError) {
             console.log(`Erro: ${apiError}`);
@@ -49,6 +50,7 @@ function VerificarMerenda() {
             console.log(`Erro: ${faceError}`);
         }
     }, [apiError, faceError]);
+
 
     const realizarVerificacaoMerenda = async () => {
         try { 
@@ -112,24 +114,29 @@ function VerificarMerenda() {
             );
         }
 
-        if (resultadoVerificacao.bloqueado) {
-            return (
-                <div className="p-6 rounded-lg bg-yellow-500/90 border-2 border-yellow-500">
-                    <div className="text-center space-y-3">
-                        <div className="flex items-center justify-center gap-2">
-                            <AlertTriangle className="w-8 h-8 text-white" />
-                            <h3 className="font-bold text-lg text-white">
-                                Acesso Negado
-                            </h3>
-                        </div>
-                        <p className="text-white">
-                            <span className="font-bold">{resultadoVerificacao.dados?.usuario?.nome}</span>, 
-                             {resultadoVerificacao.mensagem}
-                        </p>
+       if (resultadoVerificacao.bloqueado) {
+        return (
+            <div className="p-6 rounded-lg bg-yellow-500/90 border-2 border-yellow-500">
+                <div className="text-center space-y-3">
+                    <div className="flex items-center justify-center gap-2">
+                        <AlertTriangle className="w-8 h-8 text-white" />
+                        <h3 className="font-bold text-lg text-white">
+                            Acesso Negado
+                        </h3>
                     </div>
+                    <p className="text-white">
+                        <span className="font-bold">{resultadoVerificacao.dados?.usuario?.nome}</span>, 
+                        você já retirou merenda.
+                    </p>
+                    {status.tempoRestante && (
+                        <p className="text-white font-semibold text-lg">
+                            Aguarde {status.tempoRestante}
+                        </p>
+                    )}
                 </div>
-            );
-        }
+            </div>
+        );
+    }
 
         return (
             <div className="p-6 rounded-lg bg-[#09ad5e]">

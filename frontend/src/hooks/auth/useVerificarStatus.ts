@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useAuth } from "./useAuth";
 import { baseURL } from "../../config/url";
 import { useApi } from "../api/useApi";
@@ -23,9 +23,71 @@ export const useVerificarStatus = () => {
 
     const [status, setStatus] = useState({
         usuarioBloqueado: false,
-        tempoRestante: null,
+        tempoRestante: null as string | null,
         podeRetirar: false
     });
+
+    const [tempoRestanteMs, setTempoRestanteMs] = useState<number | null>(null);
+    const intervalRef = useRef<NodeJS.Timeout | null>(null);
+
+    // Efeito para gerenciar a contagem regressiva
+    useEffect(() => {
+        if (tempoRestanteMs !== null && tempoRestanteMs > 0) {
+            intervalRef.current = setInterval(() => {
+                setTempoRestanteMs(prev => {
+                    if (prev === null || prev <= 1000) {
+                        if (intervalRef.current) {
+                            clearInterval(intervalRef.current);
+                        }
+                        setStatus({
+                            usuarioBloqueado: false,
+                            tempoRestante: null,
+                            podeRetirar: true
+                        });
+                        return null;
+                    }
+                    return prev - 1000;
+                });
+            }, 1000);
+        }
+
+        return () => {
+            if (intervalRef.current) {
+                clearInterval(intervalRef.current);
+            }
+        };
+    }, [tempoRestanteMs]);
+
+    // Efeito para atualizar o texto do tempo restante
+    useEffect(() => {
+        if (tempoRestanteMs !== null && tempoRestanteMs > 0) {
+            const texto = formatarTempo(tempoRestanteMs);
+            setStatus(prev => ({
+                ...prev,
+                tempoRestante: texto
+            }));
+        }
+    }, [tempoRestanteMs]);
+
+    const formatarTempo = (ms: number) => {
+        if (ms <= 0) return 'alguns segundos';
+
+        const minutos = Math.floor(ms / 60000);
+        const segundos = Math.floor((ms % 60000) / 1000);
+
+        if (minutos > 0) {
+            return `${minutos} minuto${minutos > 1 ? 's' : ''} e ${segundos} segundo${segundos > 1 ? 's' : ''}`;
+        }
+        return `${segundos} segundo${segundos > 1 ? 's' : ''}`;
+    };
+
+    const calcularTempoRestante = (bloqueadoAte: string) => {
+        const agora = new Date().getTime();
+        const dataDesbloqueio = new Date(bloqueadoAte).getTime();
+        const diferenca = dataDesbloqueio - agora;
+
+        return diferenca > 0 ? diferenca : 0;
+    };
 
     const verificarEBloquear = async (descriptor: number[]) => {
         try {
@@ -40,17 +102,18 @@ export const useVerificarStatus = () => {
            }
 
            if (resultado.bloqueado) {
-                const tempoRestante = calcularTempoRestante(resultado.dados?.usuario?.bloqueadoAte || '');
+                const ms = calcularTempoRestante(resultado.dados?.usuario?.bloqueadoAte || '');
                 
+                setTempoRestanteMs(ms);
                 setStatus({
                     usuarioBloqueado: true,
-                    tempoRestante: tempoRestante,
+                    tempoRestante: formatarTempo(ms),
                     podeRetirar: false
                 });
 
                 return {
                     sucesso: false,
-                    mensagem: `Você já retirou merenda. Aguarde ${tempoRestante}`,
+                    mensagem: `Você já retirou merenda. Aguarde ${formatarTempo(ms)}`,
                     dados: resultado.dados?.usuario || null,
                     bloqueado: true
                 };
@@ -66,33 +129,16 @@ export const useVerificarStatus = () => {
 
             return {
                 sucesso: true,
-                mensagem: 'Merenda liberada! Usuário bloqueado por 1 hora.',
+                mensagem: 'Merenda liberada! Usuário bloqueado por 1 minuto.',
                 dados: resultado.dados?.usuario || null, 
                 bloqueado: false
             };
-
 
         } catch (error) {
             console.error("Erro na verificação de status: ", error);
             throw error;
         }
     }
-
-    const calcularTempoRestante = (bloqueadoAte: string) => {
-        const agora = new Date().getTime();
-        const dataDesbloqueio = new Date(bloqueadoAte).getTime();
-        const diferenca = dataDesbloqueio - agora;
-
-        if (diferenca <= 0) return 'alguns segundos';
-
-        const minutos = Math.floor(diferenca / 60000);
-        const segundos = Math.floor((diferenca % 60000) / 1000);
-
-        if (minutos > 0) {
-            return `${minutos} minuto${minutos > 1 ? 's' : ''} e ${segundos} segundo${segundos > 1 ? 's' : ''}`;
-        }
-        return `${segundos} segundo${segundos > 1 ? 's' : ''}`;
-    };
 
     const bloquearUsuario = async (id: string) => {
         try {
@@ -161,10 +207,10 @@ export const useVerificarStatus = () => {
             console.error('Erro na verificação de merenda:', err);
         }
     };
+    
 
     return {
         bloquearUsuario,
-        calcularTempoRestante,
         verificarEBloquear,
         status,
         realizarVerificacaoMerenda,
