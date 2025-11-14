@@ -17,6 +17,7 @@ function VerificarMerenda() {
     const {
         loading: faceLoading,
         error: faceError,
+        expressionStatus
     } = useFaceDetection();
 
     const { 
@@ -233,6 +234,7 @@ function VerificarMerenda() {
                         canvasRef={canvasRef}
                         isDetecting={isDetecting}
                         distanceStatus={distanceStatus}
+                        expressionStatus={expressionStatus}
                         getDistanceMessage={getDistanceMessage}
                     />
           

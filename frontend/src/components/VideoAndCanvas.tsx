@@ -12,6 +12,11 @@ interface VideoCanvasDetectorProps {
   showDistanceIndicator?: boolean;
   getDistanceMessage?: (status: string) => string;
   className?: string;
+  expressionStatus?: {
+    expression: string;
+    isNeutral: boolean;
+    confidence: number;
+  };
 }
 
 const VideoCanvasDetector: React.FC<VideoCanvasDetectorProps> = ({
@@ -22,17 +27,19 @@ const VideoCanvasDetector: React.FC<VideoCanvasDetectorProps> = ({
   videoReady = true,
   showDistanceIndicator = true,
   getDistanceMessage,
+  expressionStatus,
   className = ''
 }) => {
   const getBorderColor = () => {
     if (!isDetecting) return 'border-gray-300';
-    if (distanceStatus?.isIdeal) return 'border-green-500';
+    if (isDetecting && distanceStatus?.isIdeal && expressionStatus?.isNeutral) return 'border-green-500';
     if (distanceStatus?.status === 'sem_face') return 'border-red-500';
+    return 'border-yellow-500'
   };
 
   const getIndicatorStyle = () => {
     if (distanceStatus?.isIdeal) {
-      return 'bg-green-300 text-green-800 border border-green-300';
+      return 'bg-green-300 text-green-800 border border-green-700';
     }
     return 'bg-red-300 text-red-800 border border-yellow-300';
   };
@@ -67,6 +74,19 @@ const VideoCanvasDetector: React.FC<VideoCanvasDetectorProps> = ({
           <div className={`px-3 py-2 rounded-lg text-sm font-medium ${getIndicatorStyle()}`}>
             {getDistanceMessage(distanceStatus.status)}
           </div>
+          {/* Indicador adicional de expressão */}
+          {expressionStatus && distanceStatus.status !== 'sem_face' && (
+            <div className={`px-3 py-2 rounded-lg text-sm font-medium ${
+              expressionStatus.isNeutral 
+                ? 'bg-green-300 text-green-800 border border-green-300' 
+                : 'bg-yellow-200 text-yellow-800 border border-yellow-300'
+            }`}>
+              {expressionStatus.isNeutral 
+                ? `Expressão neutra detectada` 
+                : `⚠ Mantenha expressão facial neutra`
+              }
+            </div>
+          )}
         </div>
       )}
     </div>

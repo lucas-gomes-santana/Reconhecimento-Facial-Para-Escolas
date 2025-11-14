@@ -4,8 +4,8 @@ import { criptografarSenha, validarFuncaoCadastrada, validarSenha } from '../uti
 
 export async function cadastrarDesenvolvedor(Admin) { 
     // Remover os fallbacks em produção
-    const devNome = process.env.DEV_USER_NOME || 'Lucas Gomes';
-    const devSenha = process.env.DEV_USER_SENHA || 'lucasgomes';
+    const devNome = process.env.DEV_USER_NOME || 'admin';
+    const devSenha = process.env.DEV_USER_SENHA || 'admin';
     const devFuncao = 'desenvolvedor';
 
     const devExistente = await Admin.findOne({ nome: devNome });

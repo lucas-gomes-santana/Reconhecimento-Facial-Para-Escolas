@@ -19,3 +19,9 @@ export interface DistanceValidationResult extends ValidationResult {
 
 
 export type DistanceStatus = 'muito_longe' | 'longe' | 'ideal' | 'perto' | 'muito_perto' | 'sem_face';
+
+export interface ExpressionStatus {
+  expression: string;
+  isNeutral: boolean;
+  confidence: number;
+}

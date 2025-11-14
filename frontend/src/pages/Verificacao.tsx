@@ -16,6 +16,7 @@ function Verificacao() {
   const {
     loading: faceLoading,
     error: faceError,
+    expressionStatus
   } = useFaceDetection();
   
   const { 
@@ -119,6 +120,7 @@ function Verificacao() {
             canvasRef={canvasRef}
             isDetecting={isDetecting}
             distanceStatus={distanceStatus}
+            expressionStatus={expressionStatus}
             getDistanceMessage={getDistanceMessage}
           />
           

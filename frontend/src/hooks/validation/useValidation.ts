@@ -47,6 +47,23 @@ export const useValidation = () => {
     };
   }, []);
 
+  const validateExpression = useCallback((expressionStatus: { expression: string; isNeutral: boolean; confidence: number }): ValidationResult => {
+    const errors: string[] = [];
+    
+    if (!expressionStatus.isNeutral) {
+      errors.push(`Mantenha uma expressão facial neutra. Expressão facial capturada: ${expressionStatus.expression}`);
+    }
+    
+    if (expressionStatus.confidence < 60) {
+      errors.push('Confiança da detecção de expressão muito baixa. Certifique-se de estar bem iluminado e posicionado.');
+    }
+    
+    return {
+      isValid: errors.length === 0,
+      errors
+    };
+  }, []);
+
   const validateDistance = useCallback((distanceStatus: DistanceStatus): DistanceValidationResult => {
     const errors: string[] = [];
     let isIdeal = false;
@@ -69,7 +86,6 @@ export const useValidation = () => {
         break;
       case 'ideal':
         isIdeal = true;
-        // Distância ideal, sem erros
         break;
     }
     
@@ -80,8 +96,11 @@ export const useValidation = () => {
     };
   }, []);
 
-  const getDistanceMessage = useCallback((distanceStatus: DistanceStatus): string => {
-    const messages = {
+  const getDistanceMessage = useCallback((
+    distanceStatus: DistanceStatus, 
+    expressionStatus?: { expression: string; isNeutral: boolean; confidence: number }
+  ): string => {
+    const distanceMessages = {
       'muito_longe': 'Muito longe - Aproxime-se da câmera',
       'longe': 'Longe - Aproxime-se um pouco mais',
       'ideal': 'Perfeito! Mantenha essa posição',
@@ -90,16 +109,17 @@ export const useValidation = () => {
       'sem_face': 'Nenhum rosto detectado - Posicione-se frente à câmera'
     };
     
-    return messages[distanceStatus] || 'Ajuste sua posição';
-  }, []);
-
-  const showValidationErrors = useCallback((errors: string[]): string => {
-    if (errors.length > 0) {
-      const errorMessage = errors.join('\n');
-      alert(errorMessage);
-      return errorMessage;
+    let message = distanceMessages[distanceStatus] || 'Ajuste sua posição';
+    
+    if (expressionStatus && distanceStatus !== 'sem_face') {
+      if (!expressionStatus.isNeutral) {
+        message += ` | Expressão: ${expressionStatus.expression} - Mantenha neutra!`;
+      } else {
+        message += ` | Expressão: Neutra`;
+      }
     }
-    return '';
+    
+    return message;
   }, []);
 
   return {
@@ -107,6 +127,6 @@ export const useValidation = () => {
     validateDescriptor,
     validateDistance,
     getDistanceMessage,
-    showValidationErrors
+    validateExpression,
   };
 };

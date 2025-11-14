@@ -3,6 +3,7 @@ import { useCadastroFacial } from '../hooks/frontend/useCadastro';
 import { useValidation } from '../hooks/validation/useValidation';
 import { Camera, Save } from 'lucide-react';
 import '../styles/index.css';
+import { useFaceDetection } from '../hooks/detection/useFaceDetection';
 
 function Cadastrar() {
   const {
@@ -19,11 +20,12 @@ function Cadastrar() {
     handlePararReconhecimento,
     handleSalvarCadastro,
     distanceStatus,
-    isDetecting
+    isDetecting,
   } = useCadastroFacial();
 
   const { getDistanceMessage } = useValidation();
   
+  const { expressionStatus } = useFaceDetection();
 
   return (
     <div className="min-h-screen flex items-center justify-center p-8">
@@ -97,6 +99,7 @@ function Cadastrar() {
               canvasRef={canvasRef}
               isDetecting={isDetecting}
               distanceStatus={distanceStatus}
+              expressionStatus={expressionStatus}
               getDistanceMessage={getDistanceMessage}
             />
           </div>

@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import * as faceapi from 'face-api.js';
 import { useState, useRef, useCallback, useEffect } from 'react';
-import type { DistanceResult, DistanceConfig } from '../../types/distance.types';
+import type { DistanceResult, DistanceConfig, ExpressionStatus} from '../../types/distance.types';
 
 
 export const useFaceDetection = () => {
@@ -16,6 +16,11 @@ export const useFaceDetection = () => {
   const [distanceStatus, setDistanceStatus] = useState<DistanceResult>({
     status: 'sem_face',
     isIdeal: false
+  });
+  const [expressionStatus, setExpressionStatus] = useState<ExpressionStatus>({
+    expression: 'unknown',
+    isNeutral: false,
+    confidence: 0
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -38,7 +43,8 @@ export const useFaceDetection = () => {
       await Promise.all([
         faceapi.nets.tinyFaceDetector.loadFromUri('/models'),
         faceapi.nets.faceLandmark68Net.loadFromUri('/models'),
-        faceapi.nets.faceRecognitionNet.loadFromUri('/models')
+        faceapi.nets.faceRecognitionNet.loadFromUri('/models'),
+        faceapi.nets.faceExpressionNet.loadFromUri('/models')
       ]);
       
       setModelsLoaded(true);
@@ -47,7 +53,7 @@ export const useFaceDetection = () => {
     } catch (err) {
       const errorMsg = 'Erro ao carregar modelos de reconhecimento facial: ' + (err instanceof Error ? err.message : 'Erro desconhecido');
       setError(errorMsg);
-      console.error('Erro detalhado:', err);
+      console.error('Erro ao carregar modelos de reconhecimento facial:', err);
       throw new Error(errorMsg);
 
     } finally {
@@ -120,10 +126,10 @@ export const useFaceDetection = () => {
             });
         };
 
-        videoRef.current.onerror = (err) => {
+        videoRef.current.onerror = (error: any) => {
           clearTimeout(timeoutId);
           setIsVideoLoading(false);
-          reject(new Error('Erro ao carregar stream de vídeo'));
+          reject(new Error('Erro ao carregar stream de vídeo: ', error));
         };
       });
     } catch (err) {
@@ -183,7 +189,8 @@ export const useFaceDetection = () => {
       const detections = await faceapi
         .detectAllFaces(videoRef.current, new faceapi.TinyFaceDetectorOptions())
         .withFaceLandmarks()
-        .withFaceDescriptors();
+        .withFaceDescriptors()
+        .withFaceExpressions(); 
 
       const ctx = canvasRef.current.getContext('2d');
       if (!ctx) return;
@@ -194,17 +201,24 @@ export const useFaceDetection = () => {
         setDistanceStatus({ status: 'sem_face', isIdeal: false });
         setCurrentDescriptor(null);
         setIsAtIdealDistance(false);
+        setExpressionStatus({ expression: 'desconhecida', isNeutral: false, confidence: 0 });
         return;
       }
 
       const detection = detections[0];
       const distance = calculateDistance(detection);
+      const expression = analyzeExpression(detection.expressions);
       
       setDistanceStatus(distance);
-      setIsAtIdealDistance(distance.isIdeal);
+      setExpressionStatus(expression);
+      
+      const canCapture = distance.isIdeal && expression.isNeutral;
+      setIsAtIdealDistance(canCapture);
+      
       drawDistanceIndicator(ctx, distance, detection);
+      drawExpressionIndicator(ctx, expression, detection);
 
-      if (distance.isIdeal) {
+      if (canCapture) {
         setCurrentDescriptor(Array.from(detection.descriptor));
       } else {
         setCurrentDescriptor(null);
@@ -212,7 +226,35 @@ export const useFaceDetection = () => {
     } catch (err) {
       console.error('Erro na detecção:', err);
     }
-  }, [calculateDistance, drawDistanceIndicator]);
+  }, [calculateDistance]);
+
+  const drawExpressionIndicator = useCallback((
+    ctx: CanvasRenderingContext2D, 
+    expression: ExpressionStatus, 
+    detection: any
+  ) => {
+    const faceBox = detection.detection.box;
+    const color = expression.isNeutral ? '#44ff44' : '#ff8844';
+    
+    ctx.fillStyle = color;
+    ctx.font = '14px Arial';
+    ctx.fillText(
+      `Expressão: ${expression.expression}`, 
+      faceBox.x, 
+      faceBox.y + faceBox.height + 20
+    );
+    
+  if (!expression.isNeutral) {
+    ctx.fillStyle = '#ff8844';
+    ctx.font = 'bold 14px Arial';
+    ctx.fillText(
+      'Mantenha uma expressão neutra!', 
+      faceBox.x, 
+      faceBox.y + faceBox.height + 40
+    );
+  }
+}, []);
+
 
   // useEffect para gerenciar o intervalo de detecção
   useEffect(() => {
@@ -235,7 +277,6 @@ export const useFaceDetection = () => {
       return;
     }
 
-    // CORREÇÃO: Validação antes de iniciar
     if (!videoRef.current || !canvasRef.current) {
       const errorMsg = 'Elementos de vídeo ou canvas não estão prontos. Aguarde o componente carregar.';
       setError(errorMsg);
@@ -269,20 +310,37 @@ export const useFaceDetection = () => {
     }
   }, [isDetecting, modelsLoaded, loadModels, startVideo]);
 
+  const analyzeExpression = useCallback((expressions: any): ExpressionStatus => {
+    // Encontra a expressão com maior confiança
+    const expressionsArray = Object.entries(expressions) as [string, number][];
+    const [dominantExpression, confidence] = expressionsArray.reduce((max, curr) => 
+      curr[1] > max[1] ? curr : max
+    );
+    
+    const isNeutral = dominantExpression === 'neutral' && confidence >= 0.6;
+    
+    const translatedExpressions: Record<string, string> = {
+      'neutral': 'neutra',
+      'happy': 'feliz',
+      'sad': 'triste',
+      'angry': 'raiva',
+      'fearful': 'medo',
+      'disgusted': 'desgosto',
+      'surprised': 'surpreso'
+    };
+
+    return {
+      expression: translatedExpressions[dominantExpression] || dominantExpression,
+      isNeutral,
+      confidence: Math.round(confidence * 100)
+    };
+  }, []);
+
   const stopDetection = useCallback(() => {
     console.log('Parando detecção...');
     setIsDetecting(false);
     setVideoReady(false);
 
-    // Para a trilha de vídeo para desligar a luz da câmera
-    if (videoRef.current && videoRef.current.srcObject) {
-      const stream = videoRef.current.srcObject as MediaStream;
-      stream.getTracks().forEach(track => {
-        track.stop();
-        console.log('Track parada:', track.kind);
-      });
-      videoRef.current.srcObject = null;
-    }
     
     if (canvasRef.current) {
       const ctx = canvasRef.current.getContext('2d');
@@ -326,6 +384,7 @@ export const useFaceDetection = () => {
     error,
     videoReady,
     isVideoLoading,
+    expressionStatus,
     loadModels,
     startDetection,
     stopDetection,

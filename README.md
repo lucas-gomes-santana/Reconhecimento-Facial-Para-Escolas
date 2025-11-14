@@ -31,7 +31,7 @@ Com a funcionalidade de reconhecimento facial do C.E.R.F, buscamos controlar o f
 1. Baixe o arquivo .zip deste repositório ou faça fork e clone usando:
 
    ```bash
-   https://github.com/lucas-gomes-santana/Reconhecimento-Facial-Para-Escolas.git
+   git clone https://github.com/lucas-gomes-santana/Reconhecimento-Facial-Para-Escolas.git
    ```
 
 <br>
