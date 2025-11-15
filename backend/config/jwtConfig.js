@@ -8,13 +8,14 @@ const accessTokenConfig = {
   secure: process.env.NODE_ENV === 'production',
   sameSite: 'strict',
   maxAge: 3600000 // 1 hora de duração
+  // maxAge: 60000 // 1 minuto de duração para testes
 };
 
 const refreshTokenConfig = {
   httpOnly: true,
   secure: process.env.NODE_ENV === 'production',
   sameSite: 'strict',
-  maxAge: 7 * 24 * 60 * 60 * 1000 // 7 dias de duração
+  maxAge: 7 * 24 * 60 * 60 * 1000 // 7 dias de duração do refresh token
 };
 
 export function gerarAccessToken(payload) {

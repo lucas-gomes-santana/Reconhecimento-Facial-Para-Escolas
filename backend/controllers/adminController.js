@@ -3,7 +3,7 @@ import { criptografarSenha, validarFuncaoCadastrada, validarSenha } from '../uti
 
 
 export async function cadastrarDesenvolvedor(Admin) { 
-    // Remover os fallbacks em produção
+    // Remover os fallbacks em produção e substituir por arquivos .env
     const devNome = process.env.DEV_USER_NOME || 'admin';
     const devSenha = process.env.DEV_USER_SENHA || 'admin';
     const devFuncao = 'desenvolvedor';
@@ -60,7 +60,7 @@ export class AdminController {
         const accessToken = gerarAccessToken(payload);
         const refreshToken = gerarRefreshToken(payload);
 
-        definirTokens(res, accessToken, refreshToken); // Define o cookie com o token JWT
+        definirTokens(res, accessToken, refreshToken);
 
         await this.Admin.findByIdAndUpdate(admin._id, { 
             ultimoLogin: new Date() 
@@ -76,7 +76,7 @@ export class AdminController {
             }
         });     
     }
-
+    
     async refreshToken(req, res) {
         const refreshToken = req.cookies.refreshToken;
 
@@ -88,18 +88,31 @@ export class AdminController {
 
         if (!payload) {
             removerTokens(res);
-            return res.status(403).json({ message: "Refresh token inválido" });
+            return res.status(403).json({ message: "Refresh token inválido ou expirado" });
         }
 
         const newAccessToken = gerarAccessToken({
             id: payload.id,
-            email: payload.email,
-            tipo: payload.tipo
+            nome: payload.nome,
+            funcao: payload.funcao
         });
 
-        res.cookie('jwt', newAccessToken, { httpOnly: true, sameSite: 'strict' });
-        res.json({ message: "Token atualizado com sucesso" });
-    };
+        // Gerar novo refresh token quando este expirar
+        const newRefreshToken = gerarRefreshToken({
+            id: payload.id,
+            nome: payload.nome,
+            funcao: payload.funcao
+        });
+
+        definirTokens(res, newAccessToken, newRefreshToken);
+        
+        console.log(`Tokens renovados para ${payload.nome}`);
+        
+        res.json({ 
+            success: true,
+            message: "Tokens atualizados com sucesso" 
+        });
+    }
 
     async logout(req, res) {
         try {
