@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 
+
 interface ApiError extends Error {
   status?: number;
 }
@@ -8,16 +9,16 @@ export const useApi = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleApiError = useCallback((error: any): ApiError => {
+  const handleApiError = useCallback((error: unknown): ApiError => {
     console.error('Erro na API:', error);
     
-    if (error.name === 'TypeError' && error.message.includes('fetch')) {
-      const apiError = new Error('Não foi possível conectar ao servidor. Verifique se o backend está rodando na porta correta.') as ApiError;
-      apiError.status = 0;
-      return apiError;
-    }
-    
     if (error instanceof Error) {
+      if (error.name === 'TypeError' && error.message.includes('fetch')) {
+        const apiError = new Error('Não foi possível conectar ao servidor. Verifique se o backend está rodando na porta correta.') as ApiError;
+        apiError.status = 0;
+        return apiError;
+      }
+
       return error as ApiError;
     }
     

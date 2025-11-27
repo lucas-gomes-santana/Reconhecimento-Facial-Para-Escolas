@@ -108,7 +108,7 @@ export const useUserManagement = () => {
 
       window.dispatchEvent(new CustomEvent('allUsersDeleted'));
 
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Erro ao remover os usuários:', error);
       setError('Erro ao remover os usuários. Tente novamente.');
 

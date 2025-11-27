@@ -92,20 +92,23 @@ export const useAdminPage = () => {
                 });
             }
 
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error("Erro no cadastro de admin:", error);
             
-            if (error.message.includes('Sessão expirada')) {
-                setMessage({ 
-                    texto: "Sessão encerrada. Faça login novamente.", 
-                    tipo: 'error' 
-                });
-            } else {
-                setMessage({ 
-                    texto: "Erro de conexão com o servidor!", 
-                    tipo: 'error' 
-                });
+            if (error instanceof Error) {
+                if (error.message.includes('Sessão expirada')) {
+                    setMessage({ 
+                        texto: "Sessão encerrada. Faça login novamente.", 
+                        tipo: 'error' 
+                    });
+                } else {
+                    setMessage({ 
+                        texto: "Erro de conexão com o servidor!", 
+                        tipo: 'error' 
+                    });
+                }
             }
+           
         } finally {
             setLoading(false);
         }

@@ -3,6 +3,11 @@ import * as faceapi from 'face-api.js';
 import { useState, useRef, useCallback, useEffect } from 'react';
 import type { DistanceResult, DistanceConfig, ExpressionStatus} from '../../types/distance.types';
 
+type FaceDetectionResult = faceapi.WithFaceExpressions<
+  faceapi.WithFaceDescriptor<
+    faceapi.WithFaceLandmarks<{ detection: faceapi.FaceDetection }>
+  >
+>;
 
 export const useFaceDetection = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -126,12 +131,13 @@ export const useFaceDetection = () => {
             });
         };
 
-        videoRef.current.onerror = (error: any) => {
+        videoRef.current.onerror = (error: Event | string) => {
           clearTimeout(timeoutId);
           setIsVideoLoading(false);
-          reject(new Error('Erro ao carregar stream de vídeo: ', error));
+          reject(new Error(`Erro ao carregar stream de vídeo: ${error}`));
         };
       });
+
     } catch (err) {
       const errorMsg = err instanceof Error && err.message.includes('Permission denied') 
         ? 'Permissão de câmera negada. Por favor, permita o acesso à câmera.'
@@ -145,7 +151,7 @@ export const useFaceDetection = () => {
   }, [setupCanvas]);
 
   // Lógica de cálculo e desenho 
-  const calculateDistance = useCallback((detection: any): DistanceResult => {
+  const calculateDistance = useCallback((detection: FaceDetectionResult): DistanceResult => {
     const faceBox = detection.detection.box;
     const faceSize = Math.sqrt(faceBox.width * faceBox.height);
 
@@ -165,19 +171,19 @@ export const useFaceDetection = () => {
     return { status, isIdeal, faceSize: Math.round(faceSize) };
   }, [distanceConfig]);
 
-  const drawDistanceIndicator = useCallback((ctx: CanvasRenderingContext2D, distance: DistanceResult, detection: any) => {
+  const drawDistanceIndicator = useCallback((ctx: CanvasRenderingContext2D, distance: DistanceResult, detection: FaceDetectionResult) => {
     const { status } = distance;
     const faceBox = detection.detection.box;
-    const colors = { 'muito_longe': '#ff4444', 'longe': '#ff8844', 'ideal': '#44ff44', 'perto': '#ff8844', 'muito_perto': '#ff4444' };
-    const messages = { 'muito_longe': 'Aproxime-se mais', 'longe': 'Um pouco mais perto', 'ideal': 'Distância ideal!', 'perto': 'Afaste-se um pouco', 'muito_perto': 'Muito perto, afaste-se' };
-    const color = colors[status];
+    const colors: Record<string, string> = { 'muito_longe': '#ff4444', 'longe': '#ff8844', 'ideal': '#44ff44', 'perto': '#ff8844', 'muito_perto': '#ff4444', 'sem_face': '#888888' };
+    const messages: Record<string, string> = { 'muito_longe': 'Aproxime-se mais', 'longe': 'Um pouco mais perto', 'ideal': 'Distância ideal!', 'perto': 'Afaste-se um pouco', 'muito_perto': 'Muito perto, afaste-se', 'sem_face': 'Sem rosto' };
+    const color = colors[status] || '#000000';
 
     ctx.strokeStyle = color;
     ctx.lineWidth = 3;
     ctx.strokeRect(faceBox.x, faceBox.y, faceBox.width, faceBox.height);
     ctx.fillStyle = color;
     ctx.font = '16px Arial';
-    ctx.fillText(messages[status], faceBox.x, faceBox.y - 10);
+    ctx.fillText(messages[status] || '', faceBox.x, faceBox.y - 10);
   }, []);
 
   const detectFace = useCallback(async () => {
@@ -231,7 +237,7 @@ export const useFaceDetection = () => {
   const drawExpressionIndicator = useCallback((
     ctx: CanvasRenderingContext2D, 
     expression: ExpressionStatus, 
-    detection: any
+    detection: FaceDetectionResult
   ) => {
     const faceBox = detection.detection.box;
     const color = expression.isNeutral ? '#44ff44' : '#ff8844';
@@ -254,7 +260,6 @@ export const useFaceDetection = () => {
     );
   }
 }, []);
-
 
   // useEffect para gerenciar o intervalo de detecção
   useEffect(() => {
@@ -310,7 +315,7 @@ export const useFaceDetection = () => {
     }
   }, [isDetecting, modelsLoaded, loadModels, startVideo]);
 
-  const analyzeExpression = useCallback((expressions: any): ExpressionStatus => {
+  const analyzeExpression = useCallback((expressions: faceapi.FaceExpressions): ExpressionStatus => {
     // Encontra a expressão com maior confiança
     const expressionsArray = Object.entries(expressions) as [string, number][];
     const [dominantExpression, confidence] = expressionsArray.reduce((max, curr) => 

@@ -3,6 +3,7 @@ import type { LoginResponse } from '../../types/login.types';
 import type { AdminData } from '../../types/admin.types';
 import { baseURL } from '../../config/url';
 
+
 export const useAuth = () => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [admin, setAdmin] = useState<AdminData | null>(null);
@@ -18,7 +19,7 @@ export const useAuth = () => {
         setAdmin(null);
     }, []);
 
-    // ✅ MOVER refreshAccessToken PARA ANTES de ser usado
+    
     const refreshAccessToken = useCallback(async (): Promise<boolean> => {
         try {
             const response = await fetch(`${baseURL}/admin/refresh-token`, {
@@ -87,7 +88,6 @@ export const useAuth = () => {
         clearAuthData();
     }, [clearAuthData]);
 
-    // ✅ AGORA verifyToken pode usar refreshAccessToken
     const verifyToken = useCallback(async () => {
         try {
             const response = await fetch(`${baseURL}/admin/verificar`, {
@@ -107,13 +107,12 @@ export const useAuth = () => {
                 }
             }
             
-            // ✅ Se receber 401/403, tenta refresh antes de limpar
+            //  Se receber 401/403, tenta refresh antes de limpar
             if (response.status === 401 || response.status === 403) {
                 console.log('Token expirado, tentando renovar...');
                 const refreshSuccess = await refreshAccessToken();
                 
                 if (refreshSuccess) {
-                    // Tenta verificar novamente após renovar
                     const retryResponse = await fetch(`${baseURL}/admin/verificar`, {
                         method: 'GET',
                         credentials: 'include',
@@ -145,7 +144,6 @@ export const useAuth = () => {
         }
     }, [saveAuthData, clearAuthData, refreshAccessToken]);
 
-    // ✅ authenticatedFetch também pode usar refreshAccessToken agora
     const authenticatedFetch = useCallback(async (url: string, options: RequestInit = {}) => {
         let response = await fetch(url, {
             ...options,
@@ -156,7 +154,6 @@ export const useAuth = () => {
             },
         });
 
-        // ✅ Tratar 401 E 403 juntos
         if (response.status === 401 || response.status === 403) {
             console.log('Token expirado durante requisição, tentando renovar...');
             const refreshSuccess = await refreshAccessToken();
@@ -173,7 +170,7 @@ export const useAuth = () => {
                     },
                 });
                 
-                // ✅ Se ainda falhar após refresh, aí sim faz logout
+                // Chama método de logout caso haja falha no refresh do token
                 if (response.status === 401 || response.status === 403) {
                     console.error('Falha na autenticação mesmo após renovar token');
                     logout();
@@ -194,7 +191,6 @@ export const useAuth = () => {
         verifyToken();
     }, [verifyToken]);
 
-    // ✅ Funções auxiliares de verificação de role
     const isAdmin = useCallback(() => {
         return admin?.funcao === 'admin';
     }, [admin]);

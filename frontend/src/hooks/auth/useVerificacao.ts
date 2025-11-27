@@ -7,6 +7,7 @@ import { useEffect, useState, useCallback } from "react";
 import { baseURL } from "../../config/url";
 import type { VerificarRostoResponse } from "../../types/face.type";
 
+
 export const useVerificacao = () => {
     const {
         clearError,
@@ -38,7 +39,7 @@ export const useVerificacao = () => {
 
     const [isInitialized, setIsInitialized] = useState(false);
     const [verificacaoCompleta, setVerificacaoCompleta] = useState(false);
-    const [resultadoVerificacao, setResultadoVerificacao] = useState<any>(null);
+    const [resultadoVerificacao, setResultadoVerificacao] = useState<unknown>(null);
 
     // Efeito para limpar erros quando necessário
     useEffect(() => {
