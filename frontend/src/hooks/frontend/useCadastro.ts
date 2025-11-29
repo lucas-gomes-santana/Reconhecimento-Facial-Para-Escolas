@@ -48,6 +48,7 @@ export const useCadastroFacial = (): UseCadastroFacialReturn => {
     showValidationErrors
   } = useValidation();
 
+
   const { authenticatedFetch } = useAuth();
   const { verificarRosto } = useVerificacao();
 

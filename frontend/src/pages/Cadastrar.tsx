@@ -36,9 +36,6 @@ function Cadastrar() {
           <h1 className="text-center text-2xl font-semibold text-blue-700">
             Cadastro de Usuários
           </h1>
-          <p className="text-center text-blue-600 text-sm mt-2">
-            Sistema de Reconhecimento Facial
-          </p>
         </div>
         
         {/* Formulário */}

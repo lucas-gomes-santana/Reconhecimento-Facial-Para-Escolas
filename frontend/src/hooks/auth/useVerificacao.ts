@@ -39,7 +39,7 @@ export const useVerificacao = () => {
 
     const [isInitialized, setIsInitialized] = useState(false);
     const [verificacaoCompleta, setVerificacaoCompleta] = useState(false);
-    const [resultadoVerificacao, setResultadoVerificacao] = useState<unknown>(null);
+    const [resultadoVerificacao, setResultadoVerificacao] = useState<VerificarRostoResponse | null>(null);
 
     // Efeito para limpar erros quando necessário
     useEffect(() => {
@@ -155,7 +155,7 @@ export const useVerificacao = () => {
                 similaridade: data.similaridade || 0,
                 distancia: data.distancia || 0,
             } : null
-        };
+          }
           
           return result;
           

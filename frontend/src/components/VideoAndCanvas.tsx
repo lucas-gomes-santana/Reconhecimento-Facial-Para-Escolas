@@ -1,8 +1,9 @@
 import React from 'react';
+import type { DistanceStatus } from '../types/distance.types';
 
 interface VideoCanvasDetectorProps {
-  videoRef: React.RefObject<HTMLVideoElement>;
-  canvasRef: React.RefObject<HTMLCanvasElement>;
+  videoRef: React.RefObject<HTMLVideoElement | null>;
+  canvasRef: React.RefObject<HTMLCanvasElement | null>;
   isDetecting: boolean;
   distanceStatus?: {
     status: string;
@@ -10,7 +11,7 @@ interface VideoCanvasDetectorProps {
   };
   videoReady?: boolean;
   showDistanceIndicator?: boolean;
-  getDistanceMessage?: (status: string) => string;
+  getDistanceMessage?: (status: DistanceStatus) => string;
   className?: string;
   expressionStatus?: {
     expression: string;
@@ -71,9 +72,11 @@ const VideoCanvasDetector: React.FC<VideoCanvasDetectorProps> = ({
       
       {isDetecting && showDistanceIndicator && distanceStatus && getDistanceMessage && (
         <div className="absolute top-4 left-4 right-4">
+          
           <div className={`px-3 py-2 rounded-lg text-sm font-medium ${getIndicatorStyle()}`}>
             {getDistanceMessage(distanceStatus.status)}
           </div>
+
           {/* Indicador adicional de expressão */}
           {expressionStatus && distanceStatus.status !== 'sem_face' && (
             <div className={`px-3 py-2 rounded-lg text-sm font-medium ${
@@ -87,6 +90,7 @@ const VideoCanvasDetector: React.FC<VideoCanvasDetectorProps> = ({
               }
             </div>
           )}
+          
         </div>
       )}
     </div>

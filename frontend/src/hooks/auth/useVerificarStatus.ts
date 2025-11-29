@@ -198,7 +198,6 @@ export const useVerificarStatus = () => {
                     distancia: 0,
                 } : null,
                 bloqueado: resultado.bloqueado,
-                mensagem: resultado.mensagem,
             });
 
             setVerificacaoCompleta(true);

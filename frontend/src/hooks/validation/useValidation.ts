@@ -1,9 +1,11 @@
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import type { DistanceStatus, DistanceValidationResult } from '../../types/distance.types';
 import type { ValidationResult } from '../../types/validation.types';
 
 
 export const useValidation = () => {
+
+  const [, setStatusMessage] = useState('');
   
   const validateCadastroForm = useCallback((nome: string, tipoUsuario: string): ValidationResult => {
     const errors: string[] = [];
@@ -122,11 +124,18 @@ export const useValidation = () => {
     return message;
   }, []);
 
+  const showValidationErrors = useCallback((errors: string[] | string) => {
+    const message = Array.isArray(errors) ? errors.join(' - ') : String(errors);
+    setStatusMessage(message);
+  }, []);
+
+
   return {
     validateCadastroForm,
     validateDescriptor,
     validateDistance,
     getDistanceMessage,
     validateExpression,
+    showValidationErrors
   };
 };

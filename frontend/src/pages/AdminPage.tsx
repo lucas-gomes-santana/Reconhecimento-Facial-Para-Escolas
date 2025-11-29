@@ -115,7 +115,7 @@ function AdminPage() {
                         Página do Diretor
                     </h1>
                     <p className="text-[#1E3A8A] text-sm mb-6">
-                        Cadastre ou exclua administradores e segurança no sistema C.E.R.F
+                        Cadastre ou exclua administradores e seguranças no sistema C.E.R.F
                     </p>
 
                     {/* Mensagens de Feedback */}
@@ -133,7 +133,7 @@ function AdminPage() {
                     <form onSubmit={handleCadastrarAdmin} className="space-y-4">
                         <div>
                             <label className="block text-sm font-medium text-[#1E3A8A] mb-2">
-                                Nome do Administrador/Segurança
+                                Nome do Gestor
                             </label>
                             <input
                                 type="text"
@@ -149,7 +149,7 @@ function AdminPage() {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <label className="block text-sm font-medium text-[#1E3A8A] mb-2">
-                                    Senha para o Usuário
+                                    Senha para o Gestor
                                 </label>
                                 <input
                                     type="password"
@@ -165,7 +165,7 @@ function AdminPage() {
 
                             <div>
                                 <label htmlFor="tipoGestor" className="block text-sm font-medium text-[#1E3A8A] mb-2">
-                                    Tipo do Usuário
+                                    Tipo do Gestor
                                 </label>
                                 <select
                                     id="tipoGestor"
@@ -193,7 +193,7 @@ function AdminPage() {
                                     Cadastrando...
                                 </div>
                             ) : (
-                                'Cadastrar Usuário'
+                                'Cadastrar Gestor'
                             )}
                         </button>
                     </form>
@@ -201,18 +201,17 @@ function AdminPage() {
 
                 {/* Seção de Gerenciamento */}
                 <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
-                    {/* Header azul */}
                     <div className="bg-[#1E3A8A] px-6 py-6">
                         <div className="flex items-center gap-2 mb-2 text-white">
                             <Users className="w-6 h-6" />
-                            <h2 className="text-2xl font-bold">Gerenciamento de Admins</h2>
+                            <h2 className="text-2xl font-bold">Gerenciamento de Gestores</h2>
                         </div>
                         <p className="text-purple-200 text-sm">
                             {getTotalAdmins() > 0 
-                                ? `${getTotalAdmins()} administrador${getTotalAdmins() > 1 ? 'es' : ''} cadastrado${getTotalAdmins() > 1 ? 's' : ''}`
+                                ? `${getTotalAdmins()} gestor${getTotalAdmins() > 1 ? 'es' : ''} cadastrado${getTotalAdmins() > 1 ? 's' : ''}`
                                 : searchTerm 
-                                    ? 'Nenhum usuário encontrado' 
-                                    : 'Nenhum usuário cadastrado'
+                                    ? 'Nenhum gestor encontrado' 
+                                    : 'Nenhum gestor cadastrado'
                             }
                         </p>
                     </div>
@@ -223,7 +222,7 @@ function AdminPage() {
                             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
                             <input
                                 type="text"
-                                placeholder="Pesquise por nome ou função"
+                                placeholder="Pesquisar por nome ou função"
                                 value={searchTerm}
                                 onChange={(e) => buscarAdmins(e.target.value)}
                                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1E3A8A] focus:border-[#1E3A8A] transition-all"
@@ -235,12 +234,12 @@ function AdminPage() {
                             <div className="text-center py-12">
                                 <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                                 <h3 className="text-lg font-medium text-gray-900 mb-2">
-                                    {searchTerm ? 'Nenhum usuário encontrado' : 'Nenhum usuário cadastrado'}
+                                    {searchTerm ? 'Nenhum gestor encontrado' : 'Nenhum gestor cadastrado'}
                                 </h3>
                                 <p className="text-gray-500 text-sm">
                                     {searchTerm 
                                         ? 'Tente buscar com outros termos' 
-                                        : 'Cadastre o primeiro usuário usando o formulário acima'
+                                        : 'Cadastre o primeiro gestor usando o formulário acima'
                                     }
                                 </p>
                             </div>
@@ -269,7 +268,7 @@ function AdminPage() {
                                             onClick={() => confirmarRemocao(admin._id)}
                                             disabled={removendoAdmin === admin._id}
                                             className="ml-3 p-2 text-gray-400  hover:text-red-600 hover:bg-red-100 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                                            title="Remover usuário"
+                                            title="Remover gestor"
                                         >
                                             {removendoAdmin === admin._id ? (
                                                 <Loader className="h-5 w-5 animate-spin" />
@@ -285,14 +284,14 @@ function AdminPage() {
                         {loadingList && (
                             <div className="flex justify-center items-center py-8">
                                 <Loader className="h-6 w-6 animate-spin text-[#1E3A8A] mr-2" />
-                                <span className="text-gray-600">Carregando usuários...</span>
+                                <span className="text-gray-600">Carregando gestores...</span>
                             </div>
                         )}
 
                         {!hasMore && admins.length > 0 && (
                             <div className="text-center py-6">
                                 <p className="text-gray-400 text-sm">
-                                    Todos os usuários foram carregados
+                                    Todos os gestores foram carregados
                                 </p>
                             </div>
                         )}
@@ -302,7 +301,7 @@ function AdminPage() {
 
             {/* Modal de Confirmação */}
             {adminParaRemover && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+                <div className="fixed inset-0 bg-opacity-50 flex items-center justify-center p-4 z-50">
                     <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl">
                         <div className="flex items-center gap-3 mb-4">
                             <div className="flex-shrink-0 w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
@@ -314,7 +313,7 @@ function AdminPage() {
                         </div>
                         
                         <p className="text-gray-600 mb-6">
-                            Tem certeza que deseja remover o usuário <strong>{admins.find(u => u._id === adminParaRemover)?.nome}</strong>? 
+                            Tem certeza que deseja remover o gestor <strong>{admins.find(u => u._id === adminParaRemover)?.nome}</strong>? 
                             Esta ação não pode ser desfeita.
                         </p>
                         

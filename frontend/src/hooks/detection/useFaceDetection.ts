@@ -117,6 +117,7 @@ export const useFaceDetection = () => {
                   setIsVideoLoading(false);
                   console.log('Vídeo pronto para detecção');
                   resolve();
+                  
                 } else {
                   setTimeout(checkVideoReady, 100);
                 }
@@ -346,7 +347,6 @@ export const useFaceDetection = () => {
     setIsDetecting(false);
     setVideoReady(false);
 
-    
     if (canvasRef.current) {
       const ctx = canvasRef.current.getContext('2d');
       ctx?.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);

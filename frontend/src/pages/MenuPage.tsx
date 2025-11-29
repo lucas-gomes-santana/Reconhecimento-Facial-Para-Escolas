@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { UserPlus, ScanFace, UtensilsCrossed, BarChart3, Settings, Shield } from "lucide-react";
 import '../styles/index.css';
 
+
 function MenuPage() {
   const menuItems = [
     {

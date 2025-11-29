@@ -8,6 +8,7 @@ import VideoCanvasDetector from '../components/VideoAndCanvas';
 import { Camera, CheckCircle, XCircle, AlertTriangle, Salad } from 'lucide-react';
 import '../styles/index.css';
 
+
 function VerificarMerenda() {
     const { 
         loading: apiLoading, 
@@ -84,7 +85,6 @@ function VerificarMerenda() {
                     distancia: 0,
                 } : null,
                 bloqueado: resultado.bloqueado,
-                mensagem: resultado.mensagem,
             });
 
             setVerificacaoCompleta(true);

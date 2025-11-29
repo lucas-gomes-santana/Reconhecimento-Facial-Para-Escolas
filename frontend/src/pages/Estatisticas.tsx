@@ -4,6 +4,8 @@ import { useEstatisticas } from '../hooks/frontend/useEstatisticas';
 import { useGerarRelatorio } from '../hooks/utils/useGerarRelatorio';
 import { useFormatData } from '../hooks/utils/useFormatData';
 import '../styles/index.css';
+import type { UsuarioPorTipo } from '../types/user.types';
+import type { DadosEstatisticas} from '../types/estatisticas.types';
 
 
 function Estatisticas() {
@@ -26,7 +28,7 @@ function Estatisticas() {
 
   const { formatData } = useFormatData();
 
-  const [ lastRefresh, setLastRefresh] = useState<string>('');
+  const [, setLastRefresh] = useState<string>('');
 
   useEffect(() => {
     // Carrega estatísticas ao montar o componente
@@ -83,7 +85,7 @@ function Estatisticas() {
       );
     }
 
-    const stats = estatisticas as any;
+    const stats = estatisticas as DadosEstatisticas;
 
     return (
       <div>
@@ -104,7 +106,7 @@ function Estatisticas() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
 
-              {stats.usuariosPorTipo.map((tipo: any, index: number) => (
+              {stats.usuariosPorTipo.map((tipo: UsuarioPorTipo, index: number) => (
                 <div key={index} className="flex justify-between p-2 bg-white rounded border">
                   <strong>{tipo._id}:</strong>
                   <span>{tipo.quantidade} usuário(s)</span>
