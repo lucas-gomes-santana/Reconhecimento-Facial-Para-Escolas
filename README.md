@@ -8,19 +8,19 @@ O objetivo do C.E.R.F é reforçar a segurança das escolas, através do uso de 
 
 Com a funcionalidade de reconhecimento facial do C.E.R.F, buscamos controlar o fluxo de entrada de indivíduos em escolas, permitindo quem entra e barrando acesso não autorizado dentro da unidade escolar, utilizando o reconhecimento facial para verificar se o rosto escaneado foi cadastro anteriormente no sistema ou não. Dessa forma, o C.E.R.F ajudará a portaria das escolas a não permitir que pessoas que não fazem parte da unidade escolar entrarem, criando assim um ambiente de segurança entre os alunos, professores e outros integrantes da escola que possuirá o sistema C.E.R.F em atividade.
 
-****
+---
 
 ### Ferramentas Usadas
 
 - React Vite + TailwindCSS (front-end)
 
-- NodeJs (back-end)
+- NodeJs + Express (back-end)
 
 - MongoDB (banco de dados)
 
 - Git e GitHub (versionamento de código e salvamento em nuvem respectivamente)
 
-****
+---
 
 ### Como Executar o Projeto
 
@@ -28,7 +28,7 @@ Com a funcionalidade de reconhecimento facial do C.E.R.F, buscamos controlar o f
 
 <br>
 
-1. Baixe o arquivo .zip deste repositório ou faça fork e clone usando:
+1. Faça fork e clone usando:
 
    ```bash
    git clone https://github.com/lucas-gomes-santana/Reconhecimento-Facial-Para-Escolas.git
@@ -54,8 +54,7 @@ Com a funcionalidade de reconhecimento facial do C.E.R.F, buscamos controlar o f
 
 <br>
 
-4. Execute o projeto:
-
+4. Execute:
 
    Começando pelo back-end:
 
@@ -75,12 +74,12 @@ Com a funcionalidade de reconhecimento facial do C.E.R.F, buscamos controlar o f
    http://localhost:5173/
    ```
 
-   OBS: Use esses comandos pelo terminal do seu sistema operacional, como o CMD do Windows, dentro da pasta da aplicação.
+   OBS: Use esses comandos pelo terminal do seu sistema operacional, como o CMD do Windows, dentro da pasta do projeto baixado.
 
-****
+---
 
-### Avisos Finais
+### Avisos finais
 
-O projeto está licenciado pela licença CC BY-NC-ND 4.0(Attribution-NonCommercial-NoDerivatives 4.0 International) da Creative Commons. Não está autorizado o uso dele para fins comerciais. Apenas compartilhamento sem modificações e com atribuição ao autor original.
+Este projeto NÃO é uma iniciativa open-source e está protegido por direitos autorais.
 
-Caso tenha disponibilidade. leia o artigo feito a respeito do projeto para mais informações e analise os diagramas disponíveis na pasta **docs**.
+Para mais informações, consulte **LICENSE** e o resto da documentação na pasta **docs**.

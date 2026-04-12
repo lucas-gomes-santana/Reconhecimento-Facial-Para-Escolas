@@ -1,0 +1,28 @@
+root = true
+
+# Configuração padrão para todos os arquivos
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+indent_style = space
+indent_size = 2
+
+# Markdown (não quebrar espaços finais — importante para formatação)
+[*.md]
+trim_trailing_whitespace = false
+
+[*.{json,yml,yaml}]
+indent_size = 2
+
+[*.{js,jsx,ts,tsx}]
+indent_style = space
+indent_size = 2
+
+[*.{html,css,scss}]
+indent_size = 2
+
+# Evita conflitos com Prettier
+max_line_length = off
