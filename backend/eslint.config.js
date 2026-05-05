@@ -23,6 +23,7 @@ export default [
     },
 
     rules: {
+      // Estilo
       quotes: ["error", "double"],
       semi: ["error", "always"],
       "no-multiple-empty-lines": ["error", { max: 2, maxEOF: 1 }],
@@ -61,6 +62,7 @@ export default [
       "import/no-unresolved": "error",
       "import/no-duplicates": "error",
 
+      // Limpeza de código
       "unused-imports/no-unused-imports": "error",
       "unused-imports/no-unused-vars": ["warn", { argsIgnorePattern: "^_" }],
 
