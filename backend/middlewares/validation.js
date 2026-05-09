@@ -1,113 +1,111 @@
-
 class ValidationMiddleware {
+  validateLogin(req, res, next) {
+    const { nome, senha } = req.body;
 
-    validateLogin(req, res, next) {
-        const { nome, senha } = req.body;
-
-        if (!nome || !senha) {
-            return res.status(400).json({ message: 'Todos os campos são obrigatórios'});
-        }
-
-        next();
+    if (!nome || !senha) {
+      return res.status(400).json({ message: "Todos os campos são obrigatórios" });
     }
 
-    validateCadastroUsuario(req, res, next) {
-        const { nome, tipoUsuario, descriptor } = req.body;
-        
-        if (!nome || !tipoUsuario || !descriptor) {
-            return res.status(400).json({ message: 'Dados incompletos' });
-        }
+    next();
+  }
 
-        next();
+  validateCadastroUsuario(req, res, next) {
+    const { nome, tipoUsuario, descriptor } = req.body;
+
+    if (!nome || !tipoUsuario || !descriptor) {
+      return res.status(400).json({ message: "Dados incompletos" });
     }
 
-    validateVerificacaoRosto(req, res, next) {
-        const { descriptor, contexto } = req.body;
-        const errors = [];
+    next();
+  }
 
-        if (!descriptor) {
-            errors.push('Descritor facial não fornecido' );
-        }
-        
-        if (!Array.isArray(descriptor)) {
-            errors.push('Formato do descritor facial inválido');
-        }
+  validateVerificacaoRosto(req, res, next) {
+    const { descriptor, contexto } = req.body;
+    const errors = [];
 
-        if (contexto && !['cadastro', 'verificacao', 'merenda'].includes(contexto)) {
-            errors.push('Contexto inválido');
-        }
-
-        if (errors.length > 0) {
-            return res.status(400).json({ message: errors });
-        }
-
-        next();
+    if (!descriptor) {
+      errors.push("Descritor facial não fornecido");
     }
 
-    validateCadastroAdmin(req, res, next) {
-        const { nome, senha, funcao } = req.body;
-        const errors = [];
-
-        if (!nome || !senha || !funcao) {
-            errors.push('Todos os campos são obrigatórios');
-        }
-
-        if (senha.length < 8) {
-            errors.push('A senha deve ter mínimo de 8 caracteres');
-        }
-
-        if (errors.length > 0) {
-            return res.status(400).json({
-                message: errors
-            });
-        }
-
-        next();
+    if (!Array.isArray(descriptor)) {
+      errors.push("Formato do descritor facial inválido");
     }
 
-    validateId(req, res, next) {
-        const { id } = req.body;
-
-        if (!id) {
-            return res.status(400).json({ message: 'Id obrigatório para realizar a operação' });
-        }
-
-        next();
+    if (contexto && !["cadastro", "verificacao", "merenda"].includes(contexto)) {
+      errors.push("Contexto inválido");
     }
 
-    validateIdParam(req, res, next) {
-        const { id } = req.params;
-
-        if (!id) {
-            return res.status(400).json({ message: 'Id obrigatório para realizar a operação' });
-        }
-
-        next();
+    if (errors.length > 0) {
+      return res.status(400).json({ message: errors });
     }
 
-    validateMudancaDeSenha(req, res, next) {
-        const { id, novaSenha, confirmarSenha } = req.body;
-        const errors = [];
+    next();
+  }
 
-        if (!id || !novaSenha) {
-            errors.push('Todos os campos são obrigatórios');
-        }
+  validateCadastroAdmin(req, res, next) {
+    const { nome, senha, funcao } = req.body;
+    const errors = [];
 
-        if (novaSenha !== confirmarSenha) {
-            errors.push('As senhas nova e de confirmação estão diferentes');
-        }
-
-        if (novaSenha.length < 8) {
-            errors.push('A senha deve ter mínimo de 8 caracteres');
-        }
-
-        if (errors.length > 0) {
-            return res.status(400).json({ message: errors });
-        }
-
-        next();
-
+    if (!nome || !senha || !funcao) {
+      errors.push("Todos os campos são obrigatórios");
     }
+
+    if (senha.length < 8) {
+      errors.push("A senha deve ter mínimo de 8 caracteres");
+    }
+
+    if (errors.length > 0) {
+      return res.status(400).json({
+        message: errors,
+      });
+    }
+
+    next();
+  }
+
+  validateId(req, res, next) {
+    const { id } = req.body;
+
+    if (!id) {
+      return res.status(400).json({ message: "Id obrigatório para realizar a operação" });
+    }
+
+    next();
+  }
+
+  validateIdParam(req, res, next) {
+    const { id } = req.params;
+
+    if (!id) {
+      return res.status(400).json({ message: "Id obrigatório para realizar a operação" });
+    }
+
+    next();
+  }
+
+  validateMudancaDeSenha(req, res, next) {
+    const { id, novaSenha, confirmarSenha } = req.body;
+    const errors = [];
+
+    if (!id || !novaSenha) {
+      errors.push("Todos os campos são obrigatórios");
+    }
+
+    if (novaSenha !== confirmarSenha) {
+      errors.push("As senhas nova e de confirmação estão diferentes");
+    }
+
+    if (novaSenha.length < 8) {
+      errors.push("A senha deve ter mínimo de 8 caracteres");
+    }
+
+    if (errors.length > 0) {
+      return res.status(400).json({ message: errors });
+    }
+
+    next();
+  }
 }
 
 export default new ValidationMiddleware();
+

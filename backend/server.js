@@ -5,10 +5,11 @@ import usuarioRoutes from "./routes/usuarioRoutes.js";
 import estatisticaRoutes from "./routes/estatisticaRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import logEntradaRoutes from "./routes/logEntradaRoutes.js";
+import responsavelRoutes from "./routes/responsavelRoutes.js";
 import corsConfig from "./config/corsConfig.js";
-import { cadastrarDesenvolvedor }  from "./controllers/adminController.js";
-import  Admin  from "./models/Admin.js";
-
+import { cadastrarDesenvolvedor } from "./controllers/adminController.js";
+import { seedAlunosMockados } from "./config/seedAlunos.js";
+import Admin from "./models/Admin.js";
 
 const app = express();
 
@@ -21,11 +22,13 @@ app.use("/api", usuarioRoutes);
 app.use("/api", estatisticaRoutes);
 app.use("/api", adminRoutes);
 app.use("/api", logEntradaRoutes);
+app.use("/api", responsavelRoutes);
 
 async function startServer() {
   try {
-    await databaseConfig.connect(); 
+    await databaseConfig.connect();
     await cadastrarDesenvolvedor(Admin);
+    await seedAlunosMockados();
 
     app.listen(3000, () => {
       console.log("Servidor rodando na porta 3000");

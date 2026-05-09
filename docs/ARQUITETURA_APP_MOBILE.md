@@ -72,7 +72,7 @@ O app mobile **não terá backend próprio**. Ele consumirá a mesma API REST No
 
 O MongoDB já em uso no sistema principal receberá três novas collections:
 
-- `alunomocks` — dados fictícios dos alunos usados para validação no MVP
+- `alunosMatriculas` — dados fictícios dos alunos usados para validação no MVP
 - `responsaveis` — contas dos responsáveis cadastrados pelo app
 - `vinculos` — relação entre responsáveis e seus respectivos alunos
 
@@ -98,7 +98,7 @@ O responsável realiza seu próprio cadastro no app, informando dados pessoais e
 
 A validação do vínculo é feita automaticamente pelo sistema cruzando dois dados simultaneamente:
 
-1. **Matrícula informada** deve existir na collection `alunomocks`
+1. **Matrícula informada** deve existir na collection `alunosMatriculas`
 2. **Nome completo informado** deve corresponder exatamente ao nome registrado para aquela matrícula
 
 Se ambos os critérios forem satisfeitos, o vínculo é criado automaticamente e o responsável tem acesso imediato. Se qualquer um falhar, o cadastro é rejeitado com mensagem de erro apropriada.
@@ -165,7 +165,7 @@ Isso depende de integração com serviço de push notifications (Firebase Cloud 
 
 ## Modelo de Dados
 
-### Collection: `alunomocks`
+### Collection: `alunosMatriculas`
 
 Simula o banco de matrículas que em um cenário real viria de um sistema governamental ou da secretaria escolar. Populada via script de seed na inicialização do servidor.
 
@@ -285,7 +285,7 @@ Atualmente o sistema principal registra verificações apenas no contador da col
 | GET    | `/api/responsaveis/merenda/:alunoMockId`  | Responsável  | Histórico de merenda do aluno           |
 | POST   | `/api/responsaveis/vincular`              | Responsável  | Adiciona novo vínculo a conta existente |
 
-> Todas as rotas autenticadas verificam no backend se o `alunoMockId` solicitado está de fato vinculado ao responsável da sessão, prevenindo acesso indevido por manipulação da requisição.
+> Todas as rotas autenticadas verificam no backend se o `alunoMatriculaId` solicitado está de fato vinculado ao responsável da sessão, prevenindo acesso indevido por manipulação da requisição.
 
 ### Estrutura de Pastas do App Mobile (proposta)
 
@@ -457,7 +457,7 @@ Toda rota que retorna dados de um aluno específico realiza, antes de qualquer o
 Vinculo.findOne({ responsavelId: idDaSessão, alunoMockId: idSolicitado })
 ```
 
-Se não existir vínculo, retorna 403. Isso garante que mesmo um responsável autenticado não consiga ver dados de alunos que não são seus filhos, mesmo que descubra o `alunoMockId` de outro aluno.
+Se não existir vínculo, retorna 403. Isso garante que mesmo um responsável autenticado não consiga ver dados de alunos que não são seus filhos, mesmo que descubra o `alunoMatriculaId` de outro aluno.
 
 ### Dados Sensíveis
 
@@ -503,7 +503,7 @@ Para o MVP acadêmico, os dados de alunos são fictícios e pré-cadastrados no 
 
 O script de seed deve verificar se os dados já existem antes de inserir, para não duplicar ao reiniciar o servidor — igual ao que já acontece com o `desenvolvedor`.
 
-Em um cenário de produção real (fora do MVP acadêmico), a collection `alunomocks` seria substituída por uma integração com o sistema de matrícula da escola, e o script de seed seria desativado.
+Em um cenário de produção real (fora do MVP acadêmico), a collection `alunosMatriculas` seria substituída por uma integração com o sistema de matrícula da escola, e o script de seed seria desativado.
 
 ---
 
@@ -538,7 +538,7 @@ Não está no escopo inicial mas é essencial para uso real. Requer fluxo de res
 
 ### CP-05 — Logs de entrada ligados ao AlunoMock
 
-Atualmente, o sistema principal identifica o `usuarioId` (que tem o descriptor facial), mas não o `alunoMockId`. Para o app funcionar corretamente, é necessário criar e manter a relação `AlunoMock.usuarioId → Usuario._id` e usar isso ao gravar logs. Esse cruzamento pode exigir um passo extra no cadastro de alunos no sistema principal.
+Atualmente, o sistema principal identifica o `usuarioId` (que tem o descriptor facial), mas não o `alunoMatriculaId`. Para o app funcionar corretamente, é necessário criar e manter a relação `AlunoMatricula.usuarioId → Usuario._id` e usar isso ao gravar logs. Esse cruzamento pode exigir um passo extra no cadastro de alunos no sistema principal.
 
 ---
 
@@ -548,7 +548,7 @@ Estas são evoluções esperadas se o projeto for adotado por instituições rea
 
 ### LP-01 — Substituição dos dados mockados por integração real
 
-A collection `alunomocks` e o script de seed seriam substituídos por integração com o sistema de matrícula oficial da escola ou da rede estadual de ensino. Na Bahia, isso envolveria o sistema **SEC (Sistema Educacional Conectado)** da Secretaria de Educação do Estado.
+A collection `alunosMatriculas` e o script de seed seriam substituídos por integração com o sistema de matrícula oficial da escola ou da rede estadual de ensino. Na Bahia, isso envolveria o sistema **SEC (Sistema Educacional Conectado)** da Secretaria de Educação do Estado.
 
 Essa mudança não afeta a arquitetura do app mobile nem do backend de responsáveis — apenas a fonte dos dados de validação muda. O contrato das coleções permanece o mesmo.
 
@@ -624,4 +624,4 @@ Estas questões ainda precisam ser definidas pela equipe antes ou durante o dese
 **Desenvolvido para:** Feira de Ciências 2025 — CETEP Ipirá, BA
 **Módulo:** App Mobile — Responsáveis
 **Licença:** CC BY-NC-ND 4.0
-**Última atualização:** Abril de 2026
+**Última atualização:** Maio de 2026
