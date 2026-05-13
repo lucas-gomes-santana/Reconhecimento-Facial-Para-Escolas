@@ -46,5 +46,10 @@ router.post(
   responsavelController.vincular.bind(responsavelController),
 );
 
+router.post(
+  "/responsaveis/validar-matricula",
+  responsavelController.validarMatricula.bind(responsavelController),
+);
+
 export default router;
 

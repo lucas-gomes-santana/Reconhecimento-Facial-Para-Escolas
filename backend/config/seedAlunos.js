@@ -122,4 +122,3 @@ export async function seedAlunosMockados() {
     console.error("❌ Erro ao inserir alunos mockados:", err.message);
   }
 }
-

@@ -295,4 +295,44 @@ export class ResponsavelController {
       res.status(500).json({ message: err.message });
     }
   }
+
+  async validarMatricula(req, res) {
+    try {
+      const { matricula, cpf, nomeAluno } = req.body;
+
+      if (!matricula && !cpf) {
+        return res.status(400).json({ message: "Matrícula ou CPF são obrigatórios", found: false });
+      }
+
+      const query = matricula ? { matricula } : { cpf };
+      const alunoMatricula = await AlunoMatricula.findOne(query);
+
+      if (!alunoMatricula) {
+        return res.status(404).json({ message: "Aluno não encontrado", found: false });
+      }
+
+      if (nomeAluno) {
+        const nomeNormalizadoAluno = nomeAluno.trim().toLowerCase();
+        const nomeNormalizadoBanco = alunoMatricula.nomeCompleto.trim().toLowerCase();
+
+        if (nomeNormalizadoAluno !== nomeNormalizadoBanco) {
+          return res.status(400).json({ message: "Dados do aluno não conferem", found: false });
+        }
+      }
+
+      return res.json({
+        found: true,
+        aluno: {
+          id: alunoMatricula._id,
+          nomeCompleto: alunoMatricula.nomeCompleto,
+          matricula: alunoMatricula.matricula,
+          turma: alunoMatricula.turma,
+          turno: alunoMatricula.turno,
+        },
+      });
+    } catch (err) {
+      console.error("Erro ao validar matrícula:", err);
+      res.status(500).json({ message: err.message });
+    }
+  }
 }
