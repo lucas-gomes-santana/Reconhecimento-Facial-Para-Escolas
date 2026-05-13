@@ -3,14 +3,19 @@ import Responsavel from "../models/Responsavel.js";
 import Vinculo from "../models/Vinculo.js";
 import AlunoMatricula from "../models/AlunoMatricula.js";
 import LogEntrada from "../models/LogEntrada.js";
-import { gerarAccessToken, gerarRefreshToken, definirTokens, removerTokens } from "../config/jwtConfig.js";
+import {
+  gerarAccessToken,
+  gerarRefreshToken,
+  definirTokens,
+  removerTokens,
+} from "../config/jwtConfig.js";
 
 export class ResponsavelController {
   async cadastrar(req, res) {
     try {
       const { nomeCompleto, cpf, telefone, email, senha, matriculaAluno, nomeAluno } = req.body;
 
-      if (!nomeCompleto || !cpf || !telefone || !email || !senha || !matriculaAluno || !nomeAluno) {
+      if (!nomeCompleto || !cpf || !telefone || !email || !senha || !matriculaAluno) {
         return res.status(400).json({ message: "Todos os campos são obrigatórios" });
       }
 
@@ -29,10 +34,12 @@ export class ResponsavelController {
         return res.status(404).json({ message: "Matrícula não encontrada" });
       }
 
-      const nomeNormalizadoAluno = nomeAluno.trim().toLowerCase();
-      const nomeNormalizadoBanco = alunoMatricula.nomeCompleto.trim().toLowerCase();
-      if (nomeNormalizadoAluno !== nomeNormalizadoBanco) {
-        return res.status(400).json({ message: "Dados do aluno não conferem" });
+      if (nomeAluno) {
+        const nomeNormalizadoAluno = nomeAluno.trim().toLowerCase();
+        const nomeNormalizadoBanco = alunoMatricula.nomeCompleto.trim().toLowerCase();
+        if (nomeNormalizadoAluno !== nomeNormalizadoBanco) {
+          return res.status(400).json({ message: "Dados do aluno não conferem" });
+        }
       }
 
       const responsavel = new Responsavel({
@@ -164,15 +171,19 @@ export class ResponsavelController {
             timestamp: { $gte: hoje, $lt: amanha },
           }).lean();
 
-          const logAluno = logsEntrada.find((l) => l.alunoMatriculaId?.toString() === aluno.id.toString());
-          const logMerenda = logsMerenda.find((l) => l.alunoMatriculaId?.toString() === aluno.id.toString());
+          const logAluno = logsEntrada.find(
+            (l) => l.alunoMatriculaId?.toString() === aluno.id.toString(),
+          );
+          const logMerenda = logsMerenda.find(
+            (l) => l.alunoMatriculaId?.toString() === aluno.id.toString(),
+          );
 
           return {
             ...aluno,
             entradaHoje: logAluno ? true : false,
             merendaHoje: logMerenda ? true : false,
           };
-        })
+        }),
       );
 
       res.json({ success: true, dados: alunosComStatus });
@@ -298,14 +309,13 @@ export class ResponsavelController {
 
   async validarMatricula(req, res) {
     try {
-      const { matricula, cpf, nomeAluno } = req.body;
+      const { matricula, nomeAluno } = req.body;
 
-      if (!matricula && !cpf) {
-        return res.status(400).json({ message: "Matrícula ou CPF são obrigatórios", found: false });
+      if (!matricula) {
+        return res.status(400).json({ message: "Matrícula é obrigatória", found: false });
       }
 
-      const query = matricula ? { matricula } : { cpf };
-      const alunoMatricula = await AlunoMatricula.findOne(query);
+      const alunoMatricula = await AlunoMatricula.findOne({ matricula });
 
       if (!alunoMatricula) {
         return res.status(404).json({ message: "Aluno não encontrado", found: false });
