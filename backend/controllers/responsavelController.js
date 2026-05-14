@@ -13,19 +13,15 @@ import {
 export class ResponsavelController {
   async cadastrar(req, res) {
     try {
-      const { nomeCompleto, parentesco, cpf, telefone, email, senha, matriculaAluno, nomeAluno } =
+      const { nomeCompleto, parentesco, cpf, telefone, email, senha, matriculaAluno, cpfAluno, nomeAluno } =
         req.body;
 
-      if (
-        !nomeCompleto ||
-        !parentesco ||
-        !cpf ||
-        !telefone ||
-        !email ||
-        !senha ||
-        !matriculaAluno
-      ) {
+      if (!nomeCompleto || !parentesco || !cpf || !telefone || !email || !senha) {
         return res.status(400).json({ message: "Todos os campos são obrigatórios" });
+      }
+
+      if (!matriculaAluno && !cpfAluno) {
+        return res.status(400).json({ message: "Matrícula ou CPF do aluno é obrigatório" });
       }
 
       const responsavelExistente = await Responsavel.findOne({ cpf });
@@ -38,9 +34,10 @@ export class ResponsavelController {
         return res.status(400).json({ message: "E-mail já está em uso" });
       }
 
-      const alunoMatricula = await AlunoMatricula.findOne({ matricula: matriculaAluno });
+      const alunoQuery = matriculaAluno ? { matricula: matriculaAluno } : { cpf: cpfAluno };
+      const alunoMatricula = await AlunoMatricula.findOne(alunoQuery);
       if (!alunoMatricula) {
-        return res.status(404).json({ message: "Matrícula não encontrada" });
+        return res.status(404).json({ message: "Aluno não encontrado" });
       }
 
       if (nomeAluno) {
@@ -319,13 +316,14 @@ export class ResponsavelController {
 
   async validarMatricula(req, res) {
     try {
-      const { matricula, nomeAluno } = req.body;
+      const { matricula, cpf, nomeAluno } = req.body;
 
-      if (!matricula) {
-        return res.status(400).json({ message: "Matrícula é obrigatória", found: false });
+      if (!matricula && !cpf) {
+        return res.status(400).json({ message: "Matrícula ou CPF é obrigatório", found: false });
       }
 
-      const alunoMatricula = await AlunoMatricula.findOne({ matricula });
+      const query = matricula ? { matricula } : { cpf };
+      const alunoMatricula = await AlunoMatricula.findOne(query);
 
       if (!alunoMatricula) {
         return res.status(404).json({ message: "Aluno não encontrado", found: false });
@@ -346,6 +344,7 @@ export class ResponsavelController {
           id: alunoMatricula._id,
           nomeCompleto: alunoMatricula.nomeCompleto,
           matricula: alunoMatricula.matricula,
+          cpf: alunoMatricula.cpf,
           turma: alunoMatricula.turma,
           turno: alunoMatricula.turno,
         },

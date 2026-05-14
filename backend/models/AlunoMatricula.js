@@ -7,6 +7,12 @@ const AlunoMatriculaSchema = new Schema({
     unique: true,
     trim: true,
   },
+  cpf: {
+    type: String,
+    required: [true, "CPF é obrigatório!"],
+    unique: true,
+    trim: true,
+  },
   nomeCompleto: {
     type: String,
     required: [true, "Nome completo é obrigatório!"],
