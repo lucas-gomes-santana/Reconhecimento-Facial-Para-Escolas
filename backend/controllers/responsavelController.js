@@ -13,9 +13,18 @@ import {
 export class ResponsavelController {
   async cadastrar(req, res) {
     try {
-      const { nomeCompleto, cpf, telefone, email, senha, matriculaAluno, nomeAluno } = req.body;
+      const { nomeCompleto, parentesco, cpf, telefone, email, senha, matriculaAluno, nomeAluno } =
+        req.body;
 
-      if (!nomeCompleto || !cpf || !telefone || !email || !senha || !matriculaAluno) {
+      if (
+        !nomeCompleto ||
+        !parentesco ||
+        !cpf ||
+        !telefone ||
+        !email ||
+        !senha ||
+        !matriculaAluno
+      ) {
         return res.status(400).json({ message: "Todos os campos são obrigatórios" });
       }
 
@@ -44,6 +53,7 @@ export class ResponsavelController {
 
       const responsavel = new Responsavel({
         nomeCompleto,
+        parentesco,
         cpf,
         telefone,
         email: email.toLowerCase(),
