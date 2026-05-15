@@ -8,6 +8,8 @@ O objetivo do C.E.R.F é reforçar a segurança das escolas, através do uso de 
 
 Com a funcionalidade de reconhecimento facial do C.E.R.F, buscamos controlar o fluxo de entrada de indivíduos em escolas, permitindo quem entra e barrando acesso não autorizado dentro da unidade escolar, utilizando o reconhecimento facial para verificar se o rosto escaneado foi cadastro anteriormente no sistema ou não. Dessa forma, o C.E.R.F ajudará a portaria das escolas a não permitir que pessoas que não fazem parte da unidade escolar entrarem, criando assim um ambiente de segurança entre os alunos, professores e outros integrantes da escola que possuirá o sistema C.E.R.F em atividade.
 
+O sistema C.E.R.F agora possui também um aplicativo mobile em desenvolvimento que está sendo integrado com o backend do projeto. No app, os responsáveis dos alunos podem fazer monitoramento dos mesmos na escola, observando os horários de entrada e retirada de merenda do aluno. Código fonte e documentação serão liberadas em breve.
+
 ---
 
 ### Ferramentas Usadas
@@ -24,8 +26,9 @@ Com a funcionalidade de reconhecimento facial do C.E.R.F, buscamos controlar o f
 
 ### Como Executar o Projeto
 
-**OBS:** Como o C.E.R.F não se encontra em produção no atual momento, só se pode interagir com projeto executando ele no seu computador. Para isso, é necessário que você tenha instalado o framework Javascript NodeJs e o MongoDB em sua máquina. Recomendável ter também instalado o Git caso queira fazer clone do projeto.
+Como o C.E.R.F não está em produção, só se pode interagir com projeto executando ele no seu computador. Para isso, é necessário que você tenha instalado o NodeJs, npm e o MongoDB em sua máquina. Recomendável ter também instalado o Git caso queira fazer clone do projeto.
 
+Os comandos abaixo devem ser executados no terminal do seu sistema operacional(Windows, Linux, MacOs, etc)
 <br>
 
 1. Faça fork e clone usando:
@@ -34,9 +37,11 @@ Com a funcionalidade de reconhecimento facial do C.E.R.F, buscamos controlar o f
    git clone https://github.com/lucas-gomes-santana/Reconhecimento-Facial-Para-Escolas.git
    ```
 
+   OBS: Pode baixar também o projeto comprimido como .zip
+
 <br>
 
-2. Instale o gerenciador de pacotes pnpm. Pois este mesmo foi o gerenciador usado neste projeto:
+2. Instale o gerenciador de pacotes pnpm caso não tenha. Pois este foi o gerenciador usado neste projeto:
 
    ```bash
    npm install -g pnpm
@@ -44,10 +49,13 @@ Com a funcionalidade de reconhecimento facial do C.E.R.F, buscamos controlar o f
 
 <br>
 
-3. Instale as dependências necessárias usando este comando dentro das pastas **front-end** e **back-end**:
+3. Navegue para o diretório do projeto e instale as dependências necessárias usando este comando dentro das pastas **front-end** e **back-end**:
 
    ```bash
-   pnpm install
+   cd Reconhecimento-Facial-Para-Escolas/backend &&
+   pnpm install &&
+   cd ../frontend &&
+   pnpm install && cd ../
    ```
 
    O pnpm irá detectar automaticamente as bibliotecas usadas na aplicação lendo os arquivos **package-json** presentes em ambos os diretórios citados
@@ -62,7 +70,7 @@ Com a funcionalidade de reconhecimento facial do C.E.R.F, buscamos controlar o f
    cd backend && node server.js
    ```
 
-   E execute o front-end React:
+   E execute o front-end:
 
    ```bash
    cd frontend && pnpm dev
