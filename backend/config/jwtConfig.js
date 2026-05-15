@@ -5,17 +5,17 @@ const refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET || "chave-refresh-se
 
 const accessTokenConfig = {
   httpOnly: true,
-  secure: process.env.NODE_ENV === 'production',
-  sameSite: 'strict',
-  maxAge: 3600000 // 1 hora de duração
+  secure: process.env.NODE_ENV === "production",
+  sameSite: "strict",
+  maxAge: 3600000, // 1 hora de duração
   // maxAge: 60000 // 1 minuto de duração para testes
 };
 
 const refreshTokenConfig = {
   httpOnly: true,
-  secure: process.env.NODE_ENV === 'production',
-  sameSite: 'strict',
-  maxAge: 7 * 24 * 60 * 60 * 1000 // 7 dias de duração do refresh token
+  secure: process.env.NODE_ENV === "production",
+  sameSite: "strict",
+  maxAge: 7 * 24 * 60 * 60 * 1000, // 7 dias de duração do refresh token
 };
 
 export function gerarAccessToken(payload) {
@@ -43,19 +43,19 @@ export function verificarRefreshToken(token) {
 }
 
 export function definirTokens(res, accessToken, refreshToken) {
-  res.cookie('jwt', accessToken, accessTokenConfig);
-  res.cookie('refreshToken', refreshToken, refreshTokenConfig);
+  res.cookie("jwt", accessToken, accessTokenConfig);
+  res.cookie("refreshToken", refreshToken, refreshTokenConfig);
 }
 
 export function removerTokens(res) {
-  res.clearCookie('jwt');
-  res.clearCookie('refreshToken');
+  res.clearCookie("jwt");
+  res.clearCookie("refreshToken");
 }
 
 // Middleware para proteger rotas
 export function autenticarToken(req, res, next) {
   const token = req.cookies.jwt;
-  
+
   if (!token) {
     return res.status(401).json({ message: "Token não fornecido" });
   }
