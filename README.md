@@ -26,9 +26,9 @@ O sistema C.E.R.F agora possui também um aplicativo mobile em desenvolvimento q
 
 ### Como Executar o Projeto
 
-Como o C.E.R.F não está em produção, só se pode interagir com projeto executando ele no seu computador. Para isso, é necessário que você tenha instalado o NodeJs, npm e o MongoDB em sua máquina. Recomendável ter também instalado o Git caso queira fazer clone do projeto.
+Como o C.E.R.F não está em produção, só se pode interagir com projeto executando ele no seu computador. Para isso, é necessário que você tenha instalado o Git, NodeJs, npm, pnpm e o MongoDB em sua máquina.
 
-Os comandos abaixo devem ser executados no terminal do seu sistema operacional(Windows, Linux, MacOs, etc)
+Os comandos abaixo devem ser executados no Git Bash se você estiver no Windows ou no terminal padrão do seu sistema se estiver no Linux ou MacOs.
 <br>
 
 1. Faça fork e clone usando:
@@ -49,31 +49,18 @@ Os comandos abaixo devem ser executados no terminal do seu sistema operacional(W
 
 <br>
 
-3. Navegue para o diretório do projeto e instale as dependências necessárias usando este comando dentro das pastas **front-end** e **back-end**:
+3. Execute o script de instalação das dependências nas pastas **front-end** e **back-end**:
 
    ```bash
-   cd Reconhecimento-Facial-Para-Escolas/backend &&
-   pnpm install &&
-   cd ../frontend &&
-   pnpm install && cd ../
+   ./scripts/setup.sh
    ```
 
-   O pnpm irá detectar automaticamente as bibliotecas usadas na aplicação lendo os arquivos **package-json** presentes em ambos os diretórios citados
+   <br>
 
-<br>
-
-4. Execute:
-
-   Começando pelo back-end:
+4. Execute o script para rodar o projeto:
 
    ```bash
-   cd backend && node server.js
-   ```
-
-   E execute o front-end:
-
-   ```bash
-   cd frontend && pnpm dev
+   ./scripts/dev.sh
    ```
 
    Copie e cole o link gerado no **front-end** na barra de endereços do seu navegador:
@@ -81,8 +68,6 @@ Os comandos abaixo devem ser executados no terminal do seu sistema operacional(W
    ```bash
    http://localhost:5173/
    ```
-
-   OBS: Use esses comandos pelo terminal do seu sistema operacional, como o CMD do Windows, dentro da pasta do projeto baixado.
 
 ---
 

@@ -1,3 +1,5 @@
+# Script bash para instalação de dependências do projeto
+
 set -e 
 
 if ! command -v pnpm &> /dev/null; then
