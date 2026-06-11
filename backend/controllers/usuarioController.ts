@@ -1,24 +1,30 @@
+import type { Request, Response } from "express";
 import Usuario from "../models/Usuario.js";
 import LogEntrada from "../models/LogEntrada.js";
 import AlunoMatricula from "../models/AlunoMatricula.js";
+import { FaceRecognitionService } from "../services/faceRecognitionService.js";
+import type { EstatisticaModel } from "../models/Estatistica.js";
 
-let threshold = 0.96; // Percentual mínimo de 96% de similaridade para sucesso na autenticação facial
+const threshold = 0.96; // Percentual mínimo de 96% de similaridade para sucesso na autenticação facial
 
 export class UsuarioController {
-  constructor(faceRecognitionService, estatisticaModel) {
+  private faceRecognitionService: FaceRecognitionService;
+  private Estatistica: EstatisticaModel;
+  private Usuario = Usuario;
+  private LogEntrada = LogEntrada;
+  private AlunoMatricula = AlunoMatricula;
+  private threshold = threshold;
+
+  constructor(faceRecognitionService: FaceRecognitionService, estatisticaModel: EstatisticaModel) {
     this.faceRecognitionService = faceRecognitionService;
     this.Estatistica = estatisticaModel;
-    this.Usuario = Usuario;
-    this.LogEntrada = LogEntrada;
-    this.AlunoMatricula = AlunoMatricula;
-    this.threshold = threshold;
   }
 
-  async buscarAlunoMatriculaPorUsuario(usuarioId) {
+  private async buscarAlunoMatriculaPorUsuario(usuarioId: string) {
     return await this.AlunoMatricula.findOne({ usuarioId });
   }
 
-  async registrarLogEntrada(usuarioId, tipo, similaridade) {
+  private async registrarLogEntrada(usuarioId: string, tipo: string, similaridade: number) {
     const alunoMatricula = await this.buscarAlunoMatriculaPorUsuario(usuarioId);
     const log = await this.LogEntrada.create({
       usuarioId,
@@ -30,8 +36,6 @@ export class UsuarioController {
 
     if (tipo === "entrada") {
       await this.Estatistica.incrementarEntrada();
-    } else if (tipo === "saida") {
-      await this.Estatistica.incrementarSaida();
     } else if (tipo === "merenda") {
       await this.Estatistica.incrementarMerenda();
     }
@@ -39,7 +43,7 @@ export class UsuarioController {
     return log;
   }
 
-  async cadastrarUsuario(req, res) {
+  async cadastrarUsuario(req: Request, res: Response) {
     try {
       const { nome, tipoUsuario, descriptor } = req.body;
 
@@ -71,11 +75,11 @@ export class UsuarioController {
       });
     } catch (err) {
       console.error("Erro no cadastro:", err);
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: (err as Error).message });
     }
   }
 
-  async verificarRosto(req, res) {
+  async verificarRosto(req: Request, res: Response) {
     try {
       const { descriptor, contexto } = req.body;
 
@@ -128,13 +132,13 @@ export class UsuarioController {
       }
     } catch (err) {
       console.error("Erro na verificação:", err);
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: (err as Error).message });
     }
   }
 
-  async listarUsuarios(req, res) {
+  async listarUsuarios(req: Request, res: Response) {
     try {
-      const { nome } = req.query;
+      const { nome } = req.query as { nome?: string };
 
       if (nome && nome.trim() !== "") {
         const usuarios = await Usuario.find(
@@ -148,29 +152,33 @@ export class UsuarioController {
       }
 
       // Se não foi passado nome, retorna todos os usuários
-      const usuarios = await Usuario.find({}, { descriptor: 0 }).sort({ dataCadastro: -1 });
+      const usuarios = await Usuario.find({}, { descriptor: 0 }).sort({
+        dataCadastro: -1,
+      });
       res.json(usuarios);
     } catch (err) {
       console.error("Erro ao listar usuários:", err);
-      res.status(500).json({ error: err.message });
+      res.status(500).json({ error: (err as Error).message });
     }
   }
 
-  async removerUsuario(req, res) {
+  async removerUsuario(req: Request, res: Response) {
     const { id } = req.params;
 
     const usuario = await Usuario.findByIdAndDelete(id);
 
     if (!usuario) {
-      return res.status(404).json({ message: `Usuário ${usuario.nome} não encontrado` });
+      return res.status(404).json({ message: "Usuário não encontrado" });
     }
 
     console.log(`Usuário ${usuario.nome} removido do C.E.R.F com sucesso`);
 
-    res.json({ message: `Usuário ${usuario.nome} removido com sucesso` });
+    res.json({
+      message: `Usuário ${usuario.nome} removido com sucesso`,
+    });
   }
 
-  async removerTodosOsUsuarios(req, res) {
+  async removerTodosOsUsuarios(req: Request, res: Response) {
     const usuario = await this.Usuario.deleteMany({});
 
     const mensagem =
@@ -184,7 +192,7 @@ export class UsuarioController {
     });
   }
 
-  bloquearUsuario = async (req, res) => {
+  bloquearUsuario = async (req: Request, res: Response) => {
     const { id } = req.params;
 
     const tempoBloqueio = 60 * 1000; // 1 minuto em milissegundos (ajustar para um tempo maior em produção)
@@ -193,14 +201,14 @@ export class UsuarioController {
     const usuario = await Usuario.findByIdAndUpdate(
       id,
       {
-        status: "bloqueado",
+        status: "bloqueado" as const,
         bloqueadoAte: bloqueadoAte,
       },
       { new: true },
     );
 
     if (!usuario) {
-      return res.status(409).json({ message: `Usuário ${usuario.nome} não encontrado!` });
+      return res.status(404).json({ message: "Usuário não encontrado" });
     }
 
     this.agendarDesbloqueio(id, tempoBloqueio);
@@ -213,14 +221,16 @@ export class UsuarioController {
     });
   };
 
-  agendarDesbloqueio = async (usuarioId, tempo) => {
+  agendarDesbloqueio = async (usuarioId: string, tempo: number) => {
     setTimeout(async () => {
       try {
         const usuario = await Usuario.findByIdAndUpdate(usuarioId, {
-          status: "liberado",
+          status: "liberado" as const,
           bloqueadoAte: null,
         });
-        console.log(`Usuário ${usuario.nome} liberdo para pegar merenda`);
+        if (usuario) {
+          console.log(`Usuário ${usuario.nome} liberado para pegar merenda`);
+        }
       } catch (error) {
         console.error("Erro ao desbloquear usuário: ", error);
       }

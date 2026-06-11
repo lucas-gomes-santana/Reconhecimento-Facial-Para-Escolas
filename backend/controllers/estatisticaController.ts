@@ -1,10 +1,16 @@
+import type { Request, Response } from "express";
+import type { EstatisticaModel } from "../models/Estatistica.js";
+
 export class EstatisticaController {
-  constructor(estatisticaModel, usuarioModel) {
+  private Estatistica: EstatisticaModel;
+  private Usuario: import("mongoose").Model<any>;
+
+  constructor(estatisticaModel: EstatisticaModel, usuarioModel: import("mongoose").Model<any>) {
     this.Estatistica = estatisticaModel;
     this.Usuario = usuarioModel;
   }
 
-  async obterEstatisticas(req, res) {
+  async obterEstatisticas(req: Request, res: Response) {
     try {
       const estatistica = await this.Estatistica.getInstance();
       const totalCadastros = await this.Usuario.countDocuments();
@@ -22,11 +28,11 @@ export class EstatisticaController {
       });
     } catch (err) {
       console.error("Erro ao obter estatísticas:", err);
-      res.status(500).json({ message: err.message });
+      res.status(500).json({ message: (err as Error).message });
     }
   }
 
-  async reiniciarVerificacoes(req, res) {
+  async reiniciarVerificacoes(req: Request, res: Response) {
     try {
       const estatistica = await this.Estatistica.getInstance();
       estatistica.totalVerificacoes = 0;
@@ -39,11 +45,11 @@ export class EstatisticaController {
       });
     } catch (err) {
       console.error("Erro ao reiniciar verificações:", err);
-      res.status(500).json({ message: err.message });
+      res.status(500).json({ message: (err as Error).message });
     }
   }
 
-  async obterEstatisticasDetalhadas(req, res) {
+  async obterEstatisticasDetalhadas(req: Request, res: Response) {
     try {
       const estatistica = await this.Estatistica.getInstance();
       const totalCadastros = await this.Usuario.countDocuments();
@@ -57,8 +63,12 @@ export class EstatisticaController {
         },
       ]);
 
-      const primeiroUsuario = await this.Usuario.findOne().sort({ dataCadastro: 1 });
-      const ultimoCadastro = await this.Usuario.findOne().sort({ dataCadastro: -1 });
+      const primeiroUsuario = await this.Usuario.findOne().sort({
+        dataCadastro: 1,
+      });
+      const ultimoCadastro = await this.Usuario.findOne().sort({
+        dataCadastro: -1,
+      });
 
       res.json({
         success: true,
@@ -76,11 +86,11 @@ export class EstatisticaController {
       });
     } catch (err) {
       console.error("Erro ao obter estatísticas detalhadas:", err);
-      res.status(500).json({ message: err.message });
+      res.status(500).json({ message: (err as Error).message });
     }
   }
 
-  async gerarRelatorio(req, res) {
+  async gerarRelatorio(req: Request, res: Response) {
     try {
       const estatistica = await this.Estatistica.getInstance();
       const totalCadastros = await this.Usuario.countDocuments();
@@ -94,8 +104,12 @@ export class EstatisticaController {
         },
       ]);
 
-      const ultimoCadastro = await this.Usuario.findOne().sort({ dataCadastro: -1 });
-      const primeiroCadastro = await this.Usuario.findOne().sort({ dataCadastro: 1 });
+      const ultimoCadastro = await this.Usuario.findOne().sort({
+        dataCadastro: -1,
+      });
+      const primeiroCadastro = await this.Usuario.findOne().sort({
+        dataCadastro: 1,
+      });
 
       // Buscar usuários com nome, tipo E data de cadastro
       const todosUsuarios = await this.Usuario.find({}, "nome tipoUsuario dataCadastro")
@@ -107,8 +121,8 @@ export class EstatisticaController {
       const usuariosOrganizados = ordemTipos
         .map((tipo) => {
           const usuarios = todosUsuarios
-            .filter((u) => u.tipoUsuario === tipo)
-            .map((u) => ({
+            .filter((u: any) => u.tipoUsuario === tipo)
+            .map((u: any) => ({
               nome: u.nome,
               dataCadastro: u.dataCadastro,
             }));
@@ -139,7 +153,7 @@ export class EstatisticaController {
       });
     } catch (error) {
       console.error("Erro ao gerar o relatório: ", error);
-      res.status(500).json({ message: error.message });
+      res.status(500).json({ message: (error as Error).message });
     }
   }
 }
