@@ -1,9 +1,9 @@
 import type { Request, Response } from "express";
-import Usuario from "../models/Usuario.js";
+import Usuario from "../models/Usuario.ts";
 import LogEntrada from "../models/LogEntrada.js";
 import AlunoMatricula from "../models/AlunoMatricula.js";
-import { FaceRecognitionService } from "../services/faceRecognitionService.js";
-import type { EstatisticaModel } from "../models/Estatistica.js";
+import { FaceRecognitionService } from "../services/faceRecognitionService.ts";
+import type { EstatisticaModel } from "../models/Estatistica.ts";
 
 const threshold = 0.96; // Percentual mínimo de 96% de similaridade para sucesso na autenticação facial
 
@@ -106,11 +106,19 @@ export class UsuarioController {
           new Date(match.usuario.bloqueadoAte) > new Date();
 
         if (contexto === "verificacao" || contexto === "entrada") {
-          await this.registrarLogEntrada(match.usuario._id.toString(), "entrada", match.similaridade);
+          await this.registrarLogEntrada(
+            match.usuario._id.toString(),
+            "entrada",
+            match.similaridade,
+          );
         } else if (contexto === "saida") {
           await this.registrarLogEntrada(match.usuario._id.toString(), "saida", match.similaridade);
         } else if (contexto === "merenda" && !aindaBloqueado) {
-          await this.registrarLogEntrada(match.usuario._id.toString(), "merenda", match.similaridade);
+          await this.registrarLogEntrada(
+            match.usuario._id.toString(),
+            "merenda",
+            match.similaridade,
+          );
         }
 
         return res.json({

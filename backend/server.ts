@@ -1,17 +1,18 @@
 import express from "express";
+import type { Application } from "express";
 import cookieParser from "cookie-parser";
-import databaseConfig from "./config/database.js";
-import usuarioRoutes from "./routes/usuarioRoutes.js";
-import estatisticaRoutes from "./routes/estatisticaRoutes.js";
-import adminRoutes from "./routes/adminRoutes.js";
+import databaseConfig from "./config/database.ts";
+import usuarioRoutes from "./routes/usuarioRoutes.ts";
+import estatisticaRoutes from "./routes/estatisticaRoutes.ts";
+import adminRoutes from "./routes/adminRoutes.ts";
 import logEntradaRoutes from "./routes/logEntradaRoutes.js";
 import responsavelRoutes from "./routes/responsavelRoutes.js";
-import corsConfig from "./config/corsConfig.js";
-import { cadastrarDesenvolvedor } from "./controllers/adminController.js";
-import { seedAlunosMockados } from "./config/seedAlunos.js";
-import Admin from "./models/Admin.js";
+import corsConfig from "./config/corsConfig.ts";
+import { cadastrarDesenvolvedor } from "./controllers/adminController.ts";
+import { seedAlunosMockados } from "./config/seedAlunos.ts";
+import Admin from "./models/Admin.ts";
 
-const app = express();
+const app: Application = express();
 
 // Middlewares
 app.use(express.json());

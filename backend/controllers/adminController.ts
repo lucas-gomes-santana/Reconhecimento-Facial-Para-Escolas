@@ -5,9 +5,9 @@ import {
   definirTokens,
   removerTokens,
   gerarRefreshToken,
-} from "../config/jwtConfig.js";
+} from "../config/jwtConfig.ts";
 import { criptografarSenha, validarFuncaoCadastrada, validarSenha } from "../utils/utils.js";
-import type { IAdmin } from "../models/Admin.js";
+import type { IAdmin } from "../models/Admin.ts";
 
 export async function cadastrarDesenvolvedor(Admin: import("mongoose").Model<IAdmin>) {
   // Remover os fallbacks em produção e substituir por arquivos .env

@@ -1,4 +1,4 @@
-import Usuario, { type IUsuario } from "../models/Usuario.js";
+import Usuario, { type IUsuario } from "../models/Usuario.ts";
 
 const threshold = 0.96; // Percentual mínimo de 96% de similaridade para sucesso na autenticação facial
 

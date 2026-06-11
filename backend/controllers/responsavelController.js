@@ -8,13 +8,22 @@ import {
   gerarRefreshToken,
   definirTokens,
   removerTokens,
-} from "../config/jwtConfig.js";
+} from "../config/jwtConfig.ts";
 
 export class ResponsavelController {
   async cadastrar(req, res) {
     try {
-      const { nomeCompleto, parentesco, cpf, telefone, email, senha, matriculaAluno, cpfAluno, nomeAluno } =
-        req.body;
+      const {
+        nomeCompleto,
+        parentesco,
+        cpf,
+        telefone,
+        email,
+        senha,
+        matriculaAluno,
+        cpfAluno,
+        nomeAluno,
+      } = req.body;
 
       if (!nomeCompleto || !parentesco || !cpf || !telefone || !email || !senha) {
         return res.status(400).json({ message: "Todos os campos são obrigatórios" });

@@ -2,6 +2,8 @@ import express from "express";
 import { ResponsavelController } from "../controllers/responsavelController.js";
 import { autenticarResponsavel } from "../middlewares/authResponsavel.js";
 
+// Solução temporária para arquivos javascript
+/** @type {import("express").Router} */
 const router = express.Router();
 
 const responsavelController = new ResponsavelController();
@@ -52,4 +54,3 @@ router.post(
 );
 
 export default router;
-

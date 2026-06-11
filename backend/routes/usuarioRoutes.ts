@@ -1,9 +1,9 @@
 import express, { Router } from "express";
 import validation from "../middlewares/validation.js";
-import { autenticarToken } from "../config/jwtConfig.js";
-import { UsuarioController } from "../controllers/usuarioController.js";
-import { FaceRecognitionService } from "../services/faceRecognitionService.js";
-import Estatistica from "../models/Estatistica.js";
+import { autenticarToken } from "../config/jwtConfig.ts";
+import { UsuarioController } from "../controllers/usuarioController.ts";
+import { FaceRecognitionService } from "../services/faceRecognitionService.ts";
+import Estatistica from "../models/Estatistica.ts";
 
 const router: Router = express.Router();
 

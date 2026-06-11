@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import type { EstatisticaModel } from "../models/Estatistica.js";
+import type { EstatisticaModel } from "../models/Estatistica.ts";
 
 export class EstatisticaController {
   private Estatistica: EstatisticaModel;

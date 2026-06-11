@@ -30,7 +30,9 @@
     "isolatedModules": true,
     "moduleDetection": "force",
     "skipLibCheck": true,
-    "noEmit": false
+    "noEmit": true,
+
+    "allowImportingTsExtensions": true
   },
   "include": ["./**/*.ts", "./**/*.js"],
   "exclude": ["node_modules", "dist", "coverage"]
