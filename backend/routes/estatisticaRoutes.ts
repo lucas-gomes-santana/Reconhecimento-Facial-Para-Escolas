@@ -1,10 +1,10 @@
-import express from "express";
+import express, { Router } from "express";
 import { autenticarToken } from "../config/jwtConfig.js";
 import { EstatisticaController } from "../controllers/estatisticaController.js";
 import Estatistica from "../models/Estatistica.js";
 import Usuario from "../models/Usuario.js";
 
-const router = express.Router();
+const router: Router = express.Router();
 
 const estatisticaController = new EstatisticaController(Estatistica, Usuario);
 

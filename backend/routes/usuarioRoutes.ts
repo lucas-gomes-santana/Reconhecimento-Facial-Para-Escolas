@@ -1,11 +1,11 @@
-import express from "express";
+import express, { Router } from "express";
 import validation from "../middlewares/validation.js";
 import { autenticarToken } from "../config/jwtConfig.js";
 import { UsuarioController } from "../controllers/usuarioController.js";
 import { FaceRecognitionService } from "../services/faceRecognitionService.js";
 import Estatistica from "../models/Estatistica.js";
 
-const router = express.Router();
+const router: Router = express.Router();
 
 const faceRecognitionService = new FaceRecognitionService();
 const usuarioController = new UsuarioController(faceRecognitionService, Estatistica);
