@@ -1,6 +1,21 @@
-import mongoose from "mongoose";
+import mongoose, { Document, Model, Schema } from "mongoose";
 
-const EstatisticaSchema = new mongoose.Schema({
+export interface IEstatistica extends Document {
+  totalVerificacoes: number;
+  totalEntradas: number;
+  totalSaidas: number;
+  totalMerendas: number;
+  ultimaAtualizacao: Date;
+}
+
+export interface EstatisticaModel extends Model<IEstatistica> {
+  getInstance(): Promise<IEstatistica>;
+  incrementarVerificacoes(): Promise<IEstatistica>;
+  incrementarEntrada(): Promise<IEstatistica>;
+  incrementarMerenda(): Promise<IEstatistica>;
+}
+
+const EstatisticaSchema = new Schema<IEstatistica, EstatisticaModel>({
   totalVerificacoes: {
     type: Number,
     default: 0,
@@ -23,7 +38,6 @@ const EstatisticaSchema = new mongoose.Schema({
   },
 });
 
-// Garantir que só existe um documento de estatísticas
 EstatisticaSchema.statics.getInstance = async function () {
   let estatistica = await this.findOne();
 
@@ -50,14 +64,6 @@ EstatisticaSchema.statics.incrementarEntrada = async function () {
   return estatistica;
 };
 
-// EstatisticaSchema.statics.incrementarSaida = async function () {
-//   const estatistica = await this.getInstance();
-//   estatistica.totalSaidas += 1;
-//   estatistica.ultimaAtualizacao = new Date();
-//   await estatistica.save();
-//   return estatistica;
-// };
-
 EstatisticaSchema.statics.incrementarMerenda = async function () {
   const estatistica = await this.getInstance();
   estatistica.totalMerendas += 1;
@@ -66,4 +72,8 @@ EstatisticaSchema.statics.incrementarMerenda = async function () {
   return estatistica;
 };
 
-export default mongoose.model("Estatistica", EstatisticaSchema);
+const Estatistica = mongoose.model<IEstatistica, EstatisticaModel>(
+  "Estatistica",
+  EstatisticaSchema,
+);
+export default Estatistica;
