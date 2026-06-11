@@ -106,11 +106,11 @@ export class UsuarioController {
           new Date(match.usuario.bloqueadoAte) > new Date();
 
         if (contexto === "verificacao" || contexto === "entrada") {
-          await this.registrarLogEntrada(match.usuario._id, "entrada", match.similaridade);
+          await this.registrarLogEntrada(match.usuario._id.toString(), "entrada", match.similaridade);
         } else if (contexto === "saida") {
-          await this.registrarLogEntrada(match.usuario._id, "saida", match.similaridade);
+          await this.registrarLogEntrada(match.usuario._id.toString(), "saida", match.similaridade);
         } else if (contexto === "merenda" && !aindaBloqueado) {
-          await this.registrarLogEntrada(match.usuario._id, "merenda", match.similaridade);
+          await this.registrarLogEntrada(match.usuario._id.toString(), "merenda", match.similaridade);
         }
 
         return res.json({
@@ -163,7 +163,7 @@ export class UsuarioController {
   }
 
   async removerUsuario(req: Request, res: Response) {
-    const { id } = req.params;
+    const id = req.params.id as string;
 
     const usuario = await Usuario.findByIdAndDelete(id);
 
@@ -193,7 +193,7 @@ export class UsuarioController {
   }
 
   bloquearUsuario = async (req: Request, res: Response) => {
-    const { id } = req.params;
+    const id = req.params.id as string;
 
     const tempoBloqueio = 60 * 1000; // 1 minuto em milissegundos (ajustar para um tempo maior em produção)
     const bloqueadoAte = new Date(Date.now() + tempoBloqueio);
