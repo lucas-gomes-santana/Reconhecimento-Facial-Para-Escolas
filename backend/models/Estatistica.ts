@@ -38,6 +38,7 @@ const EstatisticaSchema = new Schema<IEstatistica, EstatisticaModel>({
   },
 });
 
+// Garantir que só existe um documento de estatísticas
 EstatisticaSchema.statics.getInstance = async function () {
   let estatistica = await this.findOne();
 

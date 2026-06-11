@@ -3,7 +3,15 @@
 
 import AlunoMatricula from "../models/AlunoMatricula.js";
 
-const alunosMockados = [
+interface AlunoMock {
+  matricula: string;
+  cpf: string;
+  nomeCompleto: string;
+  turma: string;
+  turno: "Matutino" | "Vespertino" | "Noturno";
+}
+
+const alunosMockados: AlunoMock[] = [
   {
     matricula: "2025001",
     cpf: "12345678901",
@@ -146,7 +154,7 @@ const alunosMockados = [
   },
 ];
 
-export async function seedAlunosMockados() {
+export async function seedAlunosMockados(): Promise<void> {
   try {
     const count = await AlunoMatricula.countDocuments();
     if (count === 0) {

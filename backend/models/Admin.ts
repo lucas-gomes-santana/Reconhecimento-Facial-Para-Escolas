@@ -47,28 +47,33 @@ const AdminSchema = new Schema<IAdmin>(
   },
 );
 
+// Índice para melhorar performance na busca por nome
 AdminSchema.index({ nome: 1 });
 
+// Garantir que só exista um usuário do tipo "desenvolvedor" e "super-admin" no banco de dados
 AdminSchema.index(
   { funcao: 1 },
   {
     unique: true,
     partialFilterExpression: {
-      funcao: { $in: ["desenvolvedor", "super-admin"] }, // Só pode existir um desenvolvedor e um super-admin
+      funcao: { $in: ["desenvolvedor", "super-admin"] },
     },
   },
 );
 
+// Middleware para não retornar senha nas consultas por padrão
 AdminSchema.methods.toJSON = function () {
   const adminObject = this.toObject();
   delete adminObject.senha;
   return adminObject;
 };
 
+// Virtual para padronizar dataCadastro como createdAt
 AdminSchema.virtual("dataCadastro").get(function () {
   return this.createdAt;
 });
 
+// Garantir que virtuals sejam incluídos na serialização JSON
 AdminSchema.set("toJSON", { virtuals: true });
 
 const Admin: Model<IAdmin> = mongoose.model<IAdmin>("Admin", AdminSchema);
