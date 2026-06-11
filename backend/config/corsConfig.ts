@@ -1,9 +1,12 @@
-import cors, { CorsOptions } from "cors";
+import cors, { type CorsOptions } from "cors";
 
 const allowedOrigins = ["http://localhost:5173"];
 
 const corsOptions: CorsOptions = {
-  origin: function (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) {
+  origin: function (
+    origin: string | undefined,
+    callback: (err: Error | null, allow?: boolean) => void,
+  ) {
     // Permite requisições que não vem do navegador. Desativar em produção para segurança do backend
     if (!origin) return callback(null, true);
 
