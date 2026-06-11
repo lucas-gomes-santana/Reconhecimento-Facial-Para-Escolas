@@ -1,14 +1,17 @@
-import Usuario from "../models/Usuario.js";
+import Usuario, { type IUsuario } from "../models/Usuario.js";
 
-let threshold = 0.96; // Percentual mínimo de 96% de similaridade para sucesso na autenticação facial
+const threshold = 0.96; // Percentual mínimo de 96% de similaridade para sucesso na autenticação facial
+
+interface MatchResult {
+  usuario: IUsuario;
+  similaridade: number;
+}
 
 export class FaceRecognitionService {
-  constructor() {
-    this.threshold = threshold;
-  }
+  private threshold = threshold;
 
-  // Compara os veteores(arrays) dos rostos usando similaridade de cossenos
-  calcularSimilaridadeCossenos(descriptor1, descriptor2) {
+  // Compara os vetores (arrays) dos rostos usando similaridade de cossenos
+  calcularSimilaridadeCossenos(descriptor1: number[], descriptor2: number[]): number {
     if (descriptor1.length !== descriptor2.length) {
       return 0;
     }
@@ -34,10 +37,13 @@ export class FaceRecognitionService {
     return produtoPonto / magnitude;
   }
 
-  async encontrarUsuarioPorSimilaridade(descriptorBusca, threshold) {
+  async encontrarUsuarioPorSimilaridade(
+    descriptorBusca: number[],
+    threshold?: number,
+  ): Promise<MatchResult | null> {
     const usuarios = await Usuario.find({});
 
-    let melhorMatch = null;
+    let melhorMatch: MatchResult | null = null;
     // Procuramos a maior similaridade possível nos rostos cadastrados no banco de dados
     let maiorSimilaridade = -Infinity; // Começa com o valor mais baixo possível
 
@@ -46,10 +52,10 @@ export class FaceRecognitionService {
 
       console.log(`Comparando com ${usuario.nome}: similaridade = ${similaridade.toFixed(4)}`);
 
-      if (similaridade > threshold && similaridade > maiorSimilaridade) {
+      if (similaridade > (threshold ?? this.threshold) && similaridade > maiorSimilaridade) {
         maiorSimilaridade = similaridade;
         melhorMatch = {
-          usuario: usuario,
+          usuario,
           similaridade: maiorSimilaridade,
         };
       }
@@ -58,7 +64,10 @@ export class FaceRecognitionService {
     return melhorMatch;
   }
 
-  async verificarRostoExistente(descriptor, threshold) {
+  async verificarRostoExistente(
+    descriptor: number[],
+    threshold?: number,
+  ): Promise<IUsuario | null> {
     const match = await this.encontrarUsuarioPorSimilaridade(descriptor, threshold);
     return match ? match.usuario : null;
   }
