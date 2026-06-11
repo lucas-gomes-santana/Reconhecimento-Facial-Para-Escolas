@@ -47,9 +47,6 @@ const AdminSchema = new Schema<IAdmin>(
   },
 );
 
-// Índice para melhorar performance na busca por nome
-AdminSchema.index({ nome: 1 });
-
 // Garantir que só exista um usuário do tipo "desenvolvedor" e "super-admin" no banco de dados
 AdminSchema.index(
   { funcao: 1 },
