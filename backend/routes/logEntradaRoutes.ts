@@ -1,12 +1,10 @@
-import express from "express";
-import { autenticarToken } from "../config/jwtConfig.ts";
+import express, { Router } from "express";
+import { autenticarToken } from "../config/jwtConfig.js";
 import { LogEntradaController } from "../controllers/logEntradaController.js";
 import LogEntrada from "../models/LogEntrada.js";
-import Estatistica from "../models/Estatistica.ts";
+import Estatistica from "../models/Estatistica.js";
 
-// Solução temporária para arquivos javascript
-/** @type {import("express").Router} */
-const router = express.Router();
+const router: Router = express.Router();
 
 const logEntradaController = new LogEntradaController(LogEntrada, Estatistica);
 
