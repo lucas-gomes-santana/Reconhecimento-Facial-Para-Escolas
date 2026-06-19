@@ -1,4 +1,5 @@
 import bcrypt from "bcrypt";
+import type { Request, Response } from "express";
 import Responsavel from "../models/Responsavel.js";
 import Vinculo from "../models/Vinculo.js";
 import AlunoMatricula from "../models/AlunoMatricula.js";
@@ -8,10 +9,19 @@ import {
   gerarRefreshToken,
   definirTokens,
   removerTokens,
-} from "../config/jwtConfig.ts";
+} from "../config/jwtConfig.js";
+import type { TokenPayload } from "../config/jwtConfig.js";
+
+declare global {
+  namespace Express {
+    interface Request {
+      responsavel?: { id: string; tipo: string };
+    }
+  }
+}
 
 export class ResponsavelController {
-  async cadastrar(req, res) {
+  async cadastrar(req: Request, res: Response) {
     try {
       const {
         nomeCompleto,
@@ -26,11 +36,15 @@ export class ResponsavelController {
       } = req.body;
 
       if (!nomeCompleto || !parentesco || !cpf || !telefone || !email || !senha) {
-        return res.status(400).json({ message: "Todos os campos são obrigatórios" });
+        return res
+          .status(400)
+          .json({ message: "Todos os campos são obrigatórios" });
       }
 
       if (!matriculaAluno && !cpfAluno) {
-        return res.status(400).json({ message: "Matrícula ou CPF do aluno é obrigatório" });
+        return res
+          .status(400)
+          .json({ message: "Matrícula ou CPF do aluno é obrigatório" });
       }
 
       const responsavelExistente = await Responsavel.findOne({ cpf });
@@ -38,12 +52,16 @@ export class ResponsavelController {
         return res.status(400).json({ message: "CPF já possui conta" });
       }
 
-      const emailExistente = await Responsavel.findOne({ email: email.toLowerCase() });
+      const emailExistente = await Responsavel.findOne({
+        email: email.toLowerCase(),
+      });
       if (emailExistente) {
         return res.status(400).json({ message: "E-mail já está em uso" });
       }
 
-      const alunoQuery = matriculaAluno ? { matricula: matriculaAluno } : { cpf: cpfAluno };
+      const alunoQuery = matriculaAluno
+        ? { matricula: matriculaAluno }
+        : { cpf: cpfAluno };
       const alunoMatricula = await AlunoMatricula.findOne(alunoQuery);
       if (!alunoMatricula) {
         return res.status(404).json({ message: "Aluno não encontrado" });
@@ -51,9 +69,12 @@ export class ResponsavelController {
 
       if (nomeAluno) {
         const nomeNormalizadoAluno = nomeAluno.trim().toLowerCase();
-        const nomeNormalizadoBanco = alunoMatricula.nomeCompleto.trim().toLowerCase();
+        const nomeNormalizadoBanco =
+          alunoMatricula.nomeCompleto.trim().toLowerCase();
         if (nomeNormalizadoAluno !== nomeNormalizadoBanco) {
-          return res.status(400).json({ message: "Dados do aluno não conferem" });
+          return res
+            .status(400)
+            .json({ message: "Dados do aluno não conferem" });
         }
       }
 
@@ -73,7 +94,7 @@ export class ResponsavelController {
       });
       await vinculo.save();
 
-      const payload = { id: responsavel._id.toString(), tipo: "responsavel" };
+      const payload: TokenPayload = { id: responsavel._id.toString() };
       const accessToken = gerarAccessToken(payload);
       const refreshToken = gerarRefreshToken(payload);
 
@@ -88,16 +109,18 @@ export class ResponsavelController {
       });
     } catch (err) {
       console.error("Erro no cadastro de responsável:", err);
-      res.status(500).json({ message: err.message });
+      res.status(500).json({ message: (err as Error).message });
     }
   }
 
-  async login(req, res) {
+  async login(req: Request, res: Response) {
     try {
       const { cpf, senha } = req.body;
 
       if (!cpf || !senha) {
-        return res.status(400).json({ message: "CPF e senha são obrigatórios" });
+        return res
+          .status(400)
+          .json({ message: "CPF e senha são obrigatórios" });
       }
 
       const responsavel = await Responsavel.findOne({ cpf });
@@ -110,7 +133,7 @@ export class ResponsavelController {
         return res.status(401).json({ message: "Credenciais inválidas" });
       }
 
-      const payload = { id: responsavel._id.toString(), tipo: "responsavel" };
+      const payload: TokenPayload = { id: responsavel._id.toString() };
       const accessToken = gerarAccessToken(payload);
       const refreshToken = gerarRefreshToken(payload);
 
@@ -125,43 +148,49 @@ export class ResponsavelController {
       });
     } catch (err) {
       console.error("Erro no login de responsável:", err);
-      res.status(500).json({ message: err.message });
+      res.status(500).json({ message: (err as Error).message });
     }
   }
 
-  async logout(req, res) {
+  async logout(req: Request, res: Response) {
     try {
       removerTokens(res);
       res.json({ success: true, message: "Logout realizado com sucesso" });
     } catch (err) {
       console.error("Erro no logout:", err);
-      res.status(500).json({ message: err.message });
+      res.status(500).json({ message: (err as Error).message });
     }
   }
 
-  async perfil(req, res) {
+  async perfil(req: Request, res: Response) {
     try {
-      const responsavel = await Responsavel.findById(req.responsavel.id).select("-senha");
+      const responsavel = await Responsavel.findById(
+        req.responsavel!.id,
+      ).select("-senha");
       if (!responsavel) {
-        return res.status(404).json({ message: "Responsável não encontrado" });
+        return res
+          .status(404)
+          .json({ message: "Responsável não encontrado" });
       }
 
       res.json({ success: true, dados: responsavel });
     } catch (err) {
       console.error("Erro ao buscar perfil:", err);
-      res.status(500).json({ message: err.message });
+      res.status(500).json({ message: (err as Error).message });
     }
   }
 
-  async meusAlunos(req, res) {
+  async meusAlunos(req: Request, res: Response) {
     try {
-      const vinculos = await Vinculo.find({ responsavelId: req.responsavel.id })
+      const vinculos = await Vinculo.find({
+        responsavelId: req.responsavel!.id,
+      })
         .populate("alunoMatriculaId")
         .lean();
 
       const alunos = vinculos
-        .filter((v) => v.alunoMatriculaId)
-        .map((v) => ({
+        .filter((v: any) => v.alunoMatriculaId)
+        .map((v: any) => ({
           id: v.alunoMatriculaId._id,
           nomeCompleto: v.alunoMatriculaId.nomeCompleto,
           matricula: v.alunoMatriculaId.matricula,
@@ -175,7 +204,7 @@ export class ResponsavelController {
       amanha.setDate(amanha.getDate() + 1);
 
       const alunosComStatus = await Promise.all(
-        alunos.map(async (aluno) => {
+        alunos.map(async (aluno: any) => {
           const logsEntrada = await LogEntrada.find({
             usuarioId: { $exists: false },
             tipo: "entrada",
@@ -188,10 +217,12 @@ export class ResponsavelController {
           }).lean();
 
           const logAluno = logsEntrada.find(
-            (l) => l.alunoMatriculaId?.toString() === aluno.id.toString(),
+            (l: any) =>
+              l.alunoMatriculaId?.toString() === aluno.id.toString(),
           );
           const logMerenda = logsMerenda.find(
-            (l) => l.alunoMatriculaId?.toString() === aluno.id.toString(),
+            (l: any) =>
+              l.alunoMatriculaId?.toString() === aluno.id.toString(),
           );
 
           return {
@@ -205,16 +236,16 @@ export class ResponsavelController {
       res.json({ success: true, dados: alunosComStatus });
     } catch (err) {
       console.error("Erro ao buscar alunos:", err);
-      res.status(500).json({ message: err.message });
+      res.status(500).json({ message: (err as Error).message });
     }
   }
 
-  async entradas(req, res) {
+  async entradas(req: Request, res: Response) {
     try {
       const { id } = req.params;
 
       const vinculo = await Vinculo.findOne({
-        responsavelId: req.responsavel.id,
+        responsavelId: req.responsavel!.id,
         alunoMatriculaId: id,
       });
 
@@ -227,21 +258,23 @@ export class ResponsavelController {
         .limit(50)
         .lean();
 
-      const logsFiltrados = logs.filter((l) => l.alunoMatriculaId?.toString() === id);
+      const logsFiltrados = (logs as any[]).filter(
+        (l) => l.alunoMatriculaId?.toString() === id,
+      );
 
       res.json({ success: true, dados: logsFiltrados });
     } catch (err) {
       console.error("Erro ao buscar entradas:", err);
-      res.status(500).json({ message: err.message });
+      res.status(500).json({ message: (err as Error).message });
     }
   }
 
-  async merenda(req, res) {
+  async merenda(req: Request, res: Response) {
     try {
       const { id } = req.params;
 
       const vinculo = await Vinculo.findOne({
-        responsavelId: req.responsavel.id,
+        responsavelId: req.responsavel!.id,
         alunoMatriculaId: id,
       });
 
@@ -254,7 +287,9 @@ export class ResponsavelController {
         .limit(50)
         .lean();
 
-      const logsFiltrados = logs.filter((l) => l.alunoMatriculaId?.toString() === id);
+      const logsFiltrados = (logs as any[]).filter(
+        (l) => l.alunoMatriculaId?.toString() === id,
+      );
 
       const hoje = new Date();
       hoje.setHours(0, 0, 0, 0);
@@ -275,40 +310,51 @@ export class ResponsavelController {
       });
     } catch (err) {
       console.error("Erro ao buscar merenda:", err);
-      res.status(500).json({ message: err.message });
+      res.status(500).json({ message: (err as Error).message });
     }
   }
 
-  async vincular(req, res) {
+  async vincular(req: Request, res: Response) {
     try {
       const { matriculaAluno, nomeAluno } = req.body;
 
       if (!matriculaAluno || !nomeAluno) {
-        return res.status(400).json({ message: "Matrícula e nome do aluno são obrigatórios" });
+        return res
+          .status(400)
+          .json({ message: "Matrícula e nome do aluno são obrigatórios" });
       }
 
-      const alunoMatricula = await AlunoMatricula.findOne({ matricula: matriculaAluno });
+      const alunoMatricula = await AlunoMatricula.findOne({
+        matricula: matriculaAluno,
+      });
       if (!alunoMatricula) {
-        return res.status(404).json({ message: "Matrícula não encontrada" });
+        return res
+          .status(404)
+          .json({ message: "Matrícula não encontrada" });
       }
 
       const nomeNormalizadoAluno = nomeAluno.trim().toLowerCase();
-      const nomeNormalizadoBanco = alunoMatricula.nomeCompleto.trim().toLowerCase();
+      const nomeNormalizadoBanco =
+        alunoMatricula.nomeCompleto.trim().toLowerCase();
       if (nomeNormalizadoAluno !== nomeNormalizadoBanco) {
-        return res.status(400).json({ message: "Dados do aluno não conferem" });
+        return res
+          .status(400)
+          .json({ message: "Dados do aluno não conferem" });
       }
 
       const vinculoExistente = await Vinculo.findOne({
-        responsavelId: req.responsavel.id,
+        responsavelId: req.responsavel!.id,
         alunoMatriculaId: alunoMatricula._id,
       });
 
       if (vinculoExistente) {
-        return res.status(400).json({ message: "Aluno já vinculado" });
+        return res
+          .status(400)
+          .json({ message: "Aluno já vinculado" });
       }
 
       const vinculo = new Vinculo({
-        responsavelId: req.responsavel.id,
+        responsavelId: req.responsavel!.id,
         alunoMatriculaId: alunoMatricula._id,
       });
       await vinculo.save();
@@ -319,31 +365,41 @@ export class ResponsavelController {
       });
     } catch (err) {
       console.error("Erro ao vincular aluno:", err);
-      res.status(500).json({ message: err.message });
+      res.status(500).json({ message: (err as Error).message });
     }
   }
 
-  async validarMatricula(req, res) {
+  async validarMatricula(req: Request, res: Response) {
     try {
       const { matricula, cpf, nomeAluno } = req.body;
 
       if (!matricula && !cpf) {
-        return res.status(400).json({ message: "Matrícula ou CPF é obrigatório", found: false });
+        return res
+          .status(400)
+          .json({ message: "Matrícula ou CPF é obrigatório", found: false });
       }
 
       const query = matricula ? { matricula } : { cpf };
       const alunoMatricula = await AlunoMatricula.findOne(query);
 
       if (!alunoMatricula) {
-        return res.status(404).json({ message: "Aluno não encontrado", found: false });
+        return res
+          .status(404)
+          .json({ message: "Aluno não encontrado", found: false });
       }
 
       if (nomeAluno) {
         const nomeNormalizadoAluno = nomeAluno.trim().toLowerCase();
-        const nomeNormalizadoBanco = alunoMatricula.nomeCompleto.trim().toLowerCase();
+        const nomeNormalizadoBanco =
+          alunoMatricula.nomeCompleto.trim().toLowerCase();
 
         if (nomeNormalizadoAluno !== nomeNormalizadoBanco) {
-          return res.status(400).json({ message: "Dados do aluno não conferem", found: false });
+          return res
+            .status(400)
+            .json({
+              message: "Dados do aluno não conferem",
+              found: false,
+            });
         }
       }
 
@@ -360,7 +416,7 @@ export class ResponsavelController {
       });
     } catch (err) {
       console.error("Erro ao validar matrícula:", err);
-      res.status(500).json({ message: err.message });
+      res.status(500).json({ message: (err as Error).message });
     }
   }
 }

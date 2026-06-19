@@ -4,10 +4,10 @@ import type { Request, Response, NextFunction } from "express";
 const accessTokenSecret = process.env.JWT_SECRET || "chave-super-secreta";
 const refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET || "chave-refresh-secreta";
 
-interface TokenPayload {
+export interface TokenPayload {
   id: string;
-  nome: string;
-  funcao: string;
+  nome?: string;
+  funcao?: string;
 }
 
 declare global {
