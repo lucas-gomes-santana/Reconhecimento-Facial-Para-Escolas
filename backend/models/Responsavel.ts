@@ -1,7 +1,18 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose, { Document, Model, Schema } from "mongoose";
 import bcrypt from "bcrypt";
 
-const responsavelSchema = new Schema(
+export interface IResponsavel extends Document {
+  nomeCompleto: string;
+  parentesco: "Pai" | "Mãe" | "Tio / Tia" | "Avô / Avó" | "Outro";
+  cpf: string;
+  telefone: string;
+  email: string;
+  senha: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+const responsavelSchema = new Schema<IResponsavel>(
   {
     nomeCompleto: {
       type: String,
@@ -55,4 +66,8 @@ responsavelSchema.methods.toJSON = function () {
   return obj;
 };
 
-export default mongoose.model("Responsavel", responsavelSchema);
+const Responsavel: Model<IResponsavel> = mongoose.model<IResponsavel>(
+  "Responsavel",
+  responsavelSchema,
+);
+export default Responsavel;
