@@ -1,8 +1,8 @@
 import express, { Router } from "express";
-import { autenticarToken } from "../config/jwtConfig.js";
-import { LogEntradaController } from "../controllers/logEntradaController.js";
-import LogEntrada from "../models/LogEntrada.js";
-import Estatistica from "../models/Estatistica.js";
+import { autenticarToken } from "../config/jwtConfig.ts";
+import { LogEntradaController } from "../controllers/logEntradaController.ts";
+import LogEntrada from "../models/LogEntrada.ts";
+import Estatistica from "../models/Estatistica.ts";
 
 const router: Router = express.Router();
 

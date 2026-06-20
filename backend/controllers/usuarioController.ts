@@ -1,7 +1,7 @@
 import type { Request, Response } from "express";
 import Usuario from "../models/Usuario.ts";
-import LogEntrada from "../models/LogEntrada.js";
-import AlunoMatricula from "../models/AlunoMatricula.js";
+import LogEntrada from "../models/LogEntrada.ts";
+import AlunoMatricula from "../models/AlunoMatricula.ts";
 import { FaceRecognitionService } from "../services/faceRecognitionService.ts";
 import type { EstatisticaModel } from "../models/Estatistica.ts";
 

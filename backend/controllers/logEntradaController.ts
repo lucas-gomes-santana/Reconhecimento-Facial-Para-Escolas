@@ -1,6 +1,6 @@
 import type { Request, Response } from "express";
-import type { EstatisticaModel } from "../models/Estatistica.js";
-import type { ILogEntrada } from "../models/LogEntrada.js";
+import type { EstatisticaModel } from "../models/Estatistica.ts";
+import type { ILogEntrada } from "../models/LogEntrada.ts";
 
 export class LogEntradaController {
   private LogEntrada: import("mongoose").Model<ILogEntrada>;
@@ -25,10 +25,7 @@ export class LogEntradaController {
         filtro.tipo = tipo;
       }
 
-      const logs = await this.LogEntrada.find(filtro)
-        .sort({ timestamp: -1 })
-        .limit(limite)
-        .lean();
+      const logs = await this.LogEntrada.find(filtro).sort({ timestamp: -1 }).limit(limite).lean();
 
       res.json({
         success: true,
@@ -53,10 +50,7 @@ export class LogEntradaController {
         filtro.tipo = tipo;
       }
 
-      const logs = await this.LogEntrada.find(filtro)
-        .sort({ timestamp: -1 })
-        .limit(limite)
-        .lean();
+      const logs = await this.LogEntrada.find(filtro).sort({ timestamp: -1 }).limit(limite).lean();
 
       res.json({
         success: true,
@@ -70,24 +64,17 @@ export class LogEntradaController {
 
   async buscarLogsPorData(req: Request, res: Response) {
     try {
-      const { tipo, dataInicio, dataFim } = req.query as Record<
-        string,
-        string | undefined
-      >;
+      const { tipo, dataInicio, dataFim } = req.query as Record<string, string | undefined>;
 
       const filtro: Record<string, unknown> = {};
       if (tipo) filtro.tipo = tipo;
       if (dataInicio || dataFim) {
         filtro.timestamp = {};
-        if (dataInicio)
-          (filtro.timestamp as Record<string, Date>).$gte = new Date(dataInicio);
-        if (dataFim)
-          (filtro.timestamp as Record<string, Date>).$lte = new Date(dataFim);
+        if (dataInicio) (filtro.timestamp as Record<string, Date>).$gte = new Date(dataInicio);
+        if (dataFim) (filtro.timestamp as Record<string, Date>).$lte = new Date(dataFim);
       }
 
-      const logs = await this.LogEntrada.find(filtro)
-        .sort({ timestamp: -1 })
-        .lean();
+      const logs = await this.LogEntrada.find(filtro).sort({ timestamp: -1 }).lean();
 
       res.json({
         success: true,
@@ -104,9 +91,7 @@ export class LogEntradaController {
       const { usuarioId, tipo, similaridade, alunoMatriculaId } = req.body;
 
       if (!usuarioId || !tipo) {
-        return res
-          .status(400)
-          .json({ message: "usuarioId e tipo são obrigatórios" });
+        return res.status(400).json({ message: "usuarioId e tipo são obrigatórios" });
       }
 
       const log = await this.LogEntrada.create({
@@ -119,7 +104,7 @@ export class LogEntradaController {
 
       if (tipo === "entrada") {
         await this.Estatistica.incrementarEntrada();
-      } else       if (tipo === "merenda") {
+      } else if (tipo === "merenda") {
         await this.Estatistica.incrementarMerenda();
       }
 
