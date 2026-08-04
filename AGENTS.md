@@ -8,7 +8,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 - Install dependencies: `cd backend && pnpm install`
 - Run server: `cd backend && node server.js`
-- Tests: No tests currently defined.
+- Tests: `pnpm test`
 
 ### Frontend
 
@@ -32,6 +32,7 @@ The backend is a Node.js application using Express and MongoDB (via Mongoose). I
 - `services/`: Houses reusable business logic and external integrations.
 - `utils/`: Shared helper functions.
 - `config/`: Project configuration.
+- `tests`: Unit and integration tests
 
 ### Frontend (`/frontend`)
 
