@@ -1,9 +1,10 @@
-import VideoCanvasDetector from '../components/VideoAndCanvas';
-import { useCadastroFacial } from '../hooks/frontend/useCadastro';
-import { useValidation } from '../hooks/validation/useValidation';
-import { Camera, Save } from 'lucide-react';
-import '../styles/index.css';
-import { useFaceDetection } from '../hooks/detection/useFaceDetection';
+import { Camera, Save } from "lucide-react";
+
+import VideoCanvasDetector from "../components/VideoAndCanvas";
+import { useCadastroFacial } from "../hooks/frontend/useCadastro";
+import { useValidation } from "../hooks/validation/useValidation";
+import "../styles/index.css";
+import { useFaceDetection } from "../hooks/detection/useFaceDetection";
 
 function Cadastrar() {
   const {
@@ -24,32 +25,22 @@ function Cadastrar() {
   } = useCadastroFacial();
 
   const { getDistanceMessage } = useValidation();
-  
+
   const { expressionStatus } = useFaceDetection();
 
   return (
     <div className="min-h-screen flex items-center justify-center p-8">
       <div className="w-full max-w-xl bg-white border-none shadow-xl rounded-lg">
-
         {/* Header */}
         <div className="px-6 pt-6 pb-4">
-          <h1 className="text-center text-2xl font-semibold text-blue-700">
-            Cadastro de Usuários
-          </h1>
+          <h1 className="text-center text-2xl font-semibold text-blue-700">Cadastro de Usuários</h1>
         </div>
-        
+
         {/* Formulário */}
-        <form
-          id="cadastroForm"
-          className="px-6 pb-6 space-y-6"
-          onSubmit={handleSalvarCadastro}
-        >
+        <form id="cadastroForm" className="px-6 pb-6 space-y-6" onSubmit={handleSalvarCadastro}>
           {/* Nome Completo */}
           <div className="space-y-2">
-            <label
-              htmlFor="nome"
-              className="block text-sm font-medium text-gray-700"
-            >
+            <label htmlFor="nome" className="block text-sm font-medium text-gray-700">
               Nome Completo
             </label>
             <input
@@ -65,16 +56,13 @@ function Cadastrar() {
 
           {/* Tipo de Usuário */}
           <div className="space-y-2">
-            <label
-              htmlFor="tipoUsuario"
-              className="block text-sm font-medium text-gray-700"
-            >
+            <label htmlFor="tipoUsuario" className="block text-sm font-medium text-gray-700">
               Tipo de Usuário
             </label>
             <select
               id="tipoUsuario"
               value={tipoUsuario}
-              onChange={(e) => setTipoUsuario(e.target.value)} 
+              onChange={(e) => setTipoUsuario(e.target.value)}
               required
               className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             >
@@ -88,9 +76,7 @@ function Cadastrar() {
 
           {/* Captura Facial */}
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700">
-              Captura Facial
-            </label>
+            <label className="block text-sm font-medium text-gray-700">Captura Facial</label>
             <VideoCanvasDetector
               videoRef={videoRef}
               canvasRef={canvasRef}
@@ -104,7 +90,7 @@ function Cadastrar() {
           {/* Mensagem do Sistema */}
           <div className="bg-blue-700 rounded-lg p-4 text-center">
             <p className="text-white text-sm">
-              {statusMessage || 'Sistema pronto - Preencha os dados e inicie o reconhecimento'}
+              {statusMessage || "Sistema pronto - Preencha os dados e inicie o reconhecimento"}
             </p>
           </div>
 
@@ -138,7 +124,7 @@ function Cadastrar() {
               className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-blue-700 hover:bg-blue-800 text-white font-semibold rounded-lg shadow-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Save className="w-4 h-4" />
-              {isLoading ? 'Salvando...' : 'Salvar Cadastro'}
+              {isLoading ? "Salvando..." : "Salvar Cadastro"}
             </button>
           </div>
         </form>

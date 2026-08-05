@@ -1,53 +1,51 @@
+/* eslint-disable no-undef */
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+
 import { useAuth } from "../auth/useAuth";
 
-
 export const useLogin = () => {
-    const [nome, setNome] = useState('');
-    const [senha, setSenha] = useState('');
-    const [error, setError] = useState('');
-    const [mostrarSenha, setMostrarSenha] = useState(false);
-    
-    const { login, loading } = useAuth();
-    const navigate = useNavigate();
+  const [nome, setNome] = useState("");
+  const [senha, setSenha] = useState("");
+  const [error, setError] = useState("");
+  const [mostrarSenha, setMostrarSenha] = useState(false);
 
-    async function handleLogin(e: React.FormEvent) {
-        e.preventDefault();
-        setError('');
+  const { login, loading } = useAuth();
+  const navigate = useNavigate();
 
-        try {
-            const result = await login(nome, senha);
+  async function handleLogin(e: React.FormEvent) {
+    e.preventDefault();
+    setError("");
 
-            if (result.success) {
-                navigate('/menu');   
-            }
-            else {
-                setError("Acesso não autorizado! Verifique o nome e senha.");
-            }
+    try {
+      const result = await login(nome, senha);
 
-        } catch (error) {
-            setError('Erro inesperado. Tente novamente.');
-            console.error('Erro no login:', error);
-        }
+      if (result.success) {
+        navigate("/menu");
+      } else {
+        setError("Acesso não autorizado! Verifique o nome e senha.");
+      }
+    } catch (error) {
+      setError("Erro inesperado. Tente novamente.");
+      console.error("Erro no login:", error);
     }
-    const toggleMostrarSenha = () => {
-        setMostrarSenha(!mostrarSenha);
-    };
+  }
+  const toggleMostrarSenha = () => {
+    setMostrarSenha(!mostrarSenha);
+  };
 
-    return {
-        nome,
-        setNome,
-        senha,
-        setSenha,
-        mostrarSenha,
-        setMostrarSenha,
-        error,
-        setError,
-        login, 
-        loading,
-        handleLogin,
-        toggleMostrarSenha
-    }
-}
-
+  return {
+    nome,
+    setNome,
+    senha,
+    setSenha,
+    mostrarSenha,
+    setMostrarSenha,
+    error,
+    setError,
+    login,
+    loading,
+    handleLogin,
+    toggleMostrarSenha,
+  };
+};
