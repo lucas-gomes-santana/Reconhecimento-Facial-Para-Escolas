@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+
 import { useAuth } from "./useAuth";
 import { baseURL } from "../../config/url";
 import { useApi } from "../api/useApi";
@@ -70,15 +71,15 @@ export const useVerificarStatus = () => {
     }, [tempoRestanteMs]);
 
     const formatarTempo = (ms: number) => {
-        if (ms <= 0) return 'alguns segundos';
+        if (ms <= 0) return "alguns segundos";
 
         const minutos = Math.floor(ms / 60000);
         const segundos = Math.floor((ms % 60000) / 1000);
 
         if (minutos > 0) {
-            return `${minutos} minuto${minutos > 1 ? 's' : ''} e ${segundos} segundo${segundos > 1 ? 's' : ''}`;
+            return `${minutos} minuto${minutos > 1 ? "s" : ""} e ${segundos} segundo${segundos > 1 ? "s" : ""}`;
         }
-        return `${segundos} segundo${segundos > 1 ? 's' : ''}`;
+        return `${segundos} segundo${segundos > 1 ? "s" : ""}`;
     };
 
     const calcularTempoRestante = (bloqueadoAte: string) => {
@@ -91,18 +92,18 @@ export const useVerificarStatus = () => {
 
     const verificarEBloquear = async (descriptor: number[]) => {
         try {
-           const resultado = await verificarRosto(descriptor, 'verificacao');
+           const resultado = await verificarRosto(descriptor, "verificacao");
            
            if (!resultado.existe) {
                 return {
                     sucesso: false,
-                    mensagem: 'Usuário não encontrado',
+                    mensagem: "Usuário não encontrado",
                     dados: null,
                 };
            }
 
            if (resultado.bloqueado) {
-                const ms = calcularTempoRestante(resultado.dados?.usuario?.bloqueadoAte || '');
+                const ms = calcularTempoRestante(resultado.dados?.usuario?.bloqueadoAte || "");
                 
                 setTempoRestanteMs(ms);
                 setStatus({
@@ -119,7 +120,7 @@ export const useVerificarStatus = () => {
                 };
            }
            
-           await bloquearUsuario(resultado.dados?.usuario?.id || '');
+           await bloquearUsuario(resultado.dados?.usuario?.id || "");
            
            setStatus({
                 usuarioBloqueado: false,
@@ -129,7 +130,7 @@ export const useVerificarStatus = () => {
 
             return {
                 sucesso: true,
-                mensagem: 'Merenda liberada! Usuário bloqueado por 1 minuto.',
+                mensagem: "Merenda liberada! Usuário bloqueado por 1 minuto.",
                 dados: resultado.dados?.usuario || null, 
                 bloqueado: false
             };
@@ -138,28 +139,28 @@ export const useVerificarStatus = () => {
             console.error("Erro na verificação de status: ", error);
             throw error;
         }
-    }
+    };
 
     const bloquearUsuario = async (id: string) => {
         try {
             setLoading(true);
             const response = await authenticatedFetch(`${baseURL}/usuarios/bloquear/${id}`, {
-                method: 'PATCH',
+                method: "PATCH",
                 headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
+                    "Content-Type": "application/json",
+                    "Accept": "application/json"
                 }
             });
 
             if (!response.ok) {
-                throw new Error('Erro ao bloquear usuário');
+                throw new Error("Erro ao bloquear usuário");
             }
 
             return await response.json();
 
         } catch (error) {
             console.error("Erro ao tentar bloquear usuário: ", error);
-            const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
+            const errorMessage = error instanceof Error ? error.message : "Erro desconhecido";
             setError(errorMessage);
             throw error;
 
@@ -171,22 +172,22 @@ export const useVerificarStatus = () => {
     const realizarVerificacaoMerenda = async () => {
         try {   
             if (!isAtIdealDistance) {
-                console.log('Posicione-se na distância ideal antes de verificar.');
+                console.log("Posicione-se na distância ideal antes de verificar.");
                 return;
             }
 
-            console.log('Capturando dados biométricos...');
+            console.log("Capturando dados biométricos...");
             
             let descriptor: number[];
             
             try {
                 descriptor = await aguardarDescriptor(3000);
             } catch (timeoutError) {
-                console.log('Erro ao aguardar descriptor:', timeoutError);
+                console.log("Erro ao aguardar descriptor:", timeoutError);
                 return;
             }
 
-            console.log('Verificando status de merenda...');
+            console.log("Verificando status de merenda...");
             
             const resultado = await verificarEBloquear(descriptor);
             
@@ -203,7 +204,7 @@ export const useVerificarStatus = () => {
             setVerificacaoCompleta(true);
 
         } catch (err) {
-            console.error('Erro na verificação de merenda:', err);
+            console.error("Erro na verificação de merenda:", err);
         }
     };
     
@@ -213,5 +214,5 @@ export const useVerificarStatus = () => {
         verificarEBloquear,
         status,
         realizarVerificacaoMerenda,
-    }
-}
+    };
+};

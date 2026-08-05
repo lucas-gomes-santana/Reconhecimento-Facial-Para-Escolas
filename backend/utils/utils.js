@@ -1,15 +1,15 @@
-import bcrypt from 'bcrypt';
+import bcrypt from "bcrypt";
 
 export function validarFuncaoCadastrada(funcao) {
-    const funcoesValidas = ['admin', 'seguranca', 'super-admin'];
-    return funcoesValidas.includes(funcao.toLowerCase());
+  const funcoesValidas = ["admin", "seguranca", "super-admin"];
+  return funcoesValidas.includes(funcao.toLowerCase());
 }
 
 export async function validarSenha(senhaInformada, senhaArmazenada) {
-    return await bcrypt.compare(senhaInformada, senhaArmazenada);
+  return await bcrypt.compare(senhaInformada, senhaArmazenada);
 }
 
 export async function criptografarSenha(senha) {
-    const saltRounds = 12;
-    return await bcrypt.hash(senha, saltRounds);
+  const saltRounds = 12;
+  return await bcrypt.hash(senha, saltRounds);
 }

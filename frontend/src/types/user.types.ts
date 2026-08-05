@@ -7,7 +7,7 @@ export interface UsuarioData {
 export interface Usuario {
   _id: string;
   nome: string;
-  tipoUsuario: 'Aluno' | 'Professor' | 'Funcionario' | 'Outro';
+  tipoUsuario: "Aluno" | "Professor" | "Funcionario" | "Outro";
   dataCadastro: string;
 } 
 

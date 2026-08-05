@@ -1,7 +1,7 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { EstatisticaController } from '../../../controllers/estatisticaController.js';
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import { EstatisticaController } from "../../../controllers/estatisticaController.js";
 
-describe('EstatisticaController', () => {
+describe("EstatisticaController", () => {
   let controller;
   let mockEstatisticaModel;
   let mockUsuarioModel;
@@ -11,12 +11,12 @@ describe('EstatisticaController', () => {
 
   function criarEstatistica() {
     return {
-      _id: '807f1f77bcf86cd799439011',
+      _id: "807f1f77bcf86cd799439011",
       totalVerificacoes: 100,
       totalEntradas: 50,
       totalSaidas: 30,
       totalMerendas: 20,
-      ultimaAtualizacao: new Date('2025-06-01'),
+      ultimaAtualizacao: new Date("2025-06-01"),
       save: vi.fn().mockResolvedValue(true),
     };
   }
@@ -49,8 +49,8 @@ describe('EstatisticaController', () => {
     };
   });
 
-  describe('obterEstatisticas', () => {
-    it('deve retornar estatísticas com sucesso', async () => {
+  describe("obterEstatisticas", () => {
+    it("deve retornar estatísticas com sucesso", async () => {
       mockUsuarioModel.countDocuments.mockResolvedValue(200);
 
       await controller.obterEstatisticas(mockReq, mockRes);
@@ -70,30 +70,30 @@ describe('EstatisticaController', () => {
       });
     });
 
-    it('deve retornar 500 em caso de erro', async () => {
-      mockEstatisticaModel.getInstance.mockRejectedValue(new Error('DB Error'));
+    it("deve retornar 500 em caso de erro", async () => {
+      mockEstatisticaModel.getInstance.mockRejectedValue(new Error("DB Error"));
 
       await controller.obterEstatisticas(mockReq, mockRes);
 
       expect(mockRes.status).toHaveBeenCalledWith(500);
-      expect(mockRes.json).toHaveBeenCalledWith({ message: 'DB Error' });
+      expect(mockRes.json).toHaveBeenCalledWith({ message: "DB Error" });
     });
   });
 
-  describe('reiniciarVerificacoes', () => {
-    it('deve zerar totalVerificacoes', async () => {
+  describe("reiniciarVerificacoes", () => {
+    it("deve zerar totalVerificacoes", async () => {
       await controller.reiniciarVerificacoes(mockReq, mockRes);
 
       expect(mockEstatisticaModel.getInstance).toHaveBeenCalledTimes(1);
       expect(estatisticaAtual.totalVerificacoes).toBe(0);
       expect(mockRes.json).toHaveBeenCalledWith({
         success: true,
-        message: 'Quantidade de verificações reiniciadas com sucesso',
+        message: "Quantidade de verificações reiniciadas com sucesso",
       });
     });
 
-    it('deve retornar 500 em caso de erro', async () => {
-      mockEstatisticaModel.getInstance.mockRejectedValue(new Error('Erro DB'));
+    it("deve retornar 500 em caso de erro", async () => {
+      mockEstatisticaModel.getInstance.mockRejectedValue(new Error("Erro DB"));
 
       await controller.reiniciarVerificacoes(mockReq, mockRes);
 
@@ -101,23 +101,23 @@ describe('EstatisticaController', () => {
     });
   });
 
-  describe('obterEstatisticasDetalhadas', () => {
-    it('deve retornar estatísticas detalhadas com agregação por tipo', async () => {
+  describe("obterEstatisticasDetalhadas", () => {
+    it("deve retornar estatísticas detalhadas com agregação por tipo", async () => {
       mockUsuarioModel.countDocuments.mockResolvedValue(200);
       mockUsuarioModel.aggregate.mockResolvedValue([
-        { _id: 'Aluno', quantidade: 100 },
-        { _id: 'Professor', quantidade: 50 },
+        { _id: "Aluno", quantidade: 100 },
+        { _id: "Professor", quantidade: 50 },
       ]);
 
       const primeiroUsuario = {
-        _id: '1',
-        nome: 'Primeiro',
-        dataCadastro: new Date('2025-01-01'),
+        _id: "1",
+        nome: "Primeiro",
+        dataCadastro: new Date("2025-01-01"),
       };
       const ultimoUsuario = {
-        _id: '2',
-        nome: 'Ultimo',
-        dataCadastro: new Date('2025-06-01'),
+        _id: "2",
+        nome: "Ultimo",
+        dataCadastro: new Date("2025-06-01"),
       };
 
       const sortMock = vi.fn()
@@ -128,15 +128,15 @@ describe('EstatisticaController', () => {
       await controller.obterEstatisticasDetalhadas(mockReq, mockRes);
 
       expect(mockUsuarioModel.aggregate).toHaveBeenCalledWith([
-        { $group: { _id: '$tipoUsuario', quantidade: { $sum: 1 } } },
+        { $group: { _id: "$tipoUsuario", quantidade: { $sum: 1 } } },
       ]);
       expect(mockRes.json).toHaveBeenCalledWith({
         success: true,
         dados: expect.objectContaining({
           totalCadastros: 200,
           usuariosPorTipo: [
-            { _id: 'Aluno', quantidade: 100 },
-            { _id: 'Professor', quantidade: 50 },
+            { _id: "Aluno", quantidade: 100 },
+            { _id: "Professor", quantidade: 50 },
           ],
           primeiroCadastro: primeiroUsuario.dataCadastro,
           ultimoCadastro: ultimoUsuario.dataCadastro,
@@ -144,8 +144,8 @@ describe('EstatisticaController', () => {
       });
     });
 
-    it('deve retornar 500 em caso de erro', async () => {
-      mockEstatisticaModel.getInstance.mockRejectedValue(new Error('Erro DB'));
+    it("deve retornar 500 em caso de erro", async () => {
+      mockEstatisticaModel.getInstance.mockRejectedValue(new Error("Erro DB"));
 
       await controller.obterEstatisticasDetalhadas(mockReq, mockRes);
 
@@ -153,23 +153,23 @@ describe('EstatisticaController', () => {
     });
   });
 
-  describe('gerarRelatorio', () => {
-    it('deve gerar relatório completo', async () => {
+  describe("gerarRelatorio", () => {
+    it("deve gerar relatório completo", async () => {
       mockUsuarioModel.countDocuments.mockResolvedValue(200);
       mockUsuarioModel.aggregate.mockResolvedValue([
-        { _id: 'Aluno', quantidade: 100 },
-        { _id: 'Professor', quantidade: 50 },
+        { _id: "Aluno", quantidade: 100 },
+        { _id: "Professor", quantidade: 50 },
       ]);
 
       const primeiroUsuario = {
-        _id: '1',
-        nome: 'Primeiro',
-        dataCadastro: new Date('2025-01-01'),
+        _id: "1",
+        nome: "Primeiro",
+        dataCadastro: new Date("2025-01-01"),
       };
       const ultimoUsuario = {
-        _id: '2',
-        nome: 'Ultimo',
-        dataCadastro: new Date('2025-06-01'),
+        _id: "2",
+        nome: "Ultimo",
+        dataCadastro: new Date("2025-06-01"),
       };
 
       const sortMock = vi.fn()
@@ -178,9 +178,9 @@ describe('EstatisticaController', () => {
       mockUsuarioModel.findOne = vi.fn(() => ({ sort: sortMock }));
 
       const todosUsuarios = [
-        { nome: 'João', tipoUsuario: 'Aluno', dataCadastro: new Date('2025-01-01') },
-        { nome: 'Maria', tipoUsuario: 'Professor', dataCadastro: new Date('2025-02-01') },
-        { nome: 'Pedro', tipoUsuario: 'Aluno', dataCadastro: new Date('2025-03-01') },
+        { nome: "João", tipoUsuario: "Aluno", dataCadastro: new Date("2025-01-01") },
+        { nome: "Maria", tipoUsuario: "Professor", dataCadastro: new Date("2025-02-01") },
+        { nome: "Pedro", tipoUsuario: "Aluno", dataCadastro: new Date("2025-03-01") },
       ];
       mockUsuarioModel.find = vi.fn(() => ({
         sort: vi.fn(() => ({
@@ -197,15 +197,15 @@ describe('EstatisticaController', () => {
           totalCadastros: 200,
           totalVerificacoes: 100,
           usuariosOrganizados: [
-            { tipo: 'Aluno', quantidade: 2, usuarios: expect.any(Array) },
-            { tipo: 'Professor', quantidade: 1, usuarios: expect.any(Array) },
+            { tipo: "Aluno", quantidade: 2, usuarios: expect.any(Array) },
+            { tipo: "Professor", quantidade: 1, usuarios: expect.any(Array) },
           ],
         }),
       });
     });
 
-    it('deve retornar 500 em caso de erro', async () => {
-      mockEstatisticaModel.getInstance.mockRejectedValue(new Error('Erro DB'));
+    it("deve retornar 500 em caso de erro", async () => {
+      mockEstatisticaModel.getInstance.mockRejectedValue(new Error("Erro DB"));
 
       await controller.gerarRelatorio(mockReq, mockRes);
 
