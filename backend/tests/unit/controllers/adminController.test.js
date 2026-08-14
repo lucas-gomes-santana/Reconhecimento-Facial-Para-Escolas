@@ -10,7 +10,7 @@ vi.mock("../../../config/jwtConfig.js", () => ({
   verificarRefreshToken: vi.fn(),
 }));
 
-vi.mock("../../../utils/utils.js", () => ({
+vi.mock("../../../utils/utils.ts", () => ({
   criptografarSenha: vi.fn(() => Promise.resolve("hashed-password")),
   validarSenha: vi.fn(() => Promise.resolve(true)),
   validarFuncaoCadastrada: vi.fn((funcao) =>
@@ -24,7 +24,7 @@ import {
   removerTokens,
   verificarRefreshToken,
 } from "../../../config/jwtConfig.js";
-import { validarSenha, validarFuncaoCadastrada } from "../../../utils/utils.js";
+import { validarSenha, validarFuncaoCadastrada } from "../../../utils/utils.ts";
 
 describe("AdminController", () => {
   let controller;

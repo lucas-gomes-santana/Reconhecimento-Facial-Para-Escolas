@@ -6,7 +6,7 @@ import {
   removerTokens,
   gerarRefreshToken,
 } from "../config/jwtConfig.ts";
-import { criptografarSenha, validarFuncaoCadastrada, validarSenha } from "../utils/utils.js";
+import { criptografarSenha, validarFuncaoCadastrada, validarSenha } from "../utils/utils.ts";
 import type { IAdmin } from "../models/Admin.ts";
 
 export async function cadastrarDesenvolvedor(Admin: import("mongoose").Model<IAdmin>) {
