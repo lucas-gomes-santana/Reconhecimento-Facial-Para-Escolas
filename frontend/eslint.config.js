@@ -61,7 +61,7 @@ export default [
         "error",
         {
           groups: ["builtin", "external", "internal"],
-          "newlines-between": "always",
+          "newlines-between": "never",
         },
       ],
 
