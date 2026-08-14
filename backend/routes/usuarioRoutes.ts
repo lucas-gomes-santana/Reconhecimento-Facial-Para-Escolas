@@ -1,5 +1,5 @@
 import express, { Router } from "express";
-import validation from "../middlewares/validation.js";
+import validation from "../middlewares/validation.ts";
 import { autenticarToken } from "../config/jwtConfig.ts";
 import { UsuarioController } from "../controllers/usuarioController.ts";
 import { FaceRecognitionService } from "../services/faceRecognitionService.ts";

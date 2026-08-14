@@ -1,6 +1,6 @@
 import express, { Router } from "express";
 import { ResponsavelController } from "../controllers/responsavelController.ts";
-import { autenticarResponsavel } from "../middlewares/authResponsavel.js";
+import { autenticarResponsavel } from "../middlewares/authResponsavel.ts";
 
 const router: Router = express.Router();
 

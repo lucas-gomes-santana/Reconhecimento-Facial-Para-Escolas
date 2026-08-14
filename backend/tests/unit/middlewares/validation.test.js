@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
-import ValidationMiddleware from "../../../middlewares/validation.js";
+import ValidationMiddleware from "../../../middlewares/validation.ts";
 
 describe("ValidationMiddleware", () => {
   let mockReq;
