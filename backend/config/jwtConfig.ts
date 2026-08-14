@@ -23,7 +23,6 @@ const accessTokenConfig = {
   secure: process.env.NODE_ENV === "production",
   sameSite: "strict" as const,
   maxAge: 3600000, // 1 hora de duração
-  // maxAge: 60000 // 1 minuto de duração para testes
 };
 
 const refreshTokenConfig = {
@@ -69,7 +68,6 @@ export function removerTokens(res: Response): void {
   res.clearCookie("refreshToken");
 }
 
-// Middleware para proteger rotas
 export function autenticarToken(req: Request, res: Response, next: NextFunction): void {
   const token = req.cookies.jwt;
 
