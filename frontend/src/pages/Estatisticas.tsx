@@ -1,12 +1,11 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useEffect, useState } from 'react';
-import { useEstatisticas } from '../hooks/frontend/useEstatisticas';
-import { useGerarRelatorio } from '../hooks/utils/useGerarRelatorio';
-import { useFormatData } from '../hooks/utils/useFormatData';
-import '../styles/index.css';
-import type { UsuarioPorTipo } from '../types/user.types';
-import type { DadosEstatisticas} from '../types/estatisticas.types';
-
+import { useEffect, useState } from "react";
+import { useEstatisticas } from "../hooks/frontend/useEstatisticas";
+import { useGerarRelatorio } from "../hooks/utils/useGerarRelatorio";
+import { useFormatData } from "../hooks/utils/useFormatData";
+import type { UsuarioPorTipo } from "../types/user.types";
+import type { DadosEstatisticas } from "../types/estatisticas.types";
+import "../styles/index.css";
 
 function Estatisticas() {
   const {
@@ -20,15 +19,11 @@ function Estatisticas() {
     clearError,
   } = useEstatisticas();
 
-  const { 
-    gerarRelatorio, 
-    loading: loadingRelatorio, 
-    error: errorRelatorio 
-  } = useGerarRelatorio();
+  const { gerarRelatorio, loading: loadingRelatorio, error: errorRelatorio } = useGerarRelatorio();
 
   const { formatData } = useFormatData();
 
-  const [, setLastRefresh] = useState<string>('');
+  const [, setLastRefresh] = useState<string>("");
 
   useEffect(() => {
     // Carrega estatísticas ao montar o componente
@@ -40,21 +35,23 @@ function Estatisticas() {
       await carregarEstatisticas(mostrandoDetalhes);
       setLastRefresh(formatData(new Date().toISOString()));
     } catch (err) {
-      console.error('Erro ao atualizar estatísticas:', err);
+      console.error("Erro ao atualizar estatísticas:", err);
     }
   };
 
   const handleReset = async () => {
-    const confirmacao = confirm('Tem certeza que deseja reiniciar o contador de verificações? Esta ação não pode ser desfeita.');
-    
+    const confirmacao = confirm(
+      "Tem certeza que deseja reiniciar o contador de verificações? Esta ação não pode ser desfeita.",
+    );
+
     if (!confirmacao) return;
 
     try {
       await resetarEstatisticas();
       setLastRefresh(formatData(new Date().toISOString()));
-      alert('Quantidade de verificações reiniciadas com sucesso!');
+      alert("Quantidade de verificações reiniciadas com sucesso!");
     } catch (err) {
-      console.error('Erro ao reiniciar verificações:', err);
+      console.error("Erro ao reiniciar verificações:", err);
     }
   };
 
@@ -62,17 +59,17 @@ function Estatisticas() {
     try {
       await toggleDetalhes();
     } catch (err) {
-      console.error('Erro ao alternar detalhes:', err);
+      console.error("Erro ao alternar detalhes:", err);
     }
   };
 
   const handleGerarRelatorio = async () => {
     try {
       await gerarRelatorio();
-      alert('Relatório gerado com sucesso!');
+      alert("Relatório gerado com sucesso!");
     } catch (err) {
-      console.error('Erro ao gerar relatório:', err);
-      alert(`Erro ao gerar relatório: ${errorRelatorio || 'Erro desconhecido'}`);
+      console.error("Erro ao gerar relatório:", err);
+      alert(`Erro ao gerar relatório: ${errorRelatorio || "Erro desconhecido"}`);
     }
   };
 
@@ -105,23 +102,25 @@ function Estatisticas() {
             <h3 className="text-lg font-semibold mb-3">Usuários por Tipo</h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-
               {stats.usuariosPorTipo.map((tipo: UsuarioPorTipo, index: number) => (
                 <div key={index} className="flex justify-between p-2 bg-white rounded border">
                   <strong>{tipo._id}:</strong>
                   <span>{tipo.quantidade} usuário(s)</span>
                 </div>
               ))}
-              
             </div>
             {stats.primeiroCadastro && (
               <div className="mt-4 p-3 bg-blue-50 rounded">
-                <p><strong>Primeiro cadastro:</strong> {formatData(stats.primeiroCadastro)}</p>
+                <p>
+                  <strong>Primeiro cadastro:</strong> {formatData(stats.primeiroCadastro)}
+                </p>
               </div>
             )}
             {stats.ultimoCadastro && (
               <div className="mt-4 p-3 bg-blue-50 rounded">
-                <p><strong>Último cadastro:</strong> {formatData(stats.ultimoCadastro)}</p>
+                <p>
+                  <strong>Último cadastro:</strong> {formatData(stats.ultimoCadastro)}
+                </p>
               </div>
             )}
           </div>
@@ -141,32 +140,31 @@ function Estatisticas() {
       </header>
 
       <main className="flex-1 p-10 grid grid-cols-1 gap-8">
-
         <section className="bg-white p-4 rounded-lg shadow-md">
           <h2 className="mb-4 text-lg md:text-xl font-semibold">Controles</h2>
           <div className="flex gap-4 flex-wrap">
-            <button 
+            <button
               onClick={handleRefresh}
               disabled={loading}
               className="flex-1 min-w-[150px] py-2 px-4 rounded-lg text-white bg-green-500 hover:bg-green-600 transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loading ? '⏳ Carregando...' : '🔄 Atualizar'}
+              {loading ? "⏳ Carregando..." : "🔄 Atualizar"}
             </button>
-            <button 
+            <button
               onClick={handleToggleDetalhes}
               disabled={loading}
               className="flex-1 min-w-[150px] py-2 px-4 rounded-lg text-white bg-blue-500 hover:bg-blue-600 transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              📋 {mostrandoDetalhes ? 'Ocultar Detalhes' : 'Mostrar Detalhes'}
+              📋 {mostrandoDetalhes ? "Ocultar Detalhes" : "Mostrar Detalhes"}
             </button>
-            <button 
+            <button
               onClick={handleGerarRelatorio}
               disabled={loading || loadingRelatorio}
               className="flex-1 min-w-[150px] py-2 px-4 rounded-lg text-white bg-purple-500 hover:bg-purple-600 transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loadingRelatorio ? '⏳ Gerando...' : '📄 Gerar Relatório'}
+              {loadingRelatorio ? "⏳ Gerando..." : "📄 Gerar Relatório"}
             </button>
-            <button 
+            <button
               onClick={handleReset}
               disabled={loading}
               className="flex-1 min-w-[150px] py-2 px-4 rounded-lg text-white bg-red-500 hover:bg-red-600 transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
@@ -181,7 +179,7 @@ function Estatisticas() {
           {error && (
             <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
               <p className="text-red-700">⚠️ Erro: {error}</p>
-              <button 
+              <button
                 onClick={clearError}
                 className="mt-2 px-3 py-1 bg-red-100 text-red-700 rounded hover:bg-red-200"
               >
@@ -194,7 +192,10 @@ function Estatisticas() {
       </main>
 
       <footer className="bg-[#1E3A8A] text-white text-center p-4 text-sm">
-        <p>Os dados são atualizados automaticamente conforme novos cadastros e verificações são realizados.</p>
+        <p>
+          Os dados são atualizados automaticamente conforme novos cadastros e verificações são
+          realizados.
+        </p>
       </footer>
     </div>
   );

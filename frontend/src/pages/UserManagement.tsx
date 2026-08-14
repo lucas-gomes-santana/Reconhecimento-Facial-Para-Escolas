@@ -1,8 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useEffect, useState } from 'react';
-import { Trash2, Search, Users, AlertTriangle, Loader } from 'lucide-react';
-import { useUserManagement } from '../hooks/frontend/useUserManagement';
-import { useFormatData } from '../hooks/utils/useFormatData';
+import { useEffect, useState } from "react";
+import { Trash2, Search, Users, AlertTriangle, Loader } from "lucide-react";
+import { useUserManagement } from "../hooks/frontend/useUserManagement";
+import { useFormatData } from "../hooks/utils/useFormatData";
 
 function UserManagement() {
   const {
@@ -33,24 +33,26 @@ function UserManagement() {
   // Detectar scroll para carregar mais usuários
   useEffect(() => {
     const handleScroll = () => {
-      if (window.innerHeight + document.documentElement.scrollTop >= 
-          document.documentElement.offsetHeight - 1000) {
+      if (
+        window.innerHeight + document.documentElement.scrollTop >=
+        document.documentElement.offsetHeight - 1000
+      ) {
         carregarMaisUsuarios();
       }
     };
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, [carregarMaisUsuarios]);
 
   const handleRemoverUsuario = async (_id: string) => {
     setRemovendoUsuario(_id);
     const sucesso = await removerUsuario(_id);
-    
+
     if (sucesso) {
       setUsuarioParaRemover(null);
     }
-    
+
     setRemovendoUsuario(null);
   };
 
@@ -64,15 +66,15 @@ function UserManagement() {
 
   const getTipoUsuarioColor = (tipo: string) => {
     switch (tipo.toLowerCase()) {
-      case 'professor':
-        return 'bg-blue-100 text-blue-800 border border-blue-200';
-      case 'aluno':
-        return 'bg-green-100 text-green-800 border border-green-200';
-      case 'funcionário':
-      case 'funcionario':
-        return 'bg-yellow-100 text-yellow-800 border border-yellow-200';
+      case "professor":
+        return "bg-blue-100 text-blue-800 border border-blue-200";
+      case "aluno":
+        return "bg-green-100 text-green-800 border border-green-200";
+      case "funcionário":
+      case "funcionario":
+        return "bg-yellow-100 text-yellow-800 border border-yellow-200";
       default:
-        return 'bg-gray-100 text-gray-800 border border-gray-200';
+        return "bg-gray-100 text-gray-800 border border-gray-200";
     }
   };
 
@@ -80,7 +82,6 @@ function UserManagement() {
     <div className="min-h-screen flex h-screen justify-center items-center">
       <div className="min-w-4xl mx-auto">
         <div className="bg-white rounded-2xl shadow-2xl overflow-hidden">
-          
           {/* Header com gradiente azul */}
           <div className="bg-gradient-to-r from-[#0D47A1] to-[#1565C0] px-8 py-8 ">
             <div className="flex items-center justify-between">
@@ -90,10 +91,12 @@ function UserManagement() {
                   <h1 className="text-3xl font-bold text-white">Gerenciamento de Usuários</h1>
                 </div>
                 <p className="text-[#D4E157]">
-                  {totalUsuarios > 0 ? `${totalUsuarios} usuários cadastrados` : 'Nenhum usuário cadastrado'}
+                  {totalUsuarios > 0
+                    ? `${totalUsuarios} usuários cadastrados`
+                    : "Nenhum usuário cadastrado"}
                 </p>
               </div>
-              
+
               <button
                 onClick={removerTodosOsUsuarios}
                 disabled={removendo}
@@ -124,7 +127,6 @@ function UserManagement() {
           </div>
 
           <div className="p-6 bg-white">
-
             {/* Mensagem de Erro */}
             {error && (
               <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-center gap-3">
@@ -147,11 +149,11 @@ function UserManagement() {
               <div className="text-center py-12">
                 <Users className="h-16 w-16 text-gray-300 mx-auto mb-4" />
                 <h3 className="text-lg font-medium text-gray-900 mb-2">
-                  {searchTerm ? 'Nenhum usuário encontrado' : 'Nenhum usuário cadastrado'}
+                  {searchTerm ? "Nenhum usuário encontrado" : "Nenhum usuário cadastrado"}
                 </h3>
                 <p className="text-gray-500 text-sm">
                   {searchTerm
-                    ? 'Tente ajustar os termos de busca'
+                    ? "Tente ajustar os termos de busca"
                     : 'Clique em "Adicionar Usuário" para cadastrar o primeiro usuário'}
                 </p>
               </div>
@@ -168,7 +170,9 @@ function UserManagement() {
                           {usuario.nome}
                         </h3>
                         <div className="mt-2">
-                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getTipoUsuarioColor(usuario.tipoUsuario)}`}>
+                          <span
+                            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getTipoUsuarioColor(usuario.tipoUsuario)}`}
+                          >
                             {usuario.tipoUsuario}
                           </span>
                         </div>
@@ -176,7 +180,7 @@ function UserManagement() {
                           Cadastrado em {formatData(usuario.dataCadastro)}
                         </p>
                       </div>
-                      
+
                       <button
                         onClick={() => confirmarRemocao(usuario._id)}
                         disabled={removendoUsuario === usuario._id}
@@ -207,10 +211,9 @@ function UserManagement() {
             {!hasMore && usuarios.length > 0 && (
               <div className="text-center py-6">
                 <p className="text-gray-500 text-sm">
-                  {searchTerm 
-                    ? 'Todos os resultados foram carregados'
-                    : 'Todos os usuários foram carregados'
-                  }
+                  {searchTerm
+                    ? "Todos os resultados foram carregados"
+                    : "Todos os usuários foram carregados"}
                 </p>
               </div>
             )}
@@ -226,16 +229,15 @@ function UserManagement() {
               <div className="flex-shrink-0 w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
                 <AlertTriangle className="h-6 w-6 text-red-600" />
               </div>
-              <h3 className="text-xl font-semibold text-gray-900">
-                Confirmar Remoção
-              </h3>
+              <h3 className="text-xl font-semibold text-gray-900">Confirmar Remoção</h3>
             </div>
-            
+
             <p className="text-gray-600 mb-6">
-              Tem certeza que deseja remover o usuário <strong>{usuarios.find(u => u._id === usuarioParaRemover)?.nome}</strong>? 
-              Esta ação não pode ser desfeita.
+              Tem certeza que deseja remover o usuário{" "}
+              <strong>{usuarios.find((u) => u._id === usuarioParaRemover)?.nome}</strong>? Esta ação
+              não pode ser desfeita.
             </p>
-            
+
             <div className="flex justify-end gap-3">
               <button
                 onClick={cancelarRemocao}
@@ -254,7 +256,7 @@ function UserManagement() {
                     Removendo...
                   </>
                 ) : (
-                  'Remover'
+                  "Remover"
                 )}
               </button>
             </div>

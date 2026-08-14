@@ -1,29 +1,20 @@
-import { useEffect } from 'react';
-import { useApi } from '../hooks/api/useApi';
-import { useFaceDetection } from '../hooks/detection/useFaceDetection';
-import { useValidation } from '../hooks/validation/useValidation';
-import { useVerificacao } from '../hooks/auth/useVerificacao';
-import VideoCanvasDetector from '../components/VideoAndCanvas';
-import { Camera, CheckCircle, XCircle } from 'lucide-react';
-import '../styles/index.css';
+import { useEffect } from "react";
+import { Camera, CheckCircle, XCircle } from "lucide-react";
+import { useApi } from "../hooks/api/useApi";
+import { useFaceDetection } from "../hooks/detection/useFaceDetection";
+import { useValidation } from "../hooks/validation/useValidation";
+import { useVerificacao } from "../hooks/auth/useVerificacao";
+import VideoCanvasDetector from "../components/VideoAndCanvas";
+import "../styles/index.css";
 
 function Verificacao() {
-  const { 
-    loading: apiLoading, 
-    error: apiError, 
-  } = useApi();
+  const { loading: apiLoading, error: apiError } = useApi();
+
+  const { loading: faceLoading, error: faceError, expressionStatus } = useFaceDetection();
+
+  const { getDistanceMessage } = useValidation();
 
   const {
-    loading: faceLoading,
-    error: faceError,
-    expressionStatus
-  } = useFaceDetection();
-  
-  const { 
-    getDistanceMessage, 
-  } = useValidation();
-
-  const { 
     verificacaoCompleta,
     resultadoVerificacao,
     realizarVerificacao,
@@ -31,11 +22,11 @@ function Verificacao() {
     pararSistema,
     iniciarSistema,
     isInitialized,
-    videoRef,       
-    canvasRef,         
-    distanceStatus,     
-    isAtIdealDistance,  
-    isDetecting,        
+    videoRef,
+    canvasRef,
+    distanceStatus,
+    isAtIdealDistance,
+    isDetecting,
   } = useVerificacao();
 
   useEffect(() => {
@@ -50,13 +41,13 @@ function Verificacao() {
   const renderBotaoAcao = () => {
     if (!isInitialized) {
       return (
-        <button 
+        <button
           onClick={iniciarSistema}
           disabled={faceLoading}
           className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg shadow-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <Camera className="w-5 h-5" />
-          {faceLoading ? 'Carregando...' : 'Iniciar Verificação'}
+          {faceLoading ? "Carregando..." : "Iniciar Verificação"}
         </button>
       );
     }
@@ -64,14 +55,14 @@ function Verificacao() {
     if (verificacaoCompleta) {
       return (
         <div className="flex flex-col sm:flex-row gap-4 w-full">
-          <button 
+          <button
             onClick={reiniciarProcesso}
             className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg shadow-md transition-colors"
           >
             <Camera className="w-5 h-5" />
             Nova Verificação
           </button>
-          <button 
+          <button
             onClick={pararSistema}
             className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-lg shadow-md transition-colors"
           >
@@ -83,15 +74,15 @@ function Verificacao() {
 
     return (
       <div className="flex flex-col sm:flex-row gap-4 w-full">
-        <button 
+        <button
           onClick={realizarVerificacao}
           disabled={!isAtIdealDistance || apiLoading}
           className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg shadow-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <CheckCircle className="w-5 h-5" />
-          {apiLoading ? 'Verificando...' : 'Verificar Identidade'}
+          {apiLoading ? "Verificando..." : "Verificar Identidade"}
         </button>
-        <button 
+        <button
           onClick={pararSistema}
           className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-lg shadow-md transition-colors"
         >
@@ -111,7 +102,7 @@ function Verificacao() {
             Verificação de Cadastro
           </h1>
         </div>
-        
+
         {/* Conteúdo */}
         <div className="px-6 pb-6 space-y-6">
           {/* Video Canvas Detector */}
@@ -123,7 +114,7 @@ function Verificacao() {
             expressionStatus={expressionStatus}
             getDistanceMessage={getDistanceMessage}
           />
-          
+
           {/* Mensagens de Erro */}
           {(apiError || faceError) && (
             <div className="p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg flex items-start gap-2">
@@ -134,11 +125,11 @@ function Verificacao() {
 
           {/* Resultado da Verificação */}
           {verificacaoCompleta && resultadoVerificacao && (
-            <div className={`p-6 rounded-lg ${
-              resultadoVerificacao.existe 
-                ? 'bg-[#09ad5e]' 
-                : 'bg-red-500'
-            }`}>
+            <div
+              className={`p-6 rounded-lg ${
+                resultadoVerificacao.existe ? "bg-[#09ad5e]" : "bg-red-500"
+              }`}
+            >
               {resultadoVerificacao.existe ? (
                 <div className="text-center space-y-3">
                   <div className="flex items-center justify-center gap-2">
@@ -149,7 +140,8 @@ function Verificacao() {
                   </div>
                   {resultadoVerificacao.dados?.usuario?.nome && (
                     <p className="text-lg font-medium text-white">
-                      Bem-vindo(a), <span className="font-bold">{resultadoVerificacao.dados.usuario.nome}</span>!
+                      Bem-vindo(a),{" "}
+                      <span className="font-bold">{resultadoVerificacao.dados.usuario.nome}</span>!
                     </p>
                   )}
                 </div>
@@ -165,7 +157,7 @@ function Verificacao() {
               )}
             </div>
           )}
-          
+
           {/* Botões de Ação */}
           {renderBotaoAcao()}
         </div>
