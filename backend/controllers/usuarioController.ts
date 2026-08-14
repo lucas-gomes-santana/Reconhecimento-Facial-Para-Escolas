@@ -4,8 +4,7 @@ import LogEntrada from "../models/LogEntrada.ts";
 import AlunoMatricula from "../models/AlunoMatricula.ts";
 import { FaceRecognitionService } from "../services/faceRecognitionService.ts";
 import type { EstatisticaModel } from "../models/Estatistica.ts";
-
-const threshold = 0.96; // Percentual mínimo de 96% de similaridade para sucesso na autenticação facial
+import { threshold } from "../utils/threshold.ts";
 
 export class UsuarioController {
   private faceRecognitionService: FaceRecognitionService;
