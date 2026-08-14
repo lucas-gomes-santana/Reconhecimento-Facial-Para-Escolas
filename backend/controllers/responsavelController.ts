@@ -3,6 +3,7 @@ import type { Request, Response } from "express";
 import Responsavel from "../models/Responsavel.ts";
 import Vinculo from "../models/Vinculo.ts";
 import AlunoMatricula from "../models/AlunoMatricula.ts";
+import type { IAlunoMatricula } from "../models/AlunoMatricula.ts";
 import LogEntrada from "../models/LogEntrada.ts";
 import {
   gerarAccessToken,
@@ -170,12 +171,12 @@ export class ResponsavelController {
       const vinculos = await Vinculo.find({
         responsavelId: req.responsavel!.id,
       })
-        .populate("alunoMatriculaId")
+        .populate<{ alunoMatriculaId: IAlunoMatricula }>("alunoMatriculaId")
         .lean();
 
       const alunos = vinculos
-        .filter((v: any) => v.alunoMatriculaId)
-        .map((v: any) => ({
+        .filter((v) => v.alunoMatriculaId)
+        .map((v) => ({
           id: v.alunoMatriculaId._id,
           nomeCompleto: v.alunoMatriculaId.nomeCompleto,
           matricula: v.alunoMatriculaId.matricula,
@@ -189,7 +190,7 @@ export class ResponsavelController {
       amanha.setDate(amanha.getDate() + 1);
 
       const alunosComStatus = await Promise.all(
-        alunos.map(async (aluno: any) => {
+        alunos.map(async (aluno) => {
           const logsEntrada = await LogEntrada.find({
             usuarioId: { $exists: false },
             tipo: "entrada",
@@ -202,10 +203,10 @@ export class ResponsavelController {
           }).lean();
 
           const logAluno = logsEntrada.find(
-            (l: any) => l.alunoMatriculaId?.toString() === aluno.id.toString(),
+            (l) => l.alunoMatriculaId?.toString() === aluno.id.toString(),
           );
           const logMerenda = logsMerenda.find(
-            (l: any) => l.alunoMatriculaId?.toString() === aluno.id.toString(),
+            (l) => l.alunoMatriculaId?.toString() === aluno.id.toString(),
           );
 
           return {
@@ -241,7 +242,7 @@ export class ResponsavelController {
         .limit(50)
         .lean();
 
-      const logsFiltrados = (logs as any[]).filter((l) => l.alunoMatriculaId?.toString() === id);
+      const logsFiltrados = logs.filter((l) => l.alunoMatriculaId?.toString() === id);
 
       res.json({ success: true, dados: logsFiltrados });
     } catch (err) {
@@ -268,7 +269,7 @@ export class ResponsavelController {
         .limit(50)
         .lean();
 
-      const logsFiltrados = (logs as any[]).filter((l) => l.alunoMatriculaId?.toString() === id);
+      const logsFiltrados = logs.filter((l) => l.alunoMatriculaId?.toString() === id);
 
       const hoje = new Date();
       hoje.setHours(0, 0, 0, 0);
