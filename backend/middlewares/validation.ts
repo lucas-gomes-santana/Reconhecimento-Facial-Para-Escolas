@@ -1,27 +1,31 @@
-class ValidationMiddleware {
-  validateLogin(req, res, next) {
+import type { NextFunction, Request, Response } from "express";
+
+export class ValidationMiddleware {
+  validateLogin(req: Request, res: Response, next: NextFunction): void {
     const { nome, senha } = req.body;
 
     if (!nome || !senha) {
-      return res.status(400).json({ message: "Todos os campos são obrigatórios" });
+      res.status(400).json({ message: "Todos os campos são obrigatórios" });
+      return;
     }
 
     next();
   }
 
-  validateCadastroUsuario(req, res, next) {
+  validateCadastroUsuario(req: Request, res: Response, next: NextFunction): void {
     const { nome, tipoUsuario, descriptor } = req.body;
 
     if (!nome || !tipoUsuario || !descriptor) {
-      return res.status(400).json({ message: "Dados incompletos" });
+      res.status(400).json({ message: "Dados incompletos" });
+      return;
     }
 
     next();
   }
 
-  validateVerificacaoRosto(req, res, next) {
+  validateVerificacaoRosto(req: Request, res: Response, next: NextFunction): void {
     const { descriptor, contexto } = req.body;
-    const errors = [];
+    const errors: string[] = [];
 
     if (!descriptor) {
       errors.push("Descritor facial não fornecido");
@@ -36,15 +40,16 @@ class ValidationMiddleware {
     }
 
     if (errors.length > 0) {
-      return res.status(400).json({ message: errors });
+      res.status(400).json({ message: errors });
+      return;
     }
 
     next();
   }
 
-  validateCadastroAdmin(req, res, next) {
+  validateCadastroAdmin(req: Request, res: Response, next: NextFunction): void {
     const { nome, senha, funcao } = req.body;
-    const errors = [];
+    const errors: string[] = [];
 
     if (!nome || !senha || !funcao) {
       errors.push("Todos os campos são obrigatórios");
@@ -55,37 +60,38 @@ class ValidationMiddleware {
     }
 
     if (errors.length > 0) {
-      return res.status(400).json({
-        message: errors,
-      });
+      res.status(400).json({ message: errors });
+      return;
     }
 
     next();
   }
 
-  validateId(req, res, next) {
+  validateId(req: Request, res: Response, next: NextFunction): void {
     const { id } = req.body;
 
     if (!id) {
-      return res.status(400).json({ message: "Id obrigatório para realizar a operação" });
+      res.status(400).json({ message: "Id obrigatório para realizar a operação" });
+      return;
     }
 
     next();
   }
 
-  validateIdParam(req, res, next) {
+  validateIdParam(req: Request, res: Response, next: NextFunction): void {
     const { id } = req.params;
 
     if (!id) {
-      return res.status(400).json({ message: "Id obrigatório para realizar a operação" });
+      res.status(400).json({ message: "Id obrigatório para realizar a operação" });
+      return;
     }
 
     next();
   }
 
-  validateMudancaDeSenha(req, res, next) {
+  validateMudancaDeSenha(req: Request, res: Response, next: NextFunction): void {
     const { id, novaSenha, confirmarSenha } = req.body;
-    const errors = [];
+    const errors: string[] = [];
 
     if (!id || !novaSenha) {
       errors.push("Todos os campos são obrigatórios");
@@ -100,7 +106,8 @@ class ValidationMiddleware {
     }
 
     if (errors.length > 0) {
-      return res.status(400).json({ message: errors });
+      res.status(400).json({ message: errors });
+      return;
     }
 
     next();
