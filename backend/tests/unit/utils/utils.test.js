@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { criptografarSenha, validarSenha, validarFuncaoCadastrada } from "../../../utils/utils.js";
+import { criptografarSenha, validarSenha, validarFuncaoCadastrada } from "../../../utils/utils.ts";
 
 describe("Utils", () => {
   describe("criptografarSenha", () => {
