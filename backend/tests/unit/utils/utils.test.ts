@@ -78,11 +78,11 @@ describe("Utils", () => {
     });
 
     it("deve lançar erro para valor null", () => {
-      expect(() => validarFuncaoCadastrada(null)).toThrow();
+      expect(() => validarFuncaoCadastrada(null as unknown as string)).toThrow();
     });
 
     it("deve lançar erro para valor undefined", () => {
-      expect(() => validarFuncaoCadastrada(undefined)).toThrow();
+      expect(() => validarFuncaoCadastrada(undefined as unknown as string)).toThrow();
     });
 
     it('deve retornar false para "desenvolvedor" (não permitido via função)', () => {

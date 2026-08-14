@@ -1,14 +1,16 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
+import type { Request, Response, NextFunction } from "express";
 import {
   gerarAccessToken,
   gerarRefreshToken,
   verificarAccessToken,
   verificarRefreshToken,
   autenticarToken,
-} from "../../../config/jwtConfig.js";
+  type TokenPayload,
+} from "../../../config/jwtConfig.ts";
 
 describe("JWT Config", () => {
-  const payloadValido = {
+  const payloadValido: TokenPayload = {
     id: "123abc",
     nome: "teste",
     funcao: "admin",
@@ -86,17 +88,17 @@ describe("JWT Config", () => {
   });
 
   describe("autenticarToken middleware", () => {
-    let mockReq;
-    let mockRes;
-    let mockNext;
+    let mockReq: Request;
+    let mockRes: Response;
+    let mockNext: NextFunction;
 
     beforeEach(() => {
-      mockReq = { cookies: {} };
+      mockReq = { cookies: {} } as Request;
       mockRes = {
         status: vi.fn().mockReturnThis(),
         json: vi.fn(),
-      };
-      mockNext = vi.fn();
+      } as unknown as Response;
+      mockNext = vi.fn() as unknown as NextFunction;
     });
 
     it("deve chamar next() quando token presente e válido", () => {
