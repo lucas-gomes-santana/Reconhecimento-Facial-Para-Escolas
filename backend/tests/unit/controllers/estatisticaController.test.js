@@ -120,7 +120,8 @@ describe("EstatisticaController", () => {
         dataCadastro: new Date("2025-06-01"),
       };
 
-      const sortMock = vi.fn()
+      const sortMock = vi
+        .fn()
         .mockResolvedValueOnce(primeiroUsuario)
         .mockResolvedValueOnce(ultimoUsuario);
       mockUsuarioModel.findOne = vi.fn(() => ({ sort: sortMock }));
@@ -172,7 +173,8 @@ describe("EstatisticaController", () => {
         dataCadastro: new Date("2025-06-01"),
       };
 
-      const sortMock = vi.fn()
+      const sortMock = vi
+        .fn()
         .mockResolvedValueOnce(ultimoUsuario)
         .mockResolvedValueOnce(primeiroUsuario);
       mockUsuarioModel.findOne = vi.fn(() => ({ sort: sortMock }));
