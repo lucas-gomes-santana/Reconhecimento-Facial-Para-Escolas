@@ -1,7 +1,7 @@
 import express, { Router } from "express";
 import { AdminController } from "../controllers/adminController.ts";
 import { autenticarToken } from "../config/jwtConfig.ts";
-import validation from "../middlewares/validation.js";
+import validation from "../middlewares/validation.ts";
 import Admin from "../models/Admin.ts";
 
 const router: Router = express.Router();
