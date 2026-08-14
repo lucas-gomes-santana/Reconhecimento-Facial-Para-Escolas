@@ -108,4 +108,3 @@ class ValidationMiddleware {
 }
 
 export default new ValidationMiddleware();
-

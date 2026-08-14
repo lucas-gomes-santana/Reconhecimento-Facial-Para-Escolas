@@ -23,13 +23,7 @@ const vinculoSchema = new Schema<IVinculo>(
   { timestamps: true },
 );
 
-vinculoSchema.index(
-  { responsavelId: 1, alunoMatriculaId: 1 },
-  { unique: true },
-);
+vinculoSchema.index({ responsavelId: 1, alunoMatriculaId: 1 }, { unique: true });
 
-const Vinculo: Model<IVinculo> = mongoose.model<IVinculo>(
-  "Vinculo",
-  vinculoSchema,
-);
+const Vinculo: Model<IVinculo> = mongoose.model<IVinculo>("Vinculo", vinculoSchema);
 export default Vinculo;

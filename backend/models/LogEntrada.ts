@@ -43,8 +43,5 @@ LogEntradaSchema.index({ usuarioId: 1, tipo: 1, timestamp: -1 });
 LogEntradaSchema.index({ alunoMatriculaId: 1, tipo: 1, timestamp: -1 });
 LogEntradaSchema.index({ timestamp: -1 });
 
-const LogEntrada: Model<ILogEntrada> = mongoose.model<ILogEntrada>(
-  "LogEntrada",
-  LogEntradaSchema,
-);
+const LogEntrada: Model<ILogEntrada> = mongoose.model<ILogEntrada>("LogEntrada", LogEntradaSchema);
 export default LogEntrada;

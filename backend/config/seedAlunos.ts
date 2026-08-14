@@ -1,5 +1,5 @@
 // Insere dados de matrículas fictícias para testes e desenvolvimento
-// Isso deve ser removido em produção, a matrícula real deve ser cadastrada pelo gestor do sistema (super-admin)
+// Em produção, a matrícula real deve ser cadastrada pelo gestor do sistema (super-admin)
 
 import AlunoMatricula from "../models/AlunoMatricula.ts";
 
