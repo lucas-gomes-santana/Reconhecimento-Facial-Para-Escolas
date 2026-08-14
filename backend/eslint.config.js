@@ -32,6 +32,9 @@ export default [
       "no-undef": "off",
       "no-empty": "warn",
 
+      // Type augmentation (e.g. `declare global { namespace Express {...} }`)
+      "@typescript-eslint/no-namespace": ["error", { allowDeclarations: true }],
+
       // Unused vars
       "no-unused-vars": "off",
       "@typescript-eslint/no-unused-vars": [
