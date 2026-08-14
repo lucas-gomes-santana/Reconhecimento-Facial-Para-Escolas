@@ -7,7 +7,7 @@ import {
   descriptorDiferente,
   descriptorZeros,
   descriptorValoresAltos,
-} from "../../fixtures/descriptors.js";
+} from "../../fixtures/descriptors.ts";
 
 describe("FaceRecognitionService", () => {
   let service;

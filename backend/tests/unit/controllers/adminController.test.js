@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { AdminController } from "../../../controllers/adminController.js";
-import { adminMock, superAdminMock, desenvolvedorMock, adminInput } from "../../fixtures/admins.js";
+import { adminMock, superAdminMock, desenvolvedorMock, adminInput } from "../../fixtures/admins.ts";
 
 vi.mock("../../../config/jwtConfig.js", () => ({
   gerarAccessToken: vi.fn(() => "access-token-mock"),

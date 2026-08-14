@@ -5,7 +5,7 @@ import {
   usuarioBloqueadoMock,
   usuarioInput,
   matchResult,
-} from "../../fixtures/usuarios.js";
+} from "../../fixtures/usuarios.ts";
 
 vi.mock("../../../models/Usuario.js", () => ({
   default: {
