@@ -1,11 +1,12 @@
 import type { Request, Response } from "express";
 import type { EstatisticaModel } from "../models/Estatistica.ts";
+import type { IUsuario } from "../models/Usuario.ts";
 
 export class EstatisticaController {
   private Estatistica: EstatisticaModel;
-  private Usuario: import("mongoose").Model<any>;
+  private Usuario: import("mongoose").Model<IUsuario>;
 
-  constructor(estatisticaModel: EstatisticaModel, usuarioModel: import("mongoose").Model<any>) {
+  constructor(estatisticaModel: EstatisticaModel, usuarioModel: import("mongoose").Model<IUsuario>) {
     this.Estatistica = estatisticaModel;
     this.Usuario = usuarioModel;
   }
@@ -121,8 +122,8 @@ export class EstatisticaController {
       const usuariosOrganizados = ordemTipos
         .map((tipo) => {
           const usuarios = todosUsuarios
-            .filter((u: any) => u.tipoUsuario === tipo)
-            .map((u: any) => ({
+            .filter((u) => u.tipoUsuario === tipo)
+            .map((u) => ({
               nome: u.nome,
               dataCadastro: u.dataCadastro,
             }));
