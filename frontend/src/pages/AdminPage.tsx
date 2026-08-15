@@ -1,9 +1,11 @@
+/* eslint-disable no-undef */
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useEffect, useState } from 'react';
-import { useAdminPage } from '../hooks/frontend/useAdminPage';
-import { Search, AlertTriangle, Users, Loader, Trash2 } from 'lucide-react';
-import { useFormatData } from '../hooks/utils/useFormatData';
-import '../styles/index.css';
+import { useEffect, useState } from "react";
+import { Search, AlertTriangle, Users, Loader, Trash2 } from "lucide-react";
+
+import { useAdminPage } from "../hooks/frontend/useAdminPage";
+import { useFormatData } from "../hooks/utils/useFormatData";
+import "../styles/index.css";
 
 function AdminPage() {
     const {
@@ -33,7 +35,6 @@ function AdminPage() {
     const [removendoAdmin, setRemovendoAdmin] = useState<string | null>(null);
 
     useEffect(() => {
-        console.log("Carregando Admins...");
         carregarAdmins(true);
     }, []);
 
@@ -50,8 +51,8 @@ function AdminPage() {
             }
         };
 
-        window.addEventListener('scroll', handleScroll);
-        return () => window.removeEventListener('scroll', handleScroll);
+        window.addEventListener("scroll", handleScroll);
+        return () => window.removeEventListener("scroll", handleScroll);
     }, [carregarMaisAdmins, loadingList, hasMore]);
 
     const handleRemoverAdmin = async (_id: string) => {
@@ -75,31 +76,31 @@ function AdminPage() {
 
     const getTipoAdminColor = (tipo: string) => {
         switch (tipo.toLowerCase()) {
-            case 'admin':
-                return 'bg-purple-100 text-purple-800 border border-purple-200';
-            case 'seguranca':
-            case 'segurança':
-                return 'bg-red-100 text-red-800 border border-red-200';
-            case 'super-admin':
-                return 'bg-green-100 text-green-800 border border-green-200';
-            case 'desenvolvedor': 
-                return 'bg-yellow-100 text-yellow-800 border border-yellow-200';
+            case "admin":
+                return "bg-purple-100 text-purple-800 border border-purple-200";
+            case "seguranca":
+            case "segurança":
+                return "bg-red-100 text-red-800 border border-red-200";
+            case "super-admin":
+                return "bg-green-100 text-green-800 border border-green-200";
+            case "desenvolvedor": 
+                return "bg-yellow-100 text-yellow-800 border border-yellow-200";
             default:
-                return 'bg-gray-100 text-gray-800 border border-gray-200';
+                return "bg-gray-100 text-gray-800 border border-gray-200";
         }
     };
 
     const formatarFuncao = (funcao: string) => {
         switch (funcao.toLowerCase()) {
-            case 'admin':
-                return 'Administrador';
-            case 'seguranca':
-            case 'segurança':
-                return 'Segurança';
-            case 'super-admin':
-                return 'Super Admin';
-            case 'desenvolvedor':
-                return 'Desenvolvedor';
+            case "admin":
+                return "Administrador";
+            case "seguranca":
+            case "segurança":
+                return "Segurança";
+            case "super-admin":
+                return "Super Admin";
+            case "desenvolvedor":
+                return "Desenvolvedor";
             default:
                 return funcao;
         }
@@ -121,9 +122,9 @@ function AdminPage() {
                     {/* Mensagens de Feedback */}
                     {message.texto && (
                         <div className={`mb-6 p-4 rounded-lg border ${
-                            message.tipo === 'success' 
-                                ? 'bg-green-100 border-green-300 text-green-700' 
-                                : 'bg-red-100 border-red-300 text-red-700'
+                            message.tipo === "success" 
+                                ? "bg-green-100 border-green-300 text-green-700" 
+                                : "bg-red-100 border-red-300 text-red-700"
                         }`}>
                             <p className="text-sm font-medium">{message.texto}</p>
                         </div>
@@ -193,7 +194,7 @@ function AdminPage() {
                                     Cadastrando...
                                 </div>
                             ) : (
-                                'Cadastrar Gestor'
+                                "Cadastrar Gestor"
                             )}
                         </button>
                     </form>
@@ -208,10 +209,10 @@ function AdminPage() {
                         </div>
                         <p className="text-purple-200 text-sm">
                             {getTotalAdmins() > 0 
-                                ? `${getTotalAdmins()} gestor${getTotalAdmins() > 1 ? 'es' : ''} cadastrado${getTotalAdmins() > 1 ? 's' : ''}`
+                                ? `${getTotalAdmins()} gestor${getTotalAdmins() > 1 ? "es" : ""} cadastrado${getTotalAdmins() > 1 ? "s" : ""}`
                                 : searchTerm 
-                                    ? 'Nenhum gestor encontrado' 
-                                    : 'Nenhum gestor cadastrado'
+                                    ? "Nenhum gestor encontrado" 
+                                    : "Nenhum gestor cadastrado"
                             }
                         </p>
                     </div>
@@ -234,12 +235,12 @@ function AdminPage() {
                             <div className="text-center py-12">
                                 <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
                                 <h3 className="text-lg font-medium text-gray-900 mb-2">
-                                    {searchTerm ? 'Nenhum gestor encontrado' : 'Nenhum gestor cadastrado'}
+                                    {searchTerm ? "Nenhum gestor encontrado" : "Nenhum gestor cadastrado"}
                                 </h3>
                                 <p className="text-gray-500 text-sm">
                                     {searchTerm 
-                                        ? 'Tente buscar com outros termos' 
-                                        : 'Cadastre o primeiro gestor usando o formulário acima'
+                                        ? "Tente buscar com outros termos" 
+                                        : "Cadastre o primeiro gestor usando o formulário acima"
                                     }
                                 </p>
                             </div>
@@ -336,7 +337,7 @@ function AdminPage() {
                                         Removendo...
                                     </>
                                 ) : (
-                                    'Remover'
+                                    "Remover"
                                 )}
                             </button>
                         </div>

@@ -1,7 +1,7 @@
 export interface AdminData {
     _id: string;
     nome: string;
-    funcao: 'admin' | 'seguranca' | 'super-admin' | 'desenvolvedor';
+    funcao: "admin" | "seguranca" | "super-admin" | "desenvolvedor";
     dataCadastro: string;
 }
 

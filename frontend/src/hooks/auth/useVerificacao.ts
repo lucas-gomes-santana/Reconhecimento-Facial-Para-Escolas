@@ -1,9 +1,10 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+import { useEffect, useState, useCallback } from "react";
+
 import { useApi } from "../api/useApi";
 import { useFaceDetection } from "../detection/useFaceDetection";
 import { useValidation } from "../validation/useValidation";
 import { useAuth } from "./useAuth";
-import { useEffect, useState, useCallback } from "react";
 import { baseURL } from "../../config/url";
 import type { VerificarRostoResponse } from "../../types/face.type";
 
@@ -59,8 +60,8 @@ export const useVerificacao = () => {
             
             await startDetection();
         } catch (err) {
-            console.error('Erro ao iniciar sistema:', err);
-            console.log('Erro ao iniciar sistema. Verifique as permissões da câmera.');
+            console.error("Erro ao iniciar sistema:", err);
+            console.log("Erro ao iniciar sistema. Verifique as permissões da câmera.");
             setIsInitialized(false);
         }
     };
@@ -70,12 +71,12 @@ export const useVerificacao = () => {
             clearError();
             
             if (!isAtIdealDistance) {
-                const errorMessage = 'Posicione-se na distância ideal antes de verificar.';
+                const errorMessage = "Posicione-se na distância ideal antes de verificar.";
                 showValidationErrors([errorMessage]);
                 return;
             }
 
-            console.log('Capturando dados biométricos...');
+            console.log("Capturando dados biométricos...");
             
             let descriptor: number[];
             
@@ -85,7 +86,7 @@ export const useVerificacao = () => {
                 try {
                     descriptor = await aguardarDescriptor(6000);
                 } catch (timeoutError) {
-                    console.log('Tempo esgotado, tente novamente.', timeoutError);
+                    console.log("Tempo esgotado, tente novamente.", timeoutError);
                     return;
                 }
             }
@@ -93,20 +94,20 @@ export const useVerificacao = () => {
             const validation = validateDescriptor(descriptor, isAtIdealDistance);
             
             if (!validation.isValid) {
-                console.log('Erro na captura biométrica. Tente novamente.');
+                console.log("Erro na captura biométrica. Tente novamente.");
                 showValidationErrors(validation.errors);
                 return;
             }
 
-            console.log('Verificando no banco de dados...');
-            const resultado = await verificarRosto(descriptor, 'verificacao');
+            console.log("Verificando no banco de dados...");
+            const resultado = await verificarRosto(descriptor, "verificacao");
             
             
             setResultadoVerificacao(resultado);
             setVerificacaoCompleta(true);
             
         } catch (err) {
-            console.error('Erro na verificação:', err);
+            console.error("Erro na verificação:", err);
         }
     };
 
@@ -115,13 +116,13 @@ export const useVerificacao = () => {
         setError(null);
         
         try {
-          console.log('Verificando rosto...');
+          console.log("Verificando rosto...");
           
           const response = await authenticatedFetch(`${baseURL}/verificar-rosto`, {
-            method: 'POST',
+            method: "POST",
             headers: { 
-              'Content-Type': 'application/json',
-              'Accept': 'application/json'
+              "Content-Type": "application/json",
+              "Accept": "application/json"
             },
             body: JSON.stringify({ descriptor, contexto })
           });
@@ -132,7 +133,7 @@ export const useVerificacao = () => {
           try {
             data = responseText ? JSON.parse(responseText) : {};
           } catch (parseError) {
-            console.error('Erro ao parsear resposta:', parseError, 'Resposta:', responseText);
+            console.error("Erro ao parsear resposta:", parseError, "Resposta:", responseText);
             throw new Error(`Resposta inválida do servidor: ${response.status} ${response.statusText}`);
           }
     
@@ -145,24 +146,24 @@ export const useVerificacao = () => {
             bloqueado: data.bloqueado || false,  
             dados: data.encontrado ? {
                 usuario: {
-                    id: data.usuario?.id || '',
-                    nome: data.usuario?.nome || '',
-                    tipoUsuario: data.usuario?.tipoUsuario || '',
-                    dataCadastro: data.usuario?.dataCadastro || '',
+                    id: data.usuario?.id || "",
+                    nome: data.usuario?.nome || "",
+                    tipoUsuario: data.usuario?.tipoUsuario || "",
+                    dataCadastro: data.usuario?.dataCadastro || "",
                     status: data.usuario?.status, 
                     bloqueadoAte: data.usuario?.bloqueadoAte, 
                 },
                 similaridade: data.similaridade || 0,
                 distancia: data.distancia || 0,
             } : null
-          }
+          };
           
           return result;
           
         } catch (err) {
             const apiError = handleApiError(err);
             setError(apiError.message);
-            console.error('Erro na verificação:', apiError);
+            console.error("Erro na verificação:", apiError);
             throw apiError;
     
         } finally {
@@ -200,6 +201,6 @@ export const useVerificacao = () => {
         setResultadoVerificacao,
         currentDescriptor,
         aguardarDescriptor, 
-    }
-}
+    };
+};
 

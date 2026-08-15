@@ -10,7 +10,6 @@ import { criptografarSenha, validarFuncaoCadastrada, validarSenha } from "../uti
 import type { IAdmin } from "../models/Admin.ts";
 
 export async function cadastrarDesenvolvedor(Admin: import("mongoose").Model<IAdmin>) {
-  // Remover os fallbacks em produção e substituir por arquivos .env
   const devNome = process.env.DEV_USER_NOME || "admin";
   const devSenha = process.env.DEV_USER_SENHA || "admin";
   const devFuncao = "desenvolvedor";
@@ -104,7 +103,6 @@ export class AdminController {
       funcao: payload.funcao,
     });
 
-    // Gerar novo refresh token quando este expirar
     const newRefreshToken = gerarRefreshToken({
       id: payload.id,
       nome: payload.nome,

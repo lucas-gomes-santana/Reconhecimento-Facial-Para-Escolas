@@ -1,10 +1,11 @@
+/* eslint-disable no-undef */
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useState, useCallback, useEffect } from 'react';
-import type { EstatisticasBasicas } from '../../types/estatisticas.types';
-import { baseURL } from '../../config/url';
-import { useApi } from '../api/useApi';
-import { useAuth } from '../auth/useAuth';
+import { useState, useCallback, useEffect } from "react";
 
+import type { EstatisticasBasicas } from "../../types/estatisticas.types";
+import { baseURL } from "../../config/url";
+import { useApi } from "../api/useApi";
+import { useAuth } from "../auth/useAuth";
 
 export const useEstatisticas = () => {
   const [loading, setLoading] = useState(false);
@@ -14,18 +15,18 @@ export const useEstatisticas = () => {
 
   const { handleApiError } = useApi();
 
-  const { authenticatedFetch } = useAuth(); 
+  const { authenticatedFetch } = useAuth();
 
   const carregarEstatisticas = useCallback(async (detalhadas: boolean = false) => {
     setLoading(true);
     setError(null);
-    
+
     try {
-      const endpoint = detalhadas ? '/estatisticas/detalhadas' : '/estatisticas';
-      
+      const endpoint = detalhadas ? "/estatisticas/detalhadas" : "/estatisticas";
+
       const response = await fetch(`${baseURL}${endpoint}`, {
-        method: 'GET',
-        headers: { 'Content-Type': 'application/json' }
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
       });
 
       const data = await response.json();
@@ -36,12 +37,10 @@ export const useEstatisticas = () => {
 
       setEstatisticas(data.dados || data);
       setMostrandoDetalhes(detalhadas);
-      
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Erro ao carregar estatísticas';
+      const errorMessage = err instanceof Error ? err.message : "Erro ao carregar estatísticas";
       setError(errorMessage);
       throw err;
-      
     } finally {
       setLoading(false);
     }
@@ -50,23 +49,23 @@ export const useEstatisticas = () => {
   const obterEstatisticas = useCallback(async () => {
     setLoading(true);
     setError(null);
-    
+
     try {
       const response = await fetch(`${baseURL}/estatisticas`, {
-        method: 'GET',
-        headers: { 
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        }
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
       });
 
       const responseText = await response.text();
       let data;
-      
+
       try {
         data = responseText ? JSON.parse(responseText) : {};
       } catch (parseError) {
-        console.error('Erro ao parsear resposta:', parseError, 'Resposta:', responseText);
+        console.error("Erro ao parsear resposta:", parseError, "Resposta:", responseText);
         throw new Error(`Resposta inválida do servidor: ${response.status} ${response.statusText}`);
       }
 
@@ -75,11 +74,10 @@ export const useEstatisticas = () => {
       }
 
       return data;
-      
     } catch (err) {
       const apiError = handleApiError(err);
       setError(apiError.message);
-      console.error('Erro ao obter estatísticas:', apiError);
+      console.error("Erro ao obter estatísticas:", apiError);
 
       throw apiError;
     } finally {
@@ -90,11 +88,11 @@ export const useEstatisticas = () => {
   const resetarEstatisticas = useCallback(async () => {
     setLoading(true);
     setError(null);
-    
-    try {      
+
+    try {
       const response = await authenticatedFetch(`${baseURL}/estatisticas/reset`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' }
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
       });
 
       const data = await response.json();
@@ -104,9 +102,8 @@ export const useEstatisticas = () => {
       }
 
       await carregarEstatisticas(mostrandoDetalhes);
-      
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Erro ao resetar estatísticas';
+      const errorMessage = err instanceof Error ? err.message : "Erro ao resetar estatísticas";
       setError(errorMessage);
       throw err;
     } finally {
@@ -117,11 +114,11 @@ export const useEstatisticas = () => {
   const obterEstatisticasDetalhadas = useCallback(async () => {
     setLoading(true);
     setError(null);
-    
+
     try {
       const response = await fetch(`${baseURL}/estatisticas/detalhadas`, {
-        method: 'GET',
-        headers: { 'Content-Type': 'application/json' }
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
       });
 
       const data = await response.json();
@@ -149,8 +146,6 @@ export const useEstatisticas = () => {
     setError(null);
   }, []);
 
-  
-
   // Escutar por remoções de usuários para atualizar estatísticas
   useEffect(() => {
     const handleUserDeleted = () => {
@@ -159,8 +154,8 @@ export const useEstatisticas = () => {
       }
     };
 
-    window.addEventListener('userDeleted', handleUserDeleted);
-    return () => window.removeEventListener('userDeleted', handleUserDeleted);
+    window.addEventListener("userDeleted", handleUserDeleted);
+    return () => window.removeEventListener("userDeleted", handleUserDeleted);
   }, [estatisticas, mostrandoDetalhes, carregarEstatisticas]);
 
   return {
@@ -176,4 +171,3 @@ export const useEstatisticas = () => {
     clearError,
   };
 };
-

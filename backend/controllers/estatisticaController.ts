@@ -134,7 +134,7 @@ export class EstatisticaController {
             quantidade: usuarios.length,
           };
         })
-        .filter((grupo) => grupo.quantidade > 0); // Remove tipos de usuários do relatório caso não haja nenhum cadastrado
+        .filter((grupo) => grupo.quantidade > 0);
 
       res.json({
         success: true,
