@@ -1,12 +1,13 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
+import type { Mock } from "vitest";
 
 interface MockModel {
-  findOne: ReturnType<typeof vi.fn>;
-  create: ReturnType<typeof vi.fn>;
+  findOne: Mock;
+  create: Mock;
 }
 
 interface MockModelComGetInstance {
-  getInstance: ReturnType<typeof vi.fn>;
+  getInstance: Mock;
 }
 
 describe("Estatistica Model", () => {
@@ -47,7 +48,7 @@ describe("Estatistica Model", () => {
       };
       mockModel.findOne.mockResolvedValue(estatisticaExistente);
 
-      const getInstance = async function () {
+      const getInstance = async function (this: MockModel) {
         let estatistica = await this.findOne();
         if (!estatistica) {
           estatistica = await this.create({});
@@ -67,7 +68,7 @@ describe("Estatistica Model", () => {
       const novaEstatistica = { _id: "456", totalVerificacoes: 0 };
       mockModel.create.mockResolvedValue(novaEstatistica);
 
-      const getInstance = async function () {
+      const getInstance = async function (this: MockModel) {
         let estatistica = await this.findOne();
         if (!estatistica) {
           estatistica = await this.create({});
@@ -95,7 +96,7 @@ describe("Estatistica Model", () => {
         getInstance: vi.fn().mockResolvedValue(estatistica),
       };
 
-      const incrementarVerificacoes = async function () {
+      const incrementarVerificacoes = async function (this: MockModelComGetInstance) {
         const estat = await this.getInstance();
         estat.totalVerificacoes += 1;
         estat.ultimaAtualizacao = new Date();
@@ -120,7 +121,7 @@ describe("Estatistica Model", () => {
         getInstance: vi.fn().mockResolvedValue(estatistica),
       };
 
-      const incrementarVerificacoes = async function () {
+      const incrementarVerificacoes = async function (this: MockModelComGetInstance) {
         const estat = await this.getInstance();
         estat.totalVerificacoes += 1;
         estat.ultimaAtualizacao = new Date();
@@ -145,7 +146,7 @@ describe("Estatistica Model", () => {
         getInstance: vi.fn().mockResolvedValue(estatistica),
       };
 
-      const incrementarEntrada = async function () {
+      const incrementarEntrada = async function (this: MockModelComGetInstance) {
         const estat = await this.getInstance();
         estat.totalEntradas += 1;
         estat.ultimaAtualizacao = new Date();
@@ -171,7 +172,7 @@ describe("Estatistica Model", () => {
         getInstance: vi.fn().mockResolvedValue(estatistica),
       };
 
-      const incrementarSaida = async function () {
+      const incrementarSaida = async function (this: MockModelComGetInstance) {
         const estat = await this.getInstance();
         estat.totalSaidas += 1;
         estat.ultimaAtualizacao = new Date();
@@ -197,7 +198,7 @@ describe("Estatistica Model", () => {
         getInstance: vi.fn().mockResolvedValue(estatistica),
       };
 
-      const incrementarMerenda = async function () {
+      const incrementarMerenda = async function (this: MockModelComGetInstance) {
         const estat = await this.getInstance();
         estat.totalMerendas += 1;
         estat.ultimaAtualizacao = new Date();
