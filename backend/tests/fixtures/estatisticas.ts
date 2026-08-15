@@ -1,4 +1,11 @@
-export const estatisticaMock = {
+import type { IEstatistica } from "../../models/Estatistica.ts";
+
+type EstatisticaMock = Pick<
+  IEstatistica,
+  "totalVerificacoes" | "totalEntradas" | "totalSaidas" | "totalMerendas" | "ultimaAtualizacao"
+> & { _id: string; save: () => Promise<boolean> };
+
+export const estatisticaMock: EstatisticaMock = {
   _id: "807f1f77bcf86cd799439011",
   totalVerificacoes: 100,
   totalEntradas: 50,
@@ -8,7 +15,7 @@ export const estatisticaMock = {
   save: () => Promise.resolve(true),
 };
 
-export const estatisticaZerada = {
+export const estatisticaZerada: EstatisticaMock = {
   _id: "807f1f77bcf86cd799439011",
   totalVerificacoes: 0,
   totalEntradas: 0,

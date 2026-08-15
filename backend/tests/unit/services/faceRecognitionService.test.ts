@@ -1,16 +1,16 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
-import { FaceRecognitionService } from "../../../services/faceRecognitionService.js";
+import { FaceRecognitionService } from "../../../services/faceRecognitionService.ts";
 import {
   descriptorValido,
   descriptorSimilar,
   descriptorDiferente,
   descriptorZeros,
   descriptorValoresAltos,
-} from "../../fixtures/descriptors.js";
+} from "../../fixtures/descriptors.ts";
 
 describe("FaceRecognitionService", () => {
-  let service;
+  let service: FaceRecognitionService;
 
   beforeEach(() => {
     service = new FaceRecognitionService();
@@ -103,15 +103,22 @@ describe("FaceRecognitionService", () => {
     });
 
     it("deve lançar erro se descriptor1 for null", () => {
-      expect(() => service.calcularSimilaridadeCossenos(null, [1, 2])).toThrow();
+      expect(() =>
+        service.calcularSimilaridadeCossenos(null as unknown as number[], [1, 2]),
+      ).toThrow();
     });
 
     it("deve lançar erro se descriptor2 for null", () => {
-      expect(() => service.calcularSimilaridadeCossenos([1, 2], null)).toThrow();
+      expect(() =>
+        service.calcularSimilaridadeCossenos([1, 2], null as unknown as number[]),
+      ).toThrow();
     });
 
     it("deve retornar 0 se descritor não for array", () => {
-      const resultado = service.calcularSimilaridadeCossenos("não é array", [1, 2]);
+      const resultado = service.calcularSimilaridadeCossenos(
+        "não é array" as unknown as number[],
+        [1, 2],
+      );
       expect(resultado).toBe(0);
     });
 
@@ -125,7 +132,7 @@ describe("FaceRecognitionService", () => {
 
   describe("threshold padrão", () => {
     it("deve ter threshold padrão de 0.96", () => {
-      expect(service.threshold).toBe(0.96);
+      expect((service as unknown as { threshold: number }).threshold).toBe(0.96);
     });
   });
 });

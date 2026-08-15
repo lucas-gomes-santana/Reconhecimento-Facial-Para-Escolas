@@ -1,15 +1,39 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { EstatisticaController } from "../../../controllers/estatisticaController.js";
+import type { Request, Response } from "express";
+import { EstatisticaController } from "../../../controllers/estatisticaController.ts";
+import type { EstatisticaModel } from "../../../models/Estatistica.ts";
+import type { IUsuario } from "../../../models/Usuario.ts";
+
+interface EstatisticaAtual {
+  _id: string;
+  totalVerificacoes: number;
+  totalEntradas: number;
+  totalSaidas: number;
+  totalMerendas: number;
+  ultimaAtualizacao: Date;
+  save: ReturnType<typeof vi.fn>;
+}
+
+interface MockEstatisticaModel {
+  getInstance: ReturnType<typeof vi.fn>;
+}
+
+interface MockUsuarioModel {
+  countDocuments: ReturnType<typeof vi.fn>;
+  aggregate: ReturnType<typeof vi.fn>;
+  findOne: ReturnType<typeof vi.fn>;
+  find: ReturnType<typeof vi.fn>;
+}
 
 describe("EstatisticaController", () => {
-  let controller;
-  let mockEstatisticaModel;
-  let mockUsuarioModel;
-  let mockReq;
-  let mockRes;
-  let estatisticaAtual;
+  let controller: EstatisticaController;
+  let mockEstatisticaModel: MockEstatisticaModel;
+  let mockUsuarioModel: MockUsuarioModel;
+  let mockReq: Request;
+  let mockRes: Response;
+  let estatisticaAtual: EstatisticaAtual;
 
-  function criarEstatistica() {
+  function criarEstatistica(): EstatisticaAtual {
     return {
       _id: "807f1f77bcf86cd799439011",
       totalVerificacoes: 100,
@@ -40,13 +64,16 @@ describe("EstatisticaController", () => {
       })),
     };
 
-    controller = new EstatisticaController(mockEstatisticaModel, mockUsuarioModel);
+    controller = new EstatisticaController(
+      mockEstatisticaModel as unknown as EstatisticaModel,
+      mockUsuarioModel as unknown as import("mongoose").Model<IUsuario>,
+    );
 
-    mockReq = {};
+    mockReq = {} as unknown as Request;
     mockRes = {
       status: vi.fn().mockReturnThis(),
       json: vi.fn(),
-    };
+    } as unknown as Response;
   });
 
   describe("obterEstatisticas", () => {
