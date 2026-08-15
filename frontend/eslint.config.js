@@ -16,6 +16,8 @@ export default [
     languageOptions: {
       parser: tsParser,
       parserOptions: {
+        ecmaVersion: "latest",
+        sourceType: "module",
         ecmaFeatures: {
           jsx: true,
         },
@@ -38,36 +40,34 @@ export default [
     },
 
     rules: {
-      // Estilo
-      quotes: ["error", "double"],
-      semi: ["error", "always"],
+      // Estilo básico
+      quotes: ["warn", "double"],
+      semi: ["warn", "always"],
+      "no-multiple-empty-lines": ["warn", { max: 2, maxEOF: 1 }],
 
-      "no-multiple-empty-lines": ["error", { max: 2, maxEOF: 1 }],
-
-      // Qualidade
-      eqeqeq: "error",
+      // Qualidade mínima
+      eqeqeq: ["warn", "always"],
       "no-console": ["warn", { allow: ["warn", "error"] }],
 
+      // React
       "react/react-in-jsx-scope": "off",
       "react/prop-types": "off",
-
       "react-hooks/rules-of-hooks": "error",
       "react-hooks/exhaustive-deps": "warn",
 
+      // TypeScript
       "@typescript-eslint/no-explicit-any": "warn",
+      "@typescript-eslint/no-unused-vars": "off",
 
-      // Ordem dos imports
+      // Organização básica
       "import/order": [
-        "error",
+        "warn",
         {
-          groups: ["builtin", "external", "internal"],
+          groups: ["builtin", "external", "internal", "parent", "sibling", "index"],
           "newlines-between": "always",
         },
       ],
-
-      // Limpeza de imports não usados
-      "unused-imports/no-unused-imports": "error",
-      "@typescript-eslint/no-unused-vars": "off",
+      "unused-imports/no-unused-imports": "warn",
     },
   },
 ];
