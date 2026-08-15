@@ -1,18 +1,19 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
+import type { Request, Response, NextFunction } from "express";
 import ValidationMiddleware from "../../../middlewares/validation.ts";
 
 describe("ValidationMiddleware", () => {
-  let mockReq;
-  let mockRes;
-  let mockNext;
+  let mockReq: Request;
+  let mockRes: Response;
+  let mockNext: NextFunction;
 
   beforeEach(() => {
-    mockReq = { body: {}, params: {} };
+    mockReq = { body: {}, params: {} } as Request;
     mockRes = {
       status: vi.fn().mockReturnThis(),
       json: vi.fn(),
-    };
-    mockNext = vi.fn();
+    } as unknown as Response;
+    mockNext = vi.fn() as unknown as NextFunction;
   });
 
   describe("validateLogin", () => {
