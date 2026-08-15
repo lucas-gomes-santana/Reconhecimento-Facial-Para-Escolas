@@ -3,7 +3,7 @@ import { describe, it, expect } from "vitest";
 describe("Admin Model", () => {
   describe("Estrutura do Schema", () => {
     it("deve ter os campos definidos no modelo", () => {
-      const adminFields = [
+      const adminFields: string[] = [
         "nome",
         "senha",
         "funcao",
@@ -19,7 +19,7 @@ describe("Admin Model", () => {
     });
 
     it("deve ter função com valores válidos", () => {
-      const funcoesValidas = ["admin", "seguranca", "super-admin", "desenvolvedor"];
+      const funcoesValidas: string[] = ["admin", "seguranca", "super-admin", "desenvolvedor"];
 
       expect(funcoesValidas).toContain("admin");
       expect(funcoesValidas).toContain("super-admin");
@@ -42,7 +42,7 @@ describe("Admin Model", () => {
     });
 
     it("deve ter índice único parcial para super-admin e desenvolvedor", () => {
-      const funcoesUnicas = ["desenvolvedor", "super-admin"];
+      const funcoesUnicas: string[] = ["desenvolvedor", "super-admin"];
 
       expect(funcoesUnicas).toContain("desenvolvedor");
       expect(funcoesUnicas).toContain("super-admin");
@@ -51,9 +51,14 @@ describe("Admin Model", () => {
 
   describe("Métodos", () => {
     it("toJSON deve remover senha", () => {
-      const adminObj = { nome: "admin", senha: "hash123", createdAt: new Date() };
+      const adminObj: Record<string, unknown> = {
+        nome: "admin",
+        senha: "hash123",
+        createdAt: new Date(),
+      };
       const { senha, ...semSenha } = adminObj;
 
+      expect(senha).toBe("hash123");
       expect(semSenha.senha).toBeUndefined();
       expect(semSenha.nome).toBe("admin");
     });

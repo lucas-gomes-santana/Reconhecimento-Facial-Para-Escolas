@@ -3,7 +3,7 @@ import { describe, it, expect } from "vitest";
 describe("Usuario Model", () => {
   describe("Estrutura do Schema", () => {
     it("deve ter os campos definidos no modelo", () => {
-      const usuarioFields = [
+      const usuarioFields: string[] = [
         "nome",
         "tipoUsuario",
         "descriptor",
@@ -20,7 +20,7 @@ describe("Usuario Model", () => {
     });
 
     it("deve ter status com valores válidos", () => {
-      const statusValidos = ["liberado", "bloqueado"];
+      const statusValidos: string[] = ["liberado", "bloqueado"];
 
       expect(statusValidos).toContain("liberado");
       expect(statusValidos).toContain("bloqueado");
@@ -41,7 +41,7 @@ describe("Usuario Model", () => {
     });
 
     it("deve aceitar descriptor com valores entre -1 e 1", () => {
-      const descriptor = Array(128)
+      const descriptor: number[] = Array(128)
         .fill(0)
         .map(() => Math.random() * 2 - 1);
 
@@ -49,7 +49,7 @@ describe("Usuario Model", () => {
     });
 
     it("deve aceitar descriptor vazio para validação", () => {
-      const descriptor = [];
+      const descriptor: unknown[] = [];
 
       expect(Array.isArray(descriptor)).toBe(true);
     });
@@ -83,4 +83,3 @@ describe("Usuario Model", () => {
     });
   });
 });
-

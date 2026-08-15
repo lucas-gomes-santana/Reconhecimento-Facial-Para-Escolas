@@ -1,9 +1,18 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
+interface MockModel {
+  findOne: ReturnType<typeof vi.fn>;
+  create: ReturnType<typeof vi.fn>;
+}
+
+interface MockModelComGetInstance {
+  getInstance: ReturnType<typeof vi.fn>;
+}
+
 describe("Estatistica Model", () => {
   describe("Estrutura do Schema", () => {
     it("deve ter os campos definidos no modelo", () => {
-      const campos = [
+      const campos: string[] = [
         "totalVerificacoes",
         "totalEntradas",
         "totalSaidas",
@@ -22,7 +31,7 @@ describe("Estatistica Model", () => {
   });
 
   describe("getInstance (Singleton)", () => {
-    let mockModel;
+    let mockModel: MockModel;
 
     beforeEach(() => {
       mockModel = {
@@ -82,7 +91,7 @@ describe("Estatistica Model", () => {
         save: vi.fn().mockResolvedValue(true),
       };
 
-      const mockModel = {
+      const mockModel: MockModelComGetInstance = {
         getInstance: vi.fn().mockResolvedValue(estatistica),
       };
 
@@ -107,7 +116,7 @@ describe("Estatistica Model", () => {
         save: vi.fn().mockResolvedValue(true),
       };
 
-      const mockModel = {
+      const mockModel: MockModelComGetInstance = {
         getInstance: vi.fn().mockResolvedValue(estatistica),
       };
 
@@ -132,7 +141,7 @@ describe("Estatistica Model", () => {
         save: vi.fn().mockResolvedValue(true),
       };
 
-      const mockModel = {
+      const mockModel: MockModelComGetInstance = {
         getInstance: vi.fn().mockResolvedValue(estatistica),
       };
 
@@ -158,7 +167,7 @@ describe("Estatistica Model", () => {
         save: vi.fn().mockResolvedValue(true),
       };
 
-      const mockModel = {
+      const mockModel: MockModelComGetInstance = {
         getInstance: vi.fn().mockResolvedValue(estatistica),
       };
 
@@ -184,7 +193,7 @@ describe("Estatistica Model", () => {
         save: vi.fn().mockResolvedValue(true),
       };
 
-      const mockModel = {
+      const mockModel: MockModelComGetInstance = {
         getInstance: vi.fn().mockResolvedValue(estatistica),
       };
 
