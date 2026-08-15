@@ -27,6 +27,13 @@ describe("JWT Config", () => {
     it("deve gerar token contendo o payload", () => {
       const token = gerarAccessToken(payloadValido);
       const decoded = verificarAccessToken(token);
+
+      expect(decoded).not.toBeNull();
+
+      if (!decoded) {
+        throw new Error("Token de acesso inválido");
+      }
+
       expect(decoded.id).toBe("123abc");
       expect(decoded.nome).toBe("teste");
       expect(decoded.funcao).toBe("admin");
@@ -51,6 +58,13 @@ describe("JWT Config", () => {
     it("deve gerar token contendo o payload", () => {
       const token = gerarRefreshToken(payloadValido);
       const decoded = verificarRefreshToken(token);
+
+      expect(decoded).not.toBeNull();
+
+      if (!decoded) {
+        throw new Error("Token de acesso inválido");
+      }
+
       expect(decoded.nome).toBe("teste");
     });
   });
@@ -60,6 +74,11 @@ describe("JWT Config", () => {
       const token = gerarAccessToken(payloadValido);
       const resultado = verificarAccessToken(token);
       expect(resultado).not.toBeNull();
+
+      if (!resultado) {
+        throw new Error("Token de acesso inválido");
+      }
+
       expect(resultado.id).toBe("123abc");
     });
 
@@ -109,6 +128,13 @@ describe("JWT Config", () => {
 
       expect(mockNext).toHaveBeenCalled();
       expect(mockReq.usuario).toBeDefined();
+
+      expect(mockReq.usuario).not.toBeNull();
+
+      if (!mockReq.usuario) {
+        throw new Error("Token de acesso inválido");
+      }
+
       expect(mockReq.usuario.id).toBe("123abc");
     });
 
