@@ -1,8 +1,21 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { AdminController } from "../../../controllers/adminController.js";
+import { describe, it, expect, vi, beforeEach, type Mock } from "vitest";
+import type { Request, Response } from "express";
+import { AdminController } from "../../../controllers/adminController.ts";
+import type { IAdmin } from "../../../models/Admin.ts";
 import { adminMock, superAdminMock, desenvolvedorMock, adminInput } from "../../fixtures/admins.ts";
+import {
+  gerarAccessToken,
+  definirTokens,
+  removerTokens,
+  verificarRefreshToken as verificarRefreshTokenReal,
+} from "../../../config/jwtConfig.ts";
+import type { TokenPayload } from "../../../config/jwtConfig.ts";
+import {
+  validarSenha as validarSenhaReal,
+  validarFuncaoCadastrada as validarFuncaoCadastradaReal,
+} from "../../../utils/utils.ts";
 
-vi.mock("../../../config/jwtConfig.js", () => ({
+vi.mock("../../../config/jwtConfig.ts", () => ({
   gerarAccessToken: vi.fn(() => "access-token-mock"),
   gerarRefreshToken: vi.fn(() => "refresh-token-mock"),
   definirTokens: vi.fn(),
@@ -13,24 +26,28 @@ vi.mock("../../../config/jwtConfig.js", () => ({
 vi.mock("../../../utils/utils.ts", () => ({
   criptografarSenha: vi.fn(() => Promise.resolve("hashed-password")),
   validarSenha: vi.fn(() => Promise.resolve(true)),
-  validarFuncaoCadastrada: vi.fn((funcao) =>
+  validarFuncaoCadastrada: vi.fn((funcao: string) =>
     ["admin", "seguranca", "super-admin"].includes(funcao.toLowerCase()),
   ),
 }));
 
-import {
-  gerarAccessToken,
-  definirTokens,
-  removerTokens,
-  verificarRefreshToken,
-} from "../../../config/jwtConfig.js";
-import { validarSenha, validarFuncaoCadastrada } from "../../../utils/utils.ts";
+const verificarRefreshToken = verificarRefreshTokenReal as unknown as Mock;
+const validarSenha = validarSenhaReal as unknown as Mock;
+const validarFuncaoCadastrada = validarFuncaoCadastradaReal as unknown as Mock;
+
+interface MockAdminModel {
+  findOne: ReturnType<typeof vi.fn>;
+  findById: ReturnType<typeof vi.fn>;
+  findByIdAndUpdate: ReturnType<typeof vi.fn>;
+  findByIdAndDelete: ReturnType<typeof vi.fn>;
+  find: ReturnType<typeof vi.fn>;
+}
 
 describe("AdminController", () => {
-  let controller;
-  let mockAdminModel;
-  let mockReq;
-  let mockRes;
+  let controller: AdminController;
+  let mockAdminModel: MockAdminModel;
+  let mockReq: Request;
+  let mockRes: Response;
 
   beforeEach(() => {
     mockAdminModel = {
@@ -40,20 +57,20 @@ describe("AdminController", () => {
       findByIdAndDelete: vi.fn(),
       find: vi.fn(),
     };
-    controller = new AdminController(mockAdminModel);
+    controller = new AdminController(mockAdminModel as unknown as import("mongoose").Model<IAdmin>);
 
     mockReq = {
       body: {},
       params: {},
       cookies: {},
       usuario: {},
-    };
+    } as unknown as Request;
     mockRes = {
       status: vi.fn().mockReturnThis(),
       json: vi.fn(),
       cookie: vi.fn(),
       clearCookie: vi.fn(),
-    };
+    } as unknown as Response;
 
     vi.clearAllMocks();
   });
@@ -165,7 +182,7 @@ describe("AdminController", () => {
   describe("cadastrarAdmin", () => {
     it("deve retornar 401 quando usuário não autorizado", async () => {
       mockReq.body = adminInput;
-      mockReq.usuario = { funcao: "admin", nome: "admin" };
+      mockReq.usuario = { funcao: "admin", nome: "admin" } as unknown as TokenPayload;
 
       await controller.cadastrarAdmin(mockReq, mockRes);
 
@@ -178,7 +195,7 @@ describe("AdminController", () => {
 
     it("deve retornar 400 quando função inválida", async () => {
       mockReq.body = { nome: "teste", senha: "senha123", funcao: "invalida" };
-      mockReq.usuario = { funcao: "desenvolvedor" };
+      mockReq.usuario = { funcao: "desenvolvedor" } as unknown as TokenPayload;
       validarFuncaoCadastrada.mockReturnValueOnce(false);
 
       await controller.cadastrarAdmin(mockReq, mockRes);
@@ -189,7 +206,7 @@ describe("AdminController", () => {
 
     it("deve retornar 409 quando admin já existe", async () => {
       mockReq.body = adminInput;
-      mockReq.usuario = { funcao: "desenvolvedor" };
+      mockReq.usuario = { funcao: "desenvolvedor" } as unknown as TokenPayload;
       mockAdminModel.findOne.mockResolvedValue(adminMock);
 
       await controller.cadastrarAdmin(mockReq, mockRes);
@@ -204,7 +221,7 @@ describe("AdminController", () => {
   describe("cadastrarSuperAdmin", () => {
     it("deve retornar 403 quando não é desenvolvedor", async () => {
       mockReq.body = { nome: "teste", senha: "senha123", funcao: "super-admin" };
-      mockReq.usuario = { funcao: "admin" };
+      mockReq.usuario = { funcao: "admin" } as unknown as TokenPayload;
 
       await controller.cadastrarSuperAdmin(mockReq, mockRes);
 
@@ -216,7 +233,7 @@ describe("AdminController", () => {
 
     it("deve retornar 409 quando super-admin já existe", async () => {
       mockReq.body = { nome: "teste", senha: "senha123", funcao: "super-admin" };
-      mockReq.usuario = { funcao: "desenvolvedor" };
+      mockReq.usuario = { funcao: "desenvolvedor" } as unknown as TokenPayload;
       mockAdminModel.findOne.mockResolvedValue(superAdminMock);
 
       await controller.cadastrarSuperAdmin(mockReq, mockRes);
@@ -231,7 +248,10 @@ describe("AdminController", () => {
   describe("atualizarSenha", () => {
     it("deve retornar 403 quando usuário tenta alterar senha de outro (não é admin)", async () => {
       mockReq.body = { id: "outro-id", novaSenha: "novasenha" };
-      mockReq.usuario = { id: { toString: () => adminMock._id }, funcao: "admin" };
+      mockReq.usuario = {
+        id: { toString: () => adminMock._id },
+        funcao: "admin",
+      } as unknown as TokenPayload;
       mockAdminModel.findById.mockResolvedValue(adminMock);
 
       await controller.atualizarSenha(mockReq, mockRes);
@@ -241,7 +261,10 @@ describe("AdminController", () => {
 
     it("deve permitir desenvolvedor alterar senha de outros", async () => {
       mockReq.body = { id: "outro-id", novaSenha: "novasenha" };
-      mockReq.usuario = { id: { toString: () => desenvolvedorMock._id }, funcao: "desenvolvedor" };
+      mockReq.usuario = {
+        id: { toString: () => desenvolvedorMock._id },
+        funcao: "desenvolvedor",
+      } as unknown as TokenPayload;
       const adminComSave = { ...adminMock, save: vi.fn().mockResolvedValue(true) };
       mockAdminModel.findById.mockResolvedValue(adminComSave);
 
@@ -324,7 +347,10 @@ describe("AdminController", () => {
   describe("removerAdmins", () => {
     it("deve remover admin com sucesso (desenvolvedor)", async () => {
       mockReq.params = { id: adminMock._id };
-      mockReq.usuario = { id: { toString: () => desenvolvedorMock._id }, funcao: "desenvolvedor" };
+      mockReq.usuario = {
+        id: { toString: () => desenvolvedorMock._id },
+        funcao: "desenvolvedor",
+      } as unknown as TokenPayload;
       mockAdminModel.findByIdAndDelete.mockResolvedValue(adminMock);
 
       await controller.removerAdmins(mockReq, mockRes);
@@ -342,7 +368,10 @@ describe("AdminController", () => {
 
     it("deve retornar 403 quando tenta remover sua própria conta", async () => {
       mockReq.params = { id: adminMock._id };
-      mockReq.usuario = { id: { toString: () => adminMock._id }, funcao: "desenvolvedor" };
+      mockReq.usuario = {
+        id: { toString: () => adminMock._id },
+        funcao: "desenvolvedor",
+      } as unknown as TokenPayload;
 
       await controller.removerAdmins(mockReq, mockRes);
 
@@ -354,7 +383,10 @@ describe("AdminController", () => {
 
     it("deve retornar 403 quando usuário não é desenvolvedor", async () => {
       mockReq.params = { id: adminMock._id };
-      mockReq.usuario = { id: { toString: () => "outro-id" }, funcao: "admin" };
+      mockReq.usuario = {
+        id: { toString: () => "outro-id" },
+        funcao: "admin",
+      } as unknown as TokenPayload;
 
       await controller.removerAdmins(mockReq, mockRes);
 
@@ -363,7 +395,10 @@ describe("AdminController", () => {
 
     it("deve encontrar admin antes de remover (comportamento interno)", async () => {
       mockReq.params = { id: adminMock._id };
-      mockReq.usuario = { id: { toString: () => desenvolvedorMock._id }, funcao: "desenvolvedor" };
+      mockReq.usuario = {
+        id: { toString: () => desenvolvedorMock._id },
+        funcao: "desenvolvedor",
+      } as unknown as TokenPayload;
       mockAdminModel.findByIdAndDelete.mockResolvedValue(adminMock);
 
       await controller.removerAdmins(mockReq, mockRes);

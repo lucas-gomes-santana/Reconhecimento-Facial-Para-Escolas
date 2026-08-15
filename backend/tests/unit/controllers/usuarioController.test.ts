@@ -1,13 +1,18 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { UsuarioController } from "../../../controllers/usuarioController.js";
+import type { Request, Response } from "express";
+import { UsuarioController } from "../../../controllers/usuarioController.ts";
+import type { FaceRecognitionService } from "../../../services/faceRecognitionService.ts";
+import type { EstatisticaModel } from "../../../models/Estatistica.ts";
 import {
   usuarioMock,
   usuarioBloqueadoMock,
   usuarioInput,
   matchResult,
 } from "../../fixtures/usuarios.ts";
+import UsuarioModel from "../../../models/Usuario.ts";
+import LogEntradaModel from "../../../models/LogEntrada.ts";
 
-vi.mock("../../../models/Usuario.js", () => ({
+vi.mock("../../../models/Usuario.ts", () => ({
   default: {
     find: vi.fn(),
     findOne: vi.fn(),
@@ -18,26 +23,26 @@ vi.mock("../../../models/Usuario.js", () => ({
   },
 }));
 
-vi.mock("../../../models/LogEntrada.js", () => ({
+vi.mock("../../../models/LogEntrada.ts", () => ({
   default: {
     create: vi.fn(),
   },
 }));
 
-vi.mock("../../../models/AlunoMatricula.js", () => ({
+vi.mock("../../../models/AlunoMatricula.ts", () => ({
   default: {
     findOne: vi.fn(),
   },
 }));
 
-vi.mock("../../../services/faceRecognitionService.js", () => ({
+vi.mock("../../../services/faceRecognitionService.ts", () => ({
   FaceRecognitionService: vi.fn().mockImplementation(() => ({
     verificarRostoExistente: vi.fn(),
     encontrarUsuarioPorSimilaridade: vi.fn(),
   })),
 }));
 
-vi.mock("../../../models/Estatistica.js", () => ({
+vi.mock("../../../models/Estatistica.ts", () => ({
   default: {
     incrementarVerificacoes: vi.fn(),
     incrementarEntrada: vi.fn(),
@@ -47,15 +52,30 @@ vi.mock("../../../models/Estatistica.js", () => ({
   },
 }));
 
-import Usuario from "../../../models/Usuario.js";
-import LogEntrada from "../../../models/LogEntrada.js";
-import AlunoMatricula from "../../../models/AlunoMatricula.js";
+interface MockUsuarioModel {
+  find: ReturnType<typeof vi.fn>;
+  findOne: ReturnType<typeof vi.fn>;
+  findById: ReturnType<typeof vi.fn>;
+  findByIdAndDelete: ReturnType<typeof vi.fn>;
+  findByIdAndUpdate: ReturnType<typeof vi.fn>;
+  deleteMany: ReturnType<typeof vi.fn>;
+}
+
+interface MockLogEntradaModel {
+  create: ReturnType<typeof vi.fn>;
+}
+
+const Usuario = UsuarioModel as unknown as MockUsuarioModel;
+const LogEntrada = LogEntradaModel as unknown as MockLogEntradaModel;
 
 describe("UsuarioController", () => {
-  let controller;
-  let mockFaceRecognitionService;
-  let mockReq;
-  let mockRes;
+  let controller: UsuarioController;
+  let mockFaceRecognitionService: {
+    verificarRostoExistente: ReturnType<typeof vi.fn>;
+    encontrarUsuarioPorSimilaridade: ReturnType<typeof vi.fn>;
+  };
+  let mockReq: Request;
+  let mockRes: Response;
 
   beforeEach(() => {
     mockFaceRecognitionService = {
@@ -70,20 +90,20 @@ describe("UsuarioController", () => {
       incrementarMerenda: vi.fn().mockResolvedValue(true),
     };
 
-    controller = new UsuarioController(mockFaceRecognitionService, mockEstatistica);
-    controller.Usuario = Usuario;
-    controller.LogEntrada = LogEntrada;
-    controller.AlunoMatricula = AlunoMatricula;
+    controller = new UsuarioController(
+      mockFaceRecognitionService as unknown as FaceRecognitionService,
+      mockEstatistica as unknown as EstatisticaModel,
+    );
 
     mockReq = {
       body: {},
       params: {},
       query: {},
-    };
+    } as unknown as Request;
     mockRes = {
       status: vi.fn().mockReturnThis(),
       json: vi.fn(),
-    };
+    } as unknown as Response;
 
     vi.clearAllMocks();
   });
@@ -260,11 +280,11 @@ describe("UsuarioController", () => {
 
   describe("removerTodosOsUsuarios", () => {
     it("deve remover todos os usuários e retornar mensagem de sucesso", async () => {
-      controller.Usuario.deleteMany.mockResolvedValue({ deletedCount: 5 });
+      Usuario.deleteMany.mockResolvedValue({ deletedCount: 5 });
 
       await controller.removerTodosOsUsuarios(mockReq, mockRes);
 
-      expect(controller.Usuario.deleteMany).toHaveBeenCalledWith({});
+      expect(Usuario.deleteMany).toHaveBeenCalledWith({});
       expect(mockRes.status).toHaveBeenCalledWith(200);
       expect(mockRes.json).toHaveBeenCalledWith({
         success: true,
@@ -273,7 +293,7 @@ describe("UsuarioController", () => {
     });
 
     it("deve retornar mensagem quando não há usuários", async () => {
-      controller.Usuario.deleteMany.mockResolvedValue({ deletedCount: 0 });
+      Usuario.deleteMany.mockResolvedValue({ deletedCount: 0 });
 
       await controller.removerTodosOsUsuarios(mockReq, mockRes);
 
