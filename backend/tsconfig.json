@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    // File Layout
     "rootDir": ".",
     "outDir": "./dist",
 
@@ -16,16 +15,13 @@
     "declaration": true,
     "declarationMap": true,
 
-    // Strict — false durante migração, true ao final
-    "strict": false,
+    "strict": true,
 
-    // Permitir JS durante a migração para TS
-    "allowJs": true,
-    "checkJs": false,
+    "allowJs": false,
 
     // Style
     "noUncheckedIndexedAccess": true,
-    "exactOptionalPropertyTypes": false, // desligado durante migração
+    "exactOptionalPropertyTypes": true,
     "verbatimModuleSyntax": true,
     "isolatedModules": true,
     "moduleDetection": "force",
