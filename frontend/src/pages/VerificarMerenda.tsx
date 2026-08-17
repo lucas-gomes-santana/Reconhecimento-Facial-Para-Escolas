@@ -1,4 +1,4 @@
-/* eslint-disable no-undef */
+ 
 import { useEffect } from "react";
 import { Camera, CheckCircle, XCircle, AlertTriangle, Salad } from "lucide-react";
 

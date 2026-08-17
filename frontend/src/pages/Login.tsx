@@ -1,5 +1,4 @@
 import { ScanFace, EyeOff, Eye, AlertCircle, Loader } from "lucide-react";
-
 import { useLogin } from "../hooks/frontend/useLogin";
 import "../styles/index.css";
 
