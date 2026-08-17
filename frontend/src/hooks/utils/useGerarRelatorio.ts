@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 import { useState } from "react";
 
 import { useAuth } from "../auth/useAuth";
