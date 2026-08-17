@@ -35,7 +35,7 @@ export default [
       semi: ["warn", "always"],
       "no-multiple-empty-lines": ["warn", { max: 2, maxEOF: 1 }],
 
-      eqeqeq: "warn",
+      eqeqeq: "error",
 
       // Console permitido
       "no-console": "off",
@@ -43,6 +43,8 @@ export default [
       // TypeScript
       "@typescript-eslint/no-explicit-any": "warn",
       "@typescript-eslint/no-unused-vars": "warn",
+
+      "react/react-in-jsx-scope": "off",
     },
   },
 ];

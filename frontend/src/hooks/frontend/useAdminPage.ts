@@ -1,5 +1,3 @@
-/* eslint-disable no-undef */
-/* eslint-disable react-hooks/exhaustive-deps */
 import { useCallback, useEffect, useState } from "react";
 
 import { useAuth } from "../auth/useAuth";
