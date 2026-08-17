@@ -1,5 +1,3 @@
-/* eslint-disable no-undef */
-/* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect, useCallback } from "react";
 
 import { useFaceDetection } from "../detection/useFaceDetection";
