@@ -3,8 +3,6 @@ import type { LoginResponse } from "../../types/login.types";
 import type { AdminData } from "../../types/admin.types";
 import { baseURL } from "../../config/url";
 
-type RequestInit = globalThis.RequestInit;
-
 export const useAuth = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [admin, setAdmin] = useState<AdminData | null>(null);
@@ -109,7 +107,6 @@ export const useAuth = () => {
         }
       }
 
-      //  Se receber 401/403, tenta refresh antes de limpar
       if (response.status === 401 || response.status === 403) {
         console.log("Token expirado, tentando renovar...");
         const refreshSuccess = await refreshAccessToken();
