@@ -17,8 +17,13 @@ export interface DistanceValidationResult extends ValidationResult {
   isIdeal: boolean;
 }
 
-
-export type DistanceStatus = "muito_longe" | "longe" | "ideal" | "perto" | "muito_perto" | "sem_face";
+export type DistanceStatus =
+  | "muito_longe"
+  | "longe"
+  | "ideal"
+  | "perto"
+  | "muito_perto"
+  | "sem_face";
 
 export interface ExpressionStatus {
   expression: string;

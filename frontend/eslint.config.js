@@ -39,9 +39,14 @@ export default [
 
       "no-console": "off",
 
-      // Evita que variáveis não declaradas sejam usadas, mas permite que o TypeScript faça a verificação de tipos.
-      // Isso evita que o linter reclame sobre tipos como React.FormEvent, que são definidos pelo TypeScript, mas não são reconhecidos pelo ESLint.
+      // Verifica se variáveis não declaradas estão sendo usadas
       "no-undef": "off",
+
+      // Verifica se variáveis não utilizadas estão sendo usadas
+      "no-unused-vars": "off",
+
+      /* no-undef e no-unused-vars estão desabilitados para evitar conflitos com o Typescript, que já faz ambas 
+      as verficiações */
 
       "@typescript-eslint/no-explicit-any": "warn",
       "@typescript-eslint/no-unused-vars": "warn",

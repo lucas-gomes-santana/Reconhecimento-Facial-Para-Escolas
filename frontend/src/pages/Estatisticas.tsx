@@ -1,13 +1,10 @@
- 
-/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from "react";
-
 import { useEstatisticas } from "../hooks/frontend/useEstatisticas";
 import { useGerarRelatorio } from "../hooks/utils/useGerarRelatorio";
 import { useFormatData } from "../hooks/utils/useFormatData";
-import "../styles/index.css";
 import type { UsuarioPorTipo } from "../types/user.types";
 import type { DadosEstatisticas } from "../types/estatisticas.types";
+import "../styles/index.css";
 
 function Estatisticas() {
   const {
