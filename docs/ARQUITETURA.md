@@ -434,9 +434,9 @@ Intermediários que processam requisições antes de chegarem aos controllers.
 
 ---
 
-### 7. SERVIDOR (server.js)
+### 7. SERVIDOR (server.ts)
 
-**Arquivo:** backend/server.js
+**Arquivo:** backend/server.ts
 
 **Responsabilidade:** Ponto de entrada da aplicação backend.
 
@@ -1103,7 +1103,7 @@ DEV_USER_NOME=desenvolvedor
 DEV_USER_SENHA=admin123456
 
 # 3. Startup
-$ node server.js
+$ node server.ts
 # Output:
 # ✅ Conectado ao MongoDB
 # ✅ Usuário "desenvolvedor" criado
@@ -1115,7 +1115,7 @@ $ node server.js
 ```bash
 # 1. Instalação
 $ cd frontend
-$ npm install  # ou pnpm install
+$ pnpm install
 
 # 2. Dev Server
 $ npm run dev  # ou pnpm dev
@@ -1132,7 +1132,7 @@ $ npm run preview
 
 ```
 Terminal 1: Backend
-$ cd backend && npm install && node server.js
+$ cd backend && npm install && node server.ts
 # Conecta MongoDB
 # Cria desenvolvedor
 # Escuta :3000

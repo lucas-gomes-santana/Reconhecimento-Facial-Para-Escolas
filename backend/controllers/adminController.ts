@@ -10,6 +10,7 @@ import { criptografarSenha, validarFuncaoCadastrada, validarSenha } from "../uti
 import type { IAdmin } from "../models/Admin.ts";
 
 export async function cadastrarDesenvolvedor(Admin: import("mongoose").Model<IAdmin>) {
+  // TODO: retirar os fallbacks se caso o sistema ir para produção
   const devNome = process.env.DEV_USER_NOME || "admin";
   const devSenha = process.env.DEV_USER_SENHA || "admin";
   const devFuncao = "desenvolvedor";
