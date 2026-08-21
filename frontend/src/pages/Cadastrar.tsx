@@ -1,10 +1,9 @@
 import { Camera, Save } from "lucide-react";
-
 import VideoCanvasDetector from "../components/VideoAndCanvas";
 import { useCadastroFacial } from "../hooks/frontend/useCadastro";
 import { useValidation } from "../hooks/validation/useValidation";
-import "../styles/index.css";
 import { useFaceDetection } from "../hooks/detection/useFaceDetection";
+import "../styles/index.css";
 
 function Cadastrar() {
   const {

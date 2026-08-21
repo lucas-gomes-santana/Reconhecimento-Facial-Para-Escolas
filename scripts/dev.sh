@@ -3,7 +3,7 @@
 set -e
 
 echo "Iniciando backend..."
-(cd backend && node server.js) &
+(cd backend && node server.ts) &
 
 echo "Iniciando frontend..."
 (cd frontend && pnpm dev)

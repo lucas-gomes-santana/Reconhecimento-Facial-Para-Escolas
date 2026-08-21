@@ -3,7 +3,7 @@
 set -e 
 
 if ! command -v pnpm &> /dev/null; then
-    echo "pnpm could not be found, installing..."
+    echo "pnpm não foi encontrado, instalando..."
     npm install -g pnpm
 fi
 

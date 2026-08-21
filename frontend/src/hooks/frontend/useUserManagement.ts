@@ -1,7 +1,4 @@
-/* eslint-disable no-undef */
-/* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useCallback, useEffect } from "react";
-
 import type { Usuario } from "../../types/user.types";
 import { baseURL } from "../../config/url";
 import { useAuth } from "../auth/useAuth";

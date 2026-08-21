@@ -9,9 +9,9 @@ export interface Usuario {
   nome: string;
   tipoUsuario: "Aluno" | "Professor" | "Funcionario" | "Outro";
   dataCadastro: string;
-} 
+}
 
-export interface UsuarioPorTipo { 
+export interface UsuarioPorTipo {
   _id: string;
   quantidade: number;
 }

@@ -7,7 +7,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ### Backend
 
 - Install dependencies: `cd backend && pnpm install`
-- Run server: `cd backend && node server.js`
+- Run server: `cd backend && node server.ts`
 - Tests: `pnpm test`
 
 ### Frontend
@@ -24,7 +24,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 The backend is a Node.js application using Express and MongoDB (via Mongoose). It follows a modular structure:
 
-- `server.js`: Main entry point.
+- `server.ts`: Main entry point.
 - `routes/`: Defines API endpoints and maps them to controllers.
 - `controllers/`: Contains the request handling logic and orchestrates services.
 - `models/`: Defines Mongoose schemas for MongoDB data structures.
