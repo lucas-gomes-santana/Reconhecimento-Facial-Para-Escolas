@@ -1,0 +1,7 @@
+{
+  "name": "reconhecimento-facial-para-escolas",
+  "private": true,
+  "scripts": {
+    "preinstall": "echo \"Installing dependencies at the root is not allowed. Use: cd frontend && pnpm install or cd backend && pnpm install\" && exit 1"
+  }
+}

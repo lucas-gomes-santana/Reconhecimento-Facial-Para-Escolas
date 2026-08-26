@@ -76,3 +76,5 @@ Os comandos abaixo devem ser executados no Git Bash se você estiver no Windows 
 Este projeto NÃO é uma iniciativa open-source e está protegido por direitos autorais.
 
 Para mais informações, consulte **LICENSE** e o resto da documentação na pasta **docs**.
+
+Comandos de instalação de dependêcias não são permitidas na raíz do projeto. Apenas em **frontend** e **backend**

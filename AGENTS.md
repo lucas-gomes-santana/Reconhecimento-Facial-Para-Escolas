@@ -2,6 +2,10 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Important: Dependency Installation
+
+**Never run `pnpm install` (or `npm install` / `yarn install`) at the project root.** Dependencies must only be installed inside `frontend/` or `backend/`. The root `package.json` contains a `preinstall` hook that blocks installation attempts at the root level.
+
 ## Development Commands
 
 ### Backend
