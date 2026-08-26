@@ -13,23 +13,22 @@
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.12",
-    "@testing-library/jest-dom": "^7.0.1",
-    "@testing-library/react": "^16.3.2",
-    "@testing-library/user-event": "^14.6.6",
     "clsx": "^2.1.1",
     "face-api.js": "^0.22.2",
-    "jsdom": "^30.0.1",
     "jspdf": "^3.0.3",
     "lucide-react": "^0.542.0",
     "nodejs": "^0.0.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-router-dom": "^7.8.2",
-    "tailwindcss": "^4.1.12",
-    "vitest": "^4.1.11"
+    "tailwindcss": "^4.1.12"
   },
   "devDependencies": {
     "@eslint/js": "^9.33.0",
+    "@testing-library/jest-dom": "^7.0.1",
+    "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.6.6",
+    "@types/node": "^26.3.0",
     "@types/react": "^19.1.10",
     "@types/react-dom": "^19.1.7",
     "@typescript-eslint/eslint-plugin": "^8.58.1",
@@ -43,8 +42,10 @@
     "eslint-plugin-react-refresh": "^0.4.20",
     "eslint-plugin-unused-imports": "^4.4.1",
     "globals": "^16.4.0",
+    "jsdom": "^30.0.1",
     "typescript": "~5.8.3",
     "typescript-eslint": "^8.39.1",
-    "vite": "^7.1.2"
+    "vite": "^7.1.2",
+    "vitest": "^4.1.11"
   }
 }
