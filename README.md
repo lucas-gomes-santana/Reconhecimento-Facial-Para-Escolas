@@ -49,25 +49,39 @@ Os comandos abaixo devem ser executados no Git Bash se você estiver no Windows 
 
 <br>
 
-3. Execute o script de instalação das dependências nas pastas **front-end** e **back-end**:
+3. Execute esses comandos de instalação das dependências nas pastas **frontend** e **backend**:
 
    ```bash
-   ./scripts/setup.sh
+   cd frontend && pnpm install
+   ```
+
+   ```bash
+   cd backend && pnpm install
    ```
 
    <br>
 
-4. Execute o script para rodar o projeto:
+4. Execute esses comandos para rodar o projeto novamente em ambas as pastas:
 
-   ```bash
-   ./scripts/dev.sh
-   ```
+**Em backend:**
 
-   Copie e cole o link gerado no **front-end** na barra de endereços do seu navegador:
+```bash
+node server.ts
+```
 
-   ```bash
-   http://localhost:5173/
-   ```
+**Em frontend:**
+
+```bash
+pnpm dev
+```
+
+Copie e cole o link gerado no **frontend** na barra de endereços do seu navegador:
+
+```bash
+http://localhost:5173/
+```
+
+**OBS:** usuários de Linux e Mac podem executar todos os processos acima através dos scripts bash da pasta **scripts**.
 
 ---
 
