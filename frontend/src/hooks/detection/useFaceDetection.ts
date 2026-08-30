@@ -2,6 +2,10 @@ import * as faceapi from "face-api.js";
 import { useState, useRef, useCallback, useEffect } from "react";
 
 import type { DistanceResult, DistanceConfig, ExpressionStatus } from "../../types/distance.types";
+import {
+  calculateDistance as calculateDistanceUtil,
+  analyzeExpression as analyzeExpressionUtil,
+} from "../../utils/faceDetection";
 
 type FaceDetectionResult = faceapi.WithFaceExpressions<
   faceapi.WithFaceDescriptor<faceapi.WithFaceLandmarks<{ detection: faceapi.FaceDetection }>>
@@ -153,19 +157,7 @@ export const useFaceDetection = () => {
   const calculateDistance = useCallback(
     (detection: FaceDetectionResult): DistanceResult => {
       const faceBox = detection.detection.box;
-      const faceSize = Math.sqrt(faceBox.width * faceBox.height);
-
-      let status: DistanceResult["status"];
-      let isIdeal = false;
-
-      if (faceSize < distanceConfig.minFaceSize) status = "muito_longe";
-      else if (faceSize > distanceConfig.maxFaceSize) status = "muito_perto";
-      else if (faceSize >= distanceConfig.idealMinSize && faceSize <= distanceConfig.idealMaxSize) {
-        status = "ideal";
-        isIdeal = true;
-      } else if (faceSize < distanceConfig.idealMinSize) status = "longe";
-      else status = "perto";
-      return { status, isIdeal, faceSize: Math.round(faceSize) };
+      return calculateDistanceUtil(faceBox.width, faceBox.height, distanceConfig);
     },
     [distanceConfig],
   );
@@ -337,29 +329,8 @@ export const useFaceDetection = () => {
 
   const analyzeExpression = useCallback(
     (expressions: faceapi.FaceExpressions): ExpressionStatus => {
-      // Encontra a expressão com maior confiança
-      const expressionsArray = Object.entries(expressions) as [string, number][];
-      const [dominantExpression, confidence] = expressionsArray.reduce((max, curr) =>
-        curr[1] > max[1] ? curr : max,
-      );
-
-      const isNeutral = dominantExpression === "neutral" && confidence >= 0.6;
-
-      const translatedExpressions: Record<string, string> = {
-        neutral: "neutra",
-        happy: "feliz",
-        sad: "triste",
-        angry: "raiva",
-        fearful: "medo",
-        disgusted: "desgosto",
-        surprised: "surpreso",
-      };
-
-      return {
-        expression: translatedExpressions[dominantExpression] || dominantExpression,
-        isNeutral,
-        confidence: Math.round(confidence * 100),
-      };
+      const expressionsRecord = expressions as unknown as Record<string, number>;
+      return analyzeExpressionUtil(expressionsRecord);
     },
     [],
   );

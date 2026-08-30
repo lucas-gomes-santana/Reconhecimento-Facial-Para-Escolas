@@ -4,6 +4,10 @@ import { useAuth } from "./useAuth";
 import { baseURL } from "../../config/url";
 import { useApi } from "../api/useApi";
 import { useVerificacao } from "./useVerificacao";
+import {
+  formatarTempo as formatarTempoUtil,
+  calcularTempoRestante as calcularTempoRestanteUtil,
+} from "../../utils/time";
 
 export const useVerificarStatus = () => {
   const {
@@ -65,25 +69,9 @@ export const useVerificarStatus = () => {
     }
   }, [tempoRestanteMs]);
 
-  const formatarTempo = (ms: number) => {
-    if (ms <= 0) return "alguns segundos";
+  const formatarTempo = (ms: number) => formatarTempoUtil(ms);
 
-    const minutos = Math.floor(ms / 60000);
-    const segundos = Math.floor((ms % 60000) / 1000);
-
-    if (minutos > 0) {
-      return `${minutos} minuto${minutos > 1 ? "s" : ""} e ${segundos} segundo${segundos > 1 ? "s" : ""}`;
-    }
-    return `${segundos} segundo${segundos > 1 ? "s" : ""}`;
-  };
-
-  const calcularTempoRestante = (bloqueadoAte: string) => {
-    const agora = new Date().getTime();
-    const dataDesbloqueio = new Date(bloqueadoAte).getTime();
-    const diferenca = dataDesbloqueio - agora;
-
-    return diferenca > 0 ? diferenca : 0;
-  };
+  const calcularTempoRestante = (bloqueadoAte: string) => calcularTempoRestanteUtil(bloqueadoAte);
 
   const verificarEBloquear = async (descriptor: number[]) => {
     try {
