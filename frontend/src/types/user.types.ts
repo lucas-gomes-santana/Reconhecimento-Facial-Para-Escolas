@@ -18,6 +18,6 @@ export interface UsuarioPorTipo {
 
 export interface UsuariosOrganizados {
   tipo: string;
-  usuarios: string[];
+  usuarios: Usuario[];
   quantidade: number;
 }

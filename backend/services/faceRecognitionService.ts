@@ -20,9 +20,11 @@ export class FaceRecognitionService {
     let norma2 = 0.0;
 
     for (let i = 0; i < descriptor1.length; i++) {
-      produtoPonto += descriptor1[i] * descriptor2[i];
-      norma1 += Math.pow(descriptor1[i], 2);
-      norma2 += Math.pow(descriptor2[i], 2);
+      const d1 = descriptor1[i]!;
+      const d2 = descriptor2[i]!;
+      produtoPonto += d1 * d2;
+      norma1 += Math.pow(d1, 2);
+      norma2 += Math.pow(d2, 2);
     }
 
     const magnitude = Math.sqrt(norma1) * Math.sqrt(norma2);

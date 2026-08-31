@@ -1,4 +1,5 @@
 import jwt from "jsonwebtoken";
+import type { JwtPayload } from "jsonwebtoken";
 import type { Request, Response, NextFunction } from "express";
 
 const accessTokenSecret = process.env.JWT_SECRET || "chave-super-secreta";
@@ -76,12 +77,16 @@ export function autenticarToken(req: Request, res: Response, next: NextFunction)
     return;
   }
 
-  jwt.verify(token, accessTokenSecret, (err, usuario) => {
-    if (err) {
-      res.status(403).json({ message: "Token inválido" });
-      return;
-    }
-    req.usuario = usuario as TokenPayload;
-    next();
-  });
+  jwt.verify(
+    token,
+    accessTokenSecret,
+    (err: jwt.VerifyErrors | null, usuario: JwtPayload | string | undefined) => {
+      if (err) {
+        res.status(403).json({ message: "Token inválido" });
+        return;
+      }
+      req.usuario = usuario as TokenPayload;
+      next();
+    },
+  );
 }
