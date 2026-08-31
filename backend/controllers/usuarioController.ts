@@ -12,7 +12,6 @@ export class UsuarioController {
   private Usuario = Usuario;
   private LogEntrada = LogEntrada;
   private AlunoMatricula = AlunoMatricula;
-  private threshold = threshold;
 
   constructor(faceRecognitionService: FaceRecognitionService, estatisticaModel: EstatisticaModel) {
     this.faceRecognitionService = faceRecognitionService;
@@ -105,19 +104,11 @@ export class UsuarioController {
           new Date(match.usuario.bloqueadoAte) > new Date();
 
         if (contexto === "verificacao" || contexto === "entrada") {
-          await this.registrarLogEntrada(
-            match.usuario._id.toString(),
-            "entrada",
-            match.similaridade,
-          );
+          await this.registrarLogEntrada(String(match.usuario._id), "entrada", match.similaridade);
         } else if (contexto === "saida") {
-          await this.registrarLogEntrada(match.usuario._id.toString(), "saida", match.similaridade);
+          await this.registrarLogEntrada(String(match.usuario._id), "saida", match.similaridade);
         } else if (contexto === "merenda" && !aindaBloqueado) {
-          await this.registrarLogEntrada(
-            match.usuario._id.toString(),
-            "merenda",
-            match.similaridade,
-          );
+          await this.registrarLogEntrada(String(match.usuario._id), "merenda", match.similaridade);
         }
 
         return res.json({
@@ -185,7 +176,7 @@ export class UsuarioController {
     });
   }
 
-  async removerTodosOsUsuarios(req: Request, res: Response) {
+  async removerTodosOsUsuarios(_req: Request, res: Response) {
     const usuario = await this.Usuario.deleteMany({});
 
     const mensagem =
