@@ -6,12 +6,15 @@ export class EstatisticaController {
   private Estatistica: EstatisticaModel;
   private Usuario: import("mongoose").Model<IUsuario>;
 
-  constructor(estatisticaModel: EstatisticaModel, usuarioModel: import("mongoose").Model<IUsuario>) {
+  constructor(
+    estatisticaModel: EstatisticaModel,
+    usuarioModel: import("mongoose").Model<IUsuario>,
+  ) {
     this.Estatistica = estatisticaModel;
     this.Usuario = usuarioModel;
   }
 
-  async obterEstatisticas(req: Request, res: Response) {
+  async obterEstatisticas(_req: Request, res: Response) {
     try {
       const estatistica = await this.Estatistica.getInstance();
       const totalCadastros = await this.Usuario.countDocuments();
@@ -33,7 +36,7 @@ export class EstatisticaController {
     }
   }
 
-  async reiniciarVerificacoes(req: Request, res: Response) {
+  async reiniciarVerificacoes(_req: Request, res: Response) {
     try {
       const estatistica = await this.Estatistica.getInstance();
       estatistica.totalVerificacoes = 0;
@@ -50,7 +53,7 @@ export class EstatisticaController {
     }
   }
 
-  async obterEstatisticasDetalhadas(req: Request, res: Response) {
+  async obterEstatisticasDetalhadas(_req: Request, res: Response) {
     try {
       const estatistica = await this.Estatistica.getInstance();
       const totalCadastros = await this.Usuario.countDocuments();
@@ -91,7 +94,7 @@ export class EstatisticaController {
     }
   }
 
-  async gerarRelatorio(req: Request, res: Response) {
+  async gerarRelatorio(_req: Request, res: Response) {
     try {
       const estatistica = await this.Estatistica.getInstance();
       const totalCadastros = await this.Usuario.countDocuments();
@@ -112,7 +115,6 @@ export class EstatisticaController {
         dataCadastro: 1,
       });
 
-      // Buscar usuários com nome, tipo E data de cadastro
       const todosUsuarios = await this.Usuario.find({}, "nome tipoUsuario dataCadastro")
         .sort({ nome: 1 })
         .lean(); // Retorna objetos Javascript puros ao invés do documento MongoDB inteiro, ideal para métodos de leitura
