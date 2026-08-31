@@ -8,6 +8,7 @@ import {
 } from "../config/jwtConfig.ts";
 import { criptografarSenha, validarFuncaoCadastrada, validarSenha } from "../utils/utils.ts";
 import type { IAdmin } from "../models/Admin.ts";
+import type { TokenPayload } from "../config/jwtConfig.ts";
 
 export async function cadastrarDesenvolvedor(Admin: import("mongoose").Model<IAdmin>) {
   // TODO: retirar os fallbacks se caso o sistema ir para produção
@@ -58,8 +59,8 @@ export class AdminController {
     }
 
     // Gerar token JWT
-    const payload = {
-      id: admin._id.toString(),
+    const payload: TokenPayload = {
+      id: String(admin._id),
       nome: admin.nome,
       funcao: admin.funcao,
     };
@@ -100,14 +101,14 @@ export class AdminController {
 
     const newAccessToken = gerarAccessToken({
       id: payload.id,
-      nome: payload.nome,
-      funcao: payload.funcao,
+      ...(payload.nome !== undefined && { nome: payload.nome }),
+      ...(payload.funcao !== undefined && { funcao: payload.funcao }),
     });
 
     const newRefreshToken = gerarRefreshToken({
       id: payload.id,
-      nome: payload.nome,
-      funcao: payload.funcao,
+      ...(payload.nome !== undefined && { nome: payload.nome }),
+      ...(payload.funcao !== undefined && { funcao: payload.funcao }),
     });
 
     definirTokens(res, newAccessToken, newRefreshToken);
@@ -120,7 +121,7 @@ export class AdminController {
     });
   }
 
-  async logout(req: Request, res: Response) {
+  async logout(_req: Request, res: Response) {
     try {
       removerTokens(res);
       return res.status(200).json({
@@ -275,7 +276,7 @@ export class AdminController {
     }
   }
 
-  async listarAdmins(req: Request, res: Response) {
+  async listarAdmins(_req: Request, res: Response) {
     try {
       const admins = await this.Admin.find()
         .select("_id nome funcao createdAt updatedAt")
@@ -298,7 +299,7 @@ export class AdminController {
   }
 
   async removerAdmins(req: Request, res: Response) {
-    const { id } = req.params;
+    const id = req.params.id as string;
 
     if (req.usuario!.funcao !== "super-admin" && req.usuario!.funcao !== "desenvolvedor") {
       return res.status(403).json({
