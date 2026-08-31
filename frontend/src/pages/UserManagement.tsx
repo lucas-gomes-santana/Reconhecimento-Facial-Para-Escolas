@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Trash2, Search, Users, AlertTriangle, Loader } from "lucide-react";
 import { useUserManagement } from "../hooks/frontend/useUserManagement";
 import { useFormatData } from "../hooks/utils/useFormatData";
+import { getTipoUsuarioColor } from "../utils/roleMapping";
 
 function UserManagement() {
   const {
@@ -61,20 +62,6 @@ function UserManagement() {
 
   const cancelarRemocao = () => {
     setUsuarioParaRemover(null);
-  };
-
-  const getTipoUsuarioColor = (tipo: string) => {
-    switch (tipo.toLowerCase()) {
-      case "professor":
-        return "bg-blue-100 text-blue-800 border border-blue-200";
-      case "aluno":
-        return "bg-green-100 text-green-800 border border-green-200";
-      case "funcionário":
-      case "funcionario":
-        return "bg-yellow-100 text-yellow-800 border border-yellow-200";
-      default:
-        return "bg-gray-100 text-gray-800 border border-gray-200";
-    }
   };
 
   return (
