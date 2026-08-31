@@ -227,7 +227,7 @@ describe("useAdminPage", () => {
 
       expect(result.current.message.tipo).toBe("error");
       expect(result.current.message.texto).toContain(
-        "Apenas o super-admin ou o desenvolvedor pode cadastrar novos adms",
+        "Apenas o super-admin ou o desenvolvedor podem cadastrar Admins e Seguranças!",
       );
       expect(authenticatedFetchMock).not.toHaveBeenCalled();
     });
