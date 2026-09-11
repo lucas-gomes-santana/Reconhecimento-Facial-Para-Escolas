@@ -1,14 +1,6 @@
-# 📐 ARQUITETURA DO PROJETO C.E.R.F
+# ARQUITETURA DO PROJETO C.E.R.F (Cadastro Escolar com Reconhecimento Facial)
 
-## Cadastro Escolar com Reconhecimento Facial
-
-**Versão:** 1.0  
-**Data:** 1º de Abril de 2026  
-**Status:** Projeto Acadêmico - Feira de Ciências 2025 (CETEP Ipirá, BA)
-
----
-
-## 📋 ÍNDICE DE CONTEÚDO
+## SUMÁRIO
 
 1. [Informações do Projeto](#informações-do-projeto)
 2. [Ferramentas & Dependências Completas](#ferramentas--dependências-completas)
@@ -34,11 +26,11 @@
 
 Controlar o fluxo de entrada de indivíduos em escolas através de reconhecimento facial, permitindo:
 
-- ✅ Verificar se um rosto foi cadastrado no sistema
-- ✅ Barrar acesso não autorizado
-- ✅ Registrar estatísticas de utilização
-- ✅ Controlar fluxo de merenda escolar
-- ✅ Gerar relatórios de utilização
+- Verificar se um rosto foi cadastrado no sistema
+- Barrar acesso não autorizado
+- Registrar estatísticas de utilização
+- Controlar fluxo de merenda escolar
+- Gerar relatórios de utilização
 
 ### Funcionalidades Disponíveis
 
@@ -56,12 +48,12 @@ Controlar o fluxo de entrada de indivíduos em escolas através de reconheciment
 ### Resumo das stacks usadas
 
 ```
-┌─────────────┐                    ┌──────────────┐                   ┌──────────────┐
-│   Frontend  │                    │   Backend    │                   │   Database   │
-│ React + Ts  │◄────HTTP/REST────► │  Node.js +   │ ◄──MONGOOSE────►  │  MongoDB     │
-│ Vite + Face │                    │  Express     │                   │  (Atlas)     │
-│ TailwindCSS │                    │              │                   │              │
-└─────────────┘                    └──────────────┘                   └──────────────┘
+┌─────────────┐                    ┌─────────────┐                   ┌──────────────┐
+│   Frontend  │                    │   Backend   │                   │   Database   │
+│ React + Ts  │◄────HTTP/REST────► │ Node.js +   │ ◄──MONGOOSE────►  │   MongoDB    │
+│ Vite + Face │                    │ Express +   │                   │ (local:      │
+│ TailwindCSS │                    │ TypeScript  │                   │  facedb)     │
+└─────────────┘                    └─────────────┘                   └──────────────┘
 ```
 
 ---
@@ -76,28 +68,76 @@ Controlar o fluxo de entrada de indivíduos em escolas através de reconheciment
 | ----------------- | ------ | ---------------------------------------------------- |
 | **express**       | 5.1.0  | Framework HTTP/REST server                           |
 | **mongoose**      | 8.17.1 | ODM (Object Data Modeling) para MongoDB              |
+| **mongodb**       | 6.20.0 | Driver oficial do MongoDB                            |
 | **bcrypt**        | 6.0.0  | Hashing de senhas (12 rounds)                        |
 | **jsonwebtoken**  | 9.0.2  | Geração e verificação de JWT (Access + Refresh)      |
 | **cors**          | 2.8.5  | Middleware de CORS (permite requisições do frontend) |
 | **cookie-parser** | 1.4.7  | Parsing de cookies (armazenamento de JWT)            |
-| **dotenv**        | _dev_  | Variáveis de ambiente (.env)                         |
+
+#### Backend — Desenvolvimento & Testes (devDependencies)
+
+| Ferramenta                | Versão | Propósito                                       |
+| ------------------------- | ------ | ----------------------------------------------- |
+| **typescript**            | 6.0.3  | Tipagem estática (projeto 100% em `.ts`)        |
+| **tsx**                   | 4.22.3 | Execução direta de TypeScript (`tsx watch`)     |
+| **ts-node**               | 10.9.2 | Execução de TypeScript no Node.js               |
+| **vitest**                | 4.1.6  | Framework de testes unitários/integração        |
+| **@vitest/coverage-v8**   | 4.1.6  | Relatório de cobertura de código                |
+| **supertest**             | 7.2.2  | Testes de requisições HTTP (controllers/routes) |
+| **mongodb-memory-server** | 11.1.0 | MongoDB em memória para testes isolados         |
+| **prettier**              | 3.8.2  | Formatação de código                            |
+| **eslint**                | 10.2.0 | Linting (com plugins de segurança/imports)      |
 
 ### Frontend (React + TypeScript)
 
 **Arquivo:** `frontend/package.json`
 
-| Dependência          | Propósito                                     |
-| -------------------- | --------------------------------------------- |
-| **react**            | Library JavaScript para UI componentes        |
-| **react-dom**        | Rendering de React no DOM                     |
-| **react-router-dom** | Roteamento client-side (SPA)                  |
-| **typescript**       | Tipagem estática JavaScript                   |
-| **vite**             | Build tool ultra-rápido (substitui webpack)   |
-| **tailwindcss**      | Framework CSS utility-first para estilização  |
-| **face-api.js**      | **Reconhecimento facial com TensorFlow.js**   |
-| **jsPDF**            | Geração de PDFs no browser                    |
-| **lucide-react**     | Biblioteca de ícones SVG                      |
-| **clsx**             | Utility para construir className condicionais |
+| Dependência           | Versão  | Propósito                                     |
+| --------------------- | ------- | --------------------------------------------- |
+| **react**             | 19.1.1  | Library JavaScript para UI componentes        |
+| **react-dom**         | 19.1.1  | Rendering de React no DOM                     |
+| **react-router-dom**  | 7.8.2   | Roteamento client-side (SPA)                  |
+| **tailwindcss**       | 4.1.12  | Framework CSS utility-first para estilização  |
+| **@tailwindcss/vite** | 4.1.12  | Plugin do Tailwind CSS para Vite              |
+| **face-api.js**       | 0.22.2  | **Reconhecimento facial com TensorFlow.js**   |
+| **jsPDF**             | 3.0.3   | Geração de PDFs no browser                    |
+| **lucide-react**      | 0.542.0 | Biblioteca de ícones SVG                      |
+| **clsx**              | 2.1.1   | Utility para construir className condicionais |
+
+#### Frontend — Desenvolvimento & Testes (devDependencies)
+
+| Ferramenta                      | Versão | Propósito                                   |
+| ------------------------------- | ------ | ------------------------------------------- |
+| **typescript**                  | 5.8.3  | Tipagem estática JavaScript                 |
+| **vite**                        | 7.1.2  | Build tool ultra-rápido (substitui webpack) |
+| **@vitejs/plugin-react**        | 5.0.0  | Integração React + Vite (Fast Refresh)      |
+| **vitest**                      | 4.1.11 | Framework de testes unitários               |
+| **@testing-library/react**      | 16.3.2 | Testes de componentes React                 |
+| **@testing-library/jest-dom**   | 7.0.1  | Matchers DOM para testes                    |
+| **@testing-library/user-event** | 14.6.6 | Simulação de interações do usuário          |
+| **jsdom**                       | 30.0.1 | Ambiente DOM para testes                    |
+| **eslint**                      | 9.33.0 | Linting de código                           |
+
+### Testes & Qualidade
+
+Além do linting com ESLint, a qualidade é garantida por suítes de testes automatizados com **Vitest**.
+
+**Backend** (`backend/package.json`):
+
+| Comando              | Descrição                                         |
+| -------------------- | ------------------------------------------------- |
+| `pnpm test`          | Executa os testes em modo watch (desenvolvimento) |
+| `pnpm test:run`      | Executa todos os testes uma única vez             |
+| `pnpm test:coverage` | Executa os testes com relatório de cobertura (v8) |
+| `pnpm lint`          | Linting do código backend                         |
+
+**Frontend** (`frontend/package.json`):
+
+| Comando         | Descrição                             |
+| --------------- | ------------------------------------- |
+| `pnpm test`     | Executa os testes em modo watch       |
+| `pnpm test:run` | Executa todos os testes uma única vez |
+| `pnpm lint`     | Linting do código frontend            |
 
 ### Banco de Dados
 
@@ -113,7 +153,7 @@ Controlar o fluxo de entrada de indivíduos em escolas através de reconheciment
 | ---------- | ------------------------------------------------- |
 | **pnpm**   | Package manager (mais rápido e otimizado que npm) |
 | **Git**    | Controle de versão                                |
-| **ESLint** | Linting de código (frontend)                      |
+| **ESLint** | Linting de código (frontend e backend)            |
 
 ### Modelo de Reconhecimento Facial
 
@@ -148,8 +188,9 @@ FRONTEND (React + TypeScript)
          │
     ↓ HTTP/REST (JSON)
     │
-BACKEND (Node.js + Express)
-    ├── Routes (Roteamento)
+BACKEND (Node.js + Express + TypeScript)
+    ├── Routes (Roteamento) — 5 routers: usuarios, admin,
+    │        estatisticas, responsaveis, logs
     ├── Middlewares (Validação, Autenticação)
     ├── Controllers (Regras de negócio)
     ├── Services (Algoritmos especializados)
@@ -158,7 +199,8 @@ BACKEND (Node.js + Express)
     ↓ Mongoose/Driver
     │
 DATABASE (MongoDB)
-    ├── Collections: Admin, Usuario, Estatistica
+    ├── Collections: Admin, Usuario, Estatistica, Responsavel,
+    │        AlunoMatricula, Vinculo, LogEntrada
     └── Índices (único, partial, etc)
 ```
 
@@ -172,13 +214,14 @@ DATABASE (MongoDB)
 - Integra com face-api.js para detecção facial
 - Comunica com backend via fetch/axios
 
-#### **Backend (Node.js)**
+#### **Backend (Node.js + TypeScript)**
 
 - Valida requisições (middlewares)
 - Executa lógica de negócio (controllers)
 - Implementa algoritmos (services)
 - Persiste dados (MongoDB via Mongoose)
 - Gerencia autenticação (JWT)
+- No boot, conecta ao MongoDB, cria o usuário `desenvolvedor` e executa `seedAlunosMockados()`
 
 #### **Database (MongoDB)**
 
@@ -340,10 +383,10 @@ Services encapsulam lógica de negócio complexa ou algoritmos.
 
 ```
 Valor         | Interpretação
-0.96+         | ✅ Mesmo rosto (Usar para cadastro)
-0.90-0.95     | ⚠️ Muito similar (revisar)
-0.70-0.89     | ⚠️ Alguma semelhança (não usar)
-< 0.70        | ❌ Rostos diferentes
+0.96+         | Mesmo rosto (Usar para cadastro)
+0.90-0.95     | Muito similar (revisar)
+0.70-0.89     | Alguma semelhança (não usar)
+< 0.70        | Rostos diferentes
 ```
 
 ---
@@ -693,7 +736,7 @@ Refresh Token Flow (quando accessToken expirar):
 │    usuario: { _id, nome, ... } │
 │ }                              │
 │                                │
-│ UI: "✅ Cadastro com sucesso!"  │
+│ UI: "Cadastro com sucesso!"  │
 └────────────────────────────────┘
 ```
 
@@ -755,16 +798,16 @@ Refresh Token Flow (quando accessToken expirar):
 │                              │
 │ Se encontrado:               │
 │ ┌────────────────────────────┐
-│ │ ✅ Usuário Identificado!   │
+│ │ Usuário Identificado!   │
 │ │ Nome: João Silva           │
 │ │ Tipo: Aluno                │
 │ │ Similaridade: 98.5%        │
-│ │ Status: 🟢 Liberado        │
+│ │ Status: Liberado        │
 │ └────────────────────────────┘
 │                              │
 │ Se não encontrado:           │
 │ ┌────────────────────────────┐
-│ │ ❌ Rosto não encontrado    │
+│ │ Rosto não encontrado    │
 │ └────────────────────────────┘
 └──────────────────────────────┘
 ```
@@ -790,7 +833,7 @@ Refresh Token Flow (quando accessToken expirar):
 └──────────┬───────────────────────┘
            │
            ├─ Se bloqueado:
-           │  └─ "⏳ Já pegou merenda"
+           │  └─ "Já pegou merenda"
            │
            └─ Se liberado:
               └─ Mostra botão "Liberar Merenda"
@@ -819,11 +862,11 @@ Refresh Token Flow (quando accessToken expirar):
            ▼ Response { success: true }
 ┌──────────────────────────────────┐
 │ 5. UI Feedback                   │
-│ "⏳ Bloqueado por 60 segundos"    │
+│ "Bloqueado por 60 segundos"    │
 │                                  │
 │ [Wait 60s]                       │
 │           ▼                      │
-│ "✅ Desbloqueado automaticamente" │
+│ "Desbloqueado automaticamente" │
 └──────────────────────────────────┘
 ```
 
@@ -1095,7 +1138,7 @@ Usuários Finais (Aluno, Professor, etc)
 ```bash
 # 1. Instalação
 $ cd backend
-$ npm install  # ou pnpm install
+$ pnpm install
 
 # 2. Configuração (.env)
 DATABASE_URL=mongodb://localhost:27017/facedb
@@ -1107,9 +1150,9 @@ DEV_USER_SENHA=admin123456
 # 3. Startup
 $ node server.ts
 # Output:
-# ✅ Conectado ao MongoDB
-# ✅ Usuário "desenvolvedor" criado
-# 🚀 Servidor escutando na porta 3000
+# Conectado ao MongoDB
+# Usuário "desenvolvedor" criado
+# Servidor escutando na porta 3000
 ```
 
 ### Frontend
@@ -1119,15 +1162,15 @@ $ node server.ts
 $ cd frontend
 $ pnpm install
 
-# 2. Dev Server
-$ npm run dev  # ou pnpm dev
+# 2. Rodar em modo de desenvolvimento
+$ pnpm dev
 # Output:
 # ➜  Local:   http://localhost:5173/
 # ➜  press h to show help
 
 # 3. Build para produção
-$ npm run build
-$ npm run preview
+$ pnpm build
+$ pnpm preview
 ```
 
 ### Sequência Completa
@@ -1161,7 +1204,6 @@ Este arquivo foi estruturado para facilitar:
 
 1. **Busca Rápida de Contexto:**
    - Use Ctrl+F para buscar por: `interface`, `class`, `function`, `endpoint`
-   - Cabeçalhos estruturados com ✅ ✅ ✅ para fácil scanning
 
 2. **Implementação de Features Novas:**
    - Seção 4: Backend → Models/Controllers/Services/Routes
@@ -1212,7 +1254,7 @@ Buscar por:                    Vá para:
 - [README.md](../README.md) - Guia de execução
 - [docs/](../) - Diagramas visuais
 
-**Última atualização:** 1º de Abril de 2026  
+**Última atualização:** 11 de Setembro de 2026  
 **Desenvolvido para:** Feira de Ciências 2025 - CETEP Ipirá, BA  
 **Status:** Projeto Acadêmico com potencial de escalabilidade  
-**Licença:** CC BY-NC-ND 4.0
+**Licença:** Todos os direitos reservados
