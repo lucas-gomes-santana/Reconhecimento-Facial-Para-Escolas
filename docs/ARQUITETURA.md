@@ -1258,13 +1258,13 @@ $ pnpm preview
 
 ```
 Terminal 1: Backend
-$ cd backend && npm install && node server.ts
+$ cd backend && pnpm install && node server.ts
 # Conecta MongoDB
 # Cria desenvolvedor
 # Escuta :3000
 
 Terminal 2: Frontend
-$ cd frontend && npm install && npm run dev
+$ cd frontend && pnpm install && pnpm dev
 # Vite dev server :5173
 # Hot reload ativo
 # Conecta em localhost:3000/api
@@ -1334,8 +1334,3 @@ Buscar por:                    Vá para:
 
 - [README.md](../README.md) - Guia de execução
 - [docs/](../) - Diagramas visuais
-
-**Última atualização:** 11 de Setembro de 2026  
-**Desenvolvido para:** Feira de Ciências 2025 - CETEP Ipirá, BA  
-**Status:** Projeto Acadêmico com potencial de escalabilidade  
-**Licença:** Todos os direitos reservados

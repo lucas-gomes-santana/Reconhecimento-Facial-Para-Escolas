@@ -26,7 +26,7 @@ O sistema C.E.R.F agora possui também um aplicativo mobile em desenvolvimento q
 
 ### Como Executar o Projeto
 
-Como o C.E.R.F não está em produção, só se pode interagir com projeto executando ele no seu computador. Para isso, é necessário que você tenha instalado o Git, NodeJs, npm, pnpm e o MongoDB em sua máquina.
+Como o sistema C.E.R.F não está em produção, só é possível interagir com projeto executando ele no seu computador. Para isso, é necessário que você tenha instalado o Git, NodeJs, npm, pnpm e o MongoDB em sua máquina.
 
 Os comandos abaixo devem ser executados no Git Bash se você estiver no Windows ou no terminal padrão do seu sistema se estiver no Linux ou MacOs.
 <br>
