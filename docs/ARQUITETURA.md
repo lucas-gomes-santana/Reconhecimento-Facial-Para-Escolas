@@ -263,9 +263,9 @@ POST /api/usuarios/cadastrar
 
 Os modelos definem a estrutura dos dados persistidos no MongoDB via Mongoose.
 
-#### **Admin.js** - Usuários Administrativos
+#### **Admin.ts** - Usuários Administrativos
 
-**Arquivo:** backend/models/Admin.js
+**Arquivo:** backend/models/Admin.ts
 
 **Responsabilidade:** Armazenar credenciais e permissões de administradores.
 
@@ -274,18 +274,19 @@ Os modelos definem a estrutura dos dados persistidos no MongoDB via Mongoose.
 **Índices Especiais:**
 
 - `unique` em `nome` → Busca O(1) por nome
-- `unique: true, partialFilterExpression: { funcao: 'super-admin' }` → Garante apenas 1 super-admin
-- `unique: true, partialFilterExpression: { funcao: 'desenvolvedor' }` → Garante apenas 1 desenvolvedor
+- `unique: true, partialFilterExpression: { funcao: { $in: ['desenvolvedor', 'super-admin'] } }` → Garante apenas 1 desenvolvedor e 1 super-admin (índice parcial único)
 
-**Métodos:** Virtual `dataCadastro`, pre-hook para bcrypt, `toJSON()` sem senha
+**Hashing de senha:** A criptografia é centralizada na função `criptografarSenha()` em `backend/utils/utils.ts` (12 rounds), chamada nos controllers antes do `save()`.
 
-#### **Usuario.js** - Usuários do Sistema (Alunos, Professores, etc)
+**Métodos:** Virtual `dataCadastro`, `toJSON()` sem senha
 
-**Arquivo:** backend/models/Usuario.js
+#### **Usuario.ts** - Usuários do Sistema (Alunos, Professores, etc)
+
+**Arquivo:** backend/models/Usuario.ts
 
 **Responsabilidade:** Armazenar dados de usuários finais com reconhecimento facial.
 
-**Schema:** Campos para nome (único), tipoUsuario (enum: Aluno, Professor, Funcionario, Outro), descriptor (array de 128 números), dataCadastro, status (enum: liberado/bloqueado), bloqueadoAte, timestamps.
+**Schema:** Campos para nome (único), tipoUsuario (string — **sem enum aplicado no schema**; os valores utilizados são Aluno, Professor, Funcionario, Outro), descriptor (array de 128 números), dataCadastro, status (enum: liberado/bloqueado), bloqueadoAte, timestamps.
 
 **O que é o Descriptor?**
 
@@ -299,15 +300,15 @@ Os modelos definem a estrutura dos dados persistidos no MongoDB via Mongoose.
 
 - `unique` em `nome` → Busca rápida de usuários
 
-#### **Estatistica.js** - Métricas do Sistema
+#### **Estatistica.ts** - Métricas do Sistema
 
-**Arquivo:** backend/models/Estatistica.js
+**Arquivo:** backend/models/Estatistica.ts
 
 **Responsabilidade:** Singleton que armazena estatísticas globais.
 
-**Schema:** Campos para totalVerificações (número) e ÚltimaAtualização (data).
+**Schema:** Contadores `totalVerificacoes`, `totalEntradas`, `totalSaidas` e `totalMerendas` (número, default 0) + `ultimaAtualizacao` (data).
 
-**Padrão Singleton:** Static method `getInstance()` garante apenas 1 documento. Static method `incrementarVerificações()` incrementa contador e timestamp.
+**Padrão Singleton:** Static methods `getInstance()` (garante apenas 1 documento), `incrementarVerificacoes()`, `incrementarEntrada()` e `incrementarMerenda()` — cada um incrementa o respectivo contador e atualiza o timestamp.
 
 ---
 
@@ -315,24 +316,34 @@ Os modelos definem a estrutura dos dados persistidos no MongoDB via Mongoose.
 
 Os controladores implementam a lógica de negócio e orquestram modelos + serviços.
 
-#### **usuarioController.js** - Gerenciamento de Usuários
+#### **usuarioController.ts** - Gerenciamento de Usuários
 
-**Arquivo:** backend/controllers/usuarioController.js
+**Arquivo:** backend/controllers/usuarioController.ts
 
 **Responsabilidade:** CRUD de usuários finais + verificação facial.
 
 **Métodos Principais:**
 
-- `cadastrarUsuario()` - POST /api/usuarios/cadastrar (valida duplicação 96%)
-- `verificarRosto()` - POST /api/verificar-rosto (encontra usuário similar)
+- `cadastrarUsuario()` - POST /api/usuarios/cadastrar (valida duplicação facial 96%)
+- `verificarRosto()` - POST /api/verificar-rosto (encontra usuário similar por contexto)
 - `listarUsuarios()` - GET /api/usuarios/listar?nome=... (busca regex case-insensitive)
 - `removerUsuario()` - DELETE /api/usuarios/remover/:id
 - `removerTodosOsUsuarios()` - DELETE /api/usuarios/remover-todos
 - `bloquearUsuario()` - PATCH /api/usuarios/bloquear/:id (bloqueio 60s automático)
 
-#### **adminController.js** - Gerenciamento de Administradores
+**Contextos de Verificação (`verificarRosto`):**
 
-**Arquivo:** backend/controllers/adminController.js
+- `cadastro` — apenas checa a existência do rosto, sem incrementar estatísticas
+- `verificacao` — valida o rosto e incrementa `totalVerificacoes`
+- `entrada` — valida o rosto, registra `LogEntrada` tipo `entrada` e incrementa `totalEntradas`
+- `saida` — valida o rosto e registra `LogEntrada` tipo `saida`
+- `merenda` — valida o rosto (se não bloqueado), registra `LogEntrada` tipo `merenda` e incrementa `totalMerendas`
+
+**Observação:** além dos incrementos específicos, cada verificação com contexto diferente de `cadastro` também incrementa `totalVerificacoes`.
+
+#### **adminController.ts** - Gerenciamento de Administradores
+
+**Arquivo:** backend/controllers/adminController.ts
 
 **Responsabilidade:** Autenticação + CRUD de admins.
 
@@ -348,18 +359,38 @@ Os controladores implementam a lógica de negócio e orquestram modelos + servi�
 - `removerAdmins()` - DELETE /api/admin/remover/:id
 - `atualizarSenha()` - PUT /api/admin/atualizar-senha
 
-#### **estatisticaController.js** - Relatórios e Estatísticas
+#### **estatisticaController.ts** - Relatórios e Estatísticas
 
-**Arquivo:** backend/controllers/estatisticaController.js
+**Arquivo:** backend/controllers/estatisticaController.ts
 
 **Responsabilidade:** Agregação de dados para dashboards.
 
 **Métodos Principais:**
 
 - `obterEstatisticas()` - GET /api/estatisticas (total cadastros + verificações)
-- `obterEstatisticasDetalhadas()` - GET /api/estatisticas/detalhadas (agregação por tipo)
+- `obterEstatisticasDetalhadas()` - GET /api/estatisticas/detalhadas (agregação por tipo + primeiro/último cadastro)
 - `reiniciarVerificacoes()` - POST /api/estatisticas/reset (requer autenticação)
 - `gerarRelatorio()` - POST /api/estatisticas/relatorio (agregação MongoDB com pipeline)
+
+**Respostas:** os endpoints retornam os campos `totalCadastros`, `totalVerificacoes`, `totalEntradas`, `totalSaidas`, `totalMerendas` e `ultimaAtualizacao`.
+
+#### **responsavelController.ts** - Responsáveis (App Mobile)
+
+**Arquivo:** backend/controllers/responsavelController.ts
+
+**Responsabilidade:** Cadastro, login/logout e vínculo de responsáveis com alunos, além do monitoramento de entradas e merenda dos filhos.
+
+**Métodos Principais:** `cadastrar`, `login`, `logout`, `perfil`, `meusAlunos`, `entradas`, `merenda`, `vincular`, `validarMatricula`.
+
+**Obs.:** pertence ao subsistema do app mobile — detalhes na nota no início desta seção e no repositório do aplicativo.
+
+#### **logEntradaController.ts** - Logs de Entrada/Saída/Merenda
+
+**Arquivo:** backend/controllers/logEntradaController.ts
+
+**Responsabilidade:** Consulta e registro de logs de entrada/saída/merenda (`LogEntrada`).
+
+**Métodos Principais:** `buscarLogsPorUsuario`, `buscarLogsPorAlunoMatricula`, `buscarLogsPorData`, `registrarLog`.
 
 ---
 
@@ -395,9 +426,11 @@ Valor         | Interpretação
 
 Definem os endpoints HTTP disponíveis.
 
-#### **usuarioRoutes.js**
+**Ordem de middlewares:** nas rotas protegidas, o middleware de validação (`validate*`) é aplicado **antes** de `autenticarToken`.
 
-**Arquivo:** backend/routes/usuarioRoutes.js
+#### **usuarioRoutes.ts**
+
+**Arquivo:** backend/routes/usuarioRoutes.ts
 
 **Endpoints:**
 
@@ -408,15 +441,15 @@ Definem os endpoints HTTP disponíveis.
 - DELETE /api/usuarios/remover-todos - autenticarToken
 - PATCH /api/usuarios/bloquear/:id - validateIdParam, autenticarToken
 
-#### **adminRoutes.js**
+#### **adminRoutes.ts**
 
-**Arquivo:** backend/routes/adminRoutes.js
+**Arquivo:** backend/routes/adminRoutes.ts
 
 **Endpoints:**
 
 - POST /api/admin/login - validateLogin (PUBLIC)
 - POST /api/admin/refresh-token - (PUBLIC)
-- POST /api/admin/logout
+- POST /api/admin/logout - (PUBLIC)
 - GET /api/admin/verificar - autenticarToken
 - POST /api/admin/cadastrar - validateCadastroAdmin, autenticarToken
 - POST /api/admin/cadastrar/super-admin - validateCadastroAdmin, autenticarToken
@@ -424,9 +457,9 @@ Definem os endpoints HTTP disponíveis.
 - DELETE /api/admin/remover/:id - validateIdParam, autenticarToken
 - PUT /api/admin/atualizar-senha - validateMudancaDeSenha, autenticarToken
 
-#### **estatisticaRoutes.js**
+#### **estatisticaRoutes.ts**
 
-**Arquivo:** backend/routes/estatisticaRoutes.js
+**Arquivo:** backend/routes/estatisticaRoutes.ts
 
 **Endpoints:**
 
@@ -435,47 +468,95 @@ Definem os endpoints HTTP disponíveis.
 - POST /api/estatisticas/reset - autenticarToken
 - POST /api/estatisticas/relatorio - autenticarToken
 
+#### **responsavelRoutes.ts**
+
+**Arquivo:** backend/routes/responsavelRoutes.ts
+
+**Endpoints (subsistema app mobile):**
+
+- POST /api/responsaveis/cadastrar - (PUBLIC)
+- POST /api/responsaveis/login - (PUBLIC)
+- POST /api/responsaveis/logout - autenticarResponsavel
+- GET /api/responsaveis/perfil - autenticarResponsavel
+- GET /api/responsaveis/meus-alunos - autenticarResponsavel
+- GET /api/responsaveis/entradas/:id - autenticarResponsavel
+- GET /api/responsaveis/merenda/:id - autenticarResponsavel
+- POST /api/responsaveis/vincular - autenticarResponsavel
+- POST /api/responsaveis/validar-matricula - (PUBLIC)
+
+#### **logEntradaRoutes.ts**
+
+**Arquivo:** backend/routes/logEntradaRoutes.ts
+
+**Endpoints:**
+
+- GET /api/logs/entrada/usuario/:usuarioId - autenticarToken
+- GET /api/logs/entrada/aluno/:alunoMatriculaId - autenticarToken
+- GET /api/logs/entrada - autenticarToken
+- POST /api/logs/entrada - autenticarToken
+
 ---
 
 ### 5. MIDDLEWARES (Middlewares)
 
 Intermediários que processam requisições antes de chegarem aos controllers.
 
-#### **validation.js**
+#### **validation.ts**
 
-**Arquivo:** backend/middlewares/validation.js
+**Arquivo:** backend/middlewares/validation.ts
 
 **Validações Implementadas:**
 
 - `validateLogin` - Valida nome + senha
-- `validateCadastroUsuario` - Valida nome, tipoUsuario, descriptor (128 números)
-- `validateVerificacaoRosto` - Valida descriptor + contexto (cadastro/verificacao/merenda)
+- `validateCadastroUsuario` - Valida presença de nome, tipoUsuario e descriptor (não valida o tamanho/length do descritor)
+- `validateVerificacaoRosto` - Valida descriptor (array) + contexto (cadastro/verificacao/merenda)
 - `validateCadastroAdmin` - Valida nome, senha (min 8 chars), funcao
+- `validateId` - Valida ID no body
 - `validateIdParam` - Valida ID em params
 - `validateMudancaDeSenha` - Valida nova_senha + confirmacao
 - `autenticarToken` - Middleware JWT (verifica cookie 'jwt')
+
+#### **authResponsavel.ts**
+
+**Arquivo:** backend/middlewares/authResponsavel.ts
+
+**Responsabilidade:** Autenticação de responsáveis (app mobile). Verifica o cookie `jwt`, exige que o payload tenha `tipo: "responsavel"` e injeta `req.responsavel` com os dados do token.
+
+> **Obs.:** o `autenticarResponsavel` roda em todas as rotas `/api/responsaveis/*` protegidas, exceto cadastrar/login/validar-matricula.
 
 ---
 
 ### 6. CONFIGURAÇÕES (Config)
 
-#### **database.js**
+#### **database.ts**
 
-**Arquivo:** backend/config/database.js
+**Arquivo:** backend/config/database.ts
 
 **Responsável por:** Conexão MongoDB (mongodb://localhost:27017/facedb)
 
-#### **corsConfig.js**
+#### **corsConfig.ts**
 
-**Arquivo:** backend/config/corsConfig.js
+**Arquivo:** backend/config/corsConfig.ts
 
-**Configuração:** Origins permitidas (localhost:5173 + production), credenciais true, métodos GET/POST/PUT/DELETE/PATCH
+**Configuração:** Origem permitida `http://localhost:5173` (frontend local) — requisições sem origin (não-browser, ex.: Postman) também são aceitas; **desativar em produção**. Credenciais true, métodos GET/POST/PUT/PATCH/DELETE/OPTIONS, headers Content-Type/Authorization, expõe `set-cookie`.
 
-#### **jwtConfig.js**
+#### **jwtConfig.ts**
 
-**Arquivo:** backend/config/jwtConfig.js
+**Arquivo:** backend/config/jwtConfig.ts
 
-**Tokens:** generateAccessToken (1h), generateRefreshToken (7d), verify, definirTokens (httpOnly cookies)
+**Tokens:** generateAccessToken (1h), generateRefreshToken (7d), verify, definirTokens/removerTokens (httpOnly cookies), autenticarToken (verifica o cookie `jwt`).
+
+#### **seedAlunos.ts**
+
+**Arquivo:** backend/config/seedAlunos.ts
+
+**Responsável por:** Inserir 20 matrículas de alunos fictícios no boot (somente desenvolvimento/testes). **Atenção:** desativar em produção — em produção, as matrículas são cadastradas pelos gestores da escola.
+
+#### **threshold.ts**
+
+**Arquivo:** backend/utils/threshold.ts
+
+**Responsável por:** Constante global de similaridade mínima (`0.96`) para considerar dois rostos como o mesmo.
 
 ---
 
