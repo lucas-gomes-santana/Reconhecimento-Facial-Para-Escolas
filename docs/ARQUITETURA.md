@@ -398,9 +398,9 @@ Os controladores implementam a lógica de negócio e orquestram modelos + servi�
 
 Services encapsulam lógica de negócio complexa ou algoritmos.
 
-#### **faceRecognitionService.js** - Reconhecimento Facial
+#### **faceRecognitionService.ts** - Reconhecimento Facial
 
-**Arquivo:** backend/services/faceRecognitionService.js
+**Arquivo:** backend/services/faceRecognitionService.ts
 
 **Responsabilidade:** Algoritmo de comparação de faces (similaridade cosseno).
 
@@ -568,12 +568,12 @@ Intermediários que processam requisições antes de chegarem aos controllers.
 
 **Inicialização:**
 
-1. Conecta ao MongoDB via DatabaseConfig.conectar()
-2. Cria usuário "desenvolvedor" (fallback .env: DEV_USER_NOME, DEV_USER_SENHA)
-3. Monta middlewares: express.json(), CORS, cookie-parser
-4. Monta rotas: /api/usuarios, /api/admin, /api/estatisticas
-5. Health check: GET /health
-6. Escuta na porta 3000 (ou env.PORT)
+1. Conecta ao MongoDB via `databaseConfig.connect()`
+2. Cria usuário desenvolvedor via `cadastrarDesenvolvedor()` (fallback sem `.env`: `admin`/`admin` — pode ser sobrescrito por `DEV_USER_NOME`/`DEV_USER_SENHA`)
+3. Executa `seedAlunosMockados()` (20 matrículas fictícias — desativar em produção)
+4. Monta middlewares: express.json(), CORS, cookie-parser
+5. Monta as 5 rotas: /api/usuarios, /api/admin, /api/estatisticas, /api/logs, /api/responsaveis
+6. Escuta na porta **3000** (fixa no código)
 
 **Tratamento de Sinais:** SIGINT para graceful shutdown
 
@@ -629,6 +629,14 @@ frontend/src/
 │ ├── useFormatData.ts # Formatação de datas
 │ └── useGerarRelatorio.ts # Geração de PDF
 │
+├── utils/ # Utilitários puros (sem estado)
+│ ├── errorHandling.ts # ApiError + handleApiError
+│ ├── faceDetection.ts # calculateDistance + analyzeExpression
+│ ├── formatData.ts # Formatação de datas (pt-BR)
+│ ├── roleMapping.ts # Labels e cores de funções/tipos
+│ ├── time.ts # formatação de tempo (bloqueio merenda)
+│ └── validation.ts # Validações de formulário/descritor
+│
 ├── types/ # Tipos TypeScript
 │ ├── admin.types.ts # Tipos de admin
 │ ├── api.types.ts # Tipos de API
@@ -669,41 +677,87 @@ frontend/src/
 
 #### **Cadastrar.tsx** - Cadastro Facial com Captura
 
-**Responsabilidade:** Captura facial para novo usuário. Integra face-api.js para detecção.
+**Armazenamento:** frontend/src/pages/Cadastrar.tsx
+
+**Responsabilidade:** Captura facial para novo usuário. Integra `VideoCanvasDetector` (vídeo + canvas) e `useCadastroFacial` (dupla checagem do rosto antes de salvar).
 
 #### **Verificacao.tsx** - Verificação de Identidade
 
-**Responsabilidade:** Identificar pessoa por rosto. Mostra resultado com dados do usuário.
+**Arquivo:** frontend/src/pages/Verificacao.tsx
+
+**Responsabilidade:** Identificar pessoa por rosto. Mostra resultado com dados do usuário ("Rosto encontrado. Acesso autorizado!" ou "Acesso negado"). Usa `useVerificacao`, que envia `contexto: "verificacao"`.
+
+#### **VerificarMerenda.tsx** - Controle de Merenda (Bloqueio 60s)
+
+**Arquivo:** frontend/src/pages/VerificarMerenda.tsx
+
+**Responsabilidade:** Verificação facial para retirada de merenda. Se liberado, bloqueia o aluno por 60 segundos e exibe countdown (`useVerificarStatus`).
+
+#### **Estatisticas.tsx** - Dashboard de Relatórios
+
+**Arquivo:** frontend/src/pages/Estatisticas.tsx
+
+**Responsabilidade:** Exibe estatísticas do sistema (obter/atualizar/detalhadas), gera relatório PDF (`useGerarRelatorio` → `generatePdf`) e reinicia o contador de verificações.
+
+#### **AdminPage.tsx** - Gerenciamento de Administradores
+
+**Arquivo:** frontend/src/pages/AdminPage.tsx
+
+**Responsabilidade:** Página do diretor: cadastra/remove admins e seguranças, com lista paginada e busca (`useAdminPage`, `useFormatData`, `roleMapping`).
+
+#### **UserManagement.tsx** - Gerenciamento de Usuários
+
+**Arquivo:** frontend/src/pages/UserManagement.tsx
+
+**Responsabilidade:** Lista, busca e remoção de usuários (individual ou em massa) via `useUserManagement`.
 
 ---
 
-### 3. HOOKS CUSTOMIZADOS (14 Hooks)
+### 3. HOOKS CUSTOMIZADOS (13 Hooks)
 
-Os hooks encapsulam lógica reutilizável e gerenciam estado.
+Os hooks encapsulam lógica reutilizável e gerenciam estado (13 hooks em `frontend/src/hooks/`).
 
-#### **useAuth.ts** - Autenticação JWT
-
-### **useFaceDetection.ts** - Integração face-api.js
-
-#### **useCadastro.ts** - Orquestração de Cadastro
+- `useApi` (api/) - Estado de loading/error + `handleApiError`
+- `useAuth` (auth/) - Login/logout, refresh de token, `authenticatedFetch`
+- `useVerificacao` (auth/) - Ciclo de vida da verificação facial (`iniciarSistema`, `realizarVerificacao`, `verificarRosto`, `reiniciarProcesso`, `pararSistema`)
+- `useVerificarStatus` (auth/) - Verificação de merenda com bloqueio de 1 minuto e countdown
+- `useFaceDetection` (detection/) - Carrega modelos da face-api.js, câmera e **loop de detecção a cada 300ms** (extrai descriptor, distância, expressão)
+- `useLogin` (frontend/) - Lógica da página Login
+- `useCadastro` (frontend/) - Fluxo de cadastro facial (`useCadastroFacial`): validação + dupla checagem do rosto
+- `useAdminPage` (frontend/) - CRUD de admins com paginação e busca
+- `useEstatisticas` (frontend/) - Obter/resetar estatísticas (comuns e detalhadas)
+- `useUserManagement` (frontend/) - CRUD de usuários (lista, busca, remoção)
+- `useValidation` (validation/) - Wrappers das validações + `showValidationErrors`
+- `useFormatData` (utils/) - Wrapper de `formatData`
+- `useGerarRelatorio` (utils/) - Busca `/estatisticas/relatorio` e chama `gerarRelatorioPdf`
 
 ### 4. TIPOS TYPESCRIPT
 
-#### **face.type.ts** - Tipos de Resposta de Rosto
-
-#### **admin.types.ts** - Tipos de Administrador
-
----
+Tipos centralizados em `frontend/src/types/` (9 arquivos): `face.type.ts`, `admin.types.ts`, `api.types.ts`, `cadastro.types.ts`, `distance.types.ts`, `estatisticas.types.ts`, `login.types.ts`, `user.types.ts`, `validation.types.ts`.
 
 ### 5. COMPONENTES
 
-#### **VideoAndCanvas.tsx** - Elemento de Vídeo e Detecção
+#### **VideoAndCanvas.tsx** - Vídeo + Canvas de Detecção
+
+**Arquivo:** frontend/src/components/VideoAndCanvas.tsx
+
+**Exportação:** `export default VideoCanvasDetector` (default export, único componente na pasta).
+
+**Responsabilidade:** Componente apresentacional que renderiza `<video>` + `<canvas>` sobrepostos, altera a cor da borda conforme `distanceStatus`/`expressionStatus` e mostra mensagens de distância/expressão. O loop de detecção (300ms) e a extração do descriptor ficam no hook `useFaceDetection`.
 
 ### 6. CONFIGURAÇÃO & TEMPLATES
 
 #### **url.ts** - Base URL da API
 
+**Arquivo:** frontend/src/config/url.ts
+
+**Configuração:** `baseURL = "http://localhost:3000/api"`
+
 #### **generatePdf.ts** - Gerador de Relatório PDF
+
+**Arquivo:** frontend/src/templates/generatePdf.ts
+
+**Responsabilidade:** Exports `gerarRelatorioPdf(dadosEstatisticas)` usando jsPDF (cabeçalho, data, tabelas por tipo, lista alfabética). Salva o arquivo como `relatorio-estatisticas-YYYY-MM-DD.pdf`.
 
 ## Fluxos de Dados Principais
 
@@ -776,7 +830,7 @@ Refresh Token Flow (quando accessToken expirar):
              ▼
 ┌────────────────────────────────┐
 │ 2. Face Detect Loop            │
-│ (100ms interval)               │
+│ (300ms interval)               │
 │ ├─ faceapi.detectSingleFace()  │
 │ ├─ Calcula bounding box        │
 │ ├─ Extrai landmarks            │
@@ -793,7 +847,16 @@ Refresh Token Flow (quando accessToken expirar):
              │
              ▼ Clica "Salvar"
 ┌────────────────────────────────┐
-│ 4. POST /usuarios/cadastrar    │
+│ 4. 1ª CHECAGEM (Frontend)      │
+│ POST /verificar-rosto          │
+│ { descriptor,                  │
+│   contexto:"cadastro" }        │
+│ └─ Se "existe": alerta e aborta│
+└────────────┬───────────────────┘
+             │
+             ▼ (rosto novo)
+┌────────────────────────────────┐
+│ 5. POST /usuarios/cadastrar    │
 │ {                              │
 │   "nome": "João Silva",        │
 │   "tipoUsuario": "Aluno",      │
@@ -803,17 +866,18 @@ Refresh Token Flow (quando accessToken expirar):
              │
              ▼
 ┌────────────────────────────────┐
-│ 5. Backend validação           │
+│ 6. 2ª CHECAGEM (Backend)       │
 │ ├─ verificarRostoExistente()   │
 │ │  (threshold 96%)             │
-│ │  └─ Se duplicado: erro 400   │
+│ │  └─ Se duplicado: erro 409   │
+│ │     "Rosto já cadastrado"    │
 │ ├─ Validações de formato       │
 │ └─ Save no MongoDB             │
 └────────────┬───────────────────┘
              │
              ▼ Sucesso
 ┌────────────────────────────────┐
-│ 6. Response { success: true,   │
+│ 7. Response { success: true,   │
 │    usuario: { _id, nome, ... } │
 │ }                              │
 │                                │
@@ -832,7 +896,7 @@ Refresh Token Flow (quando accessToken expirar):
            ▼ Carrega modelos + abre câmera
 ┌──────────────────────────────┐
 │ 2. Face Detection Loop       │
-│ Igual ao fluxo de cadastro   │
+│ (300ms, igual ao cadastro)   │
 │ Extrai descriptor quando ok  │
 └──────────┬───────────────────┘
            │
@@ -853,25 +917,23 @@ Refresh Token Flow (quando accessToken expirar):
 │   descriptor, 0.96 threshold │
 │ )                            │
 │                              │
-│ Loop: for cada usuario {     │
+│ Loop: para cada usuario {    │
 │  similaridade =              │
-│  calcularSimilaridadeCossenos(
-│    descriptorBusca,          │
-│    usuario.descriptor        │
-│  )                           │
+│  calcularSimilaridadeCossenos│
+│  (descriptorBusca,           │
+│   usuario.descriptor)        │
 │  if (similaridade > max)     │
 │    melhorMatch = usuario     │
 │ }                            │
 └──────────┬───────────────────┘
            │
-           ├─ Se encon trado:
+           ├─ Se encontrado:
            │  ├─ Verifica bloqueio
-           │  ├─ Incrementa totalVerificações
+           │  ├─ Incrementa totalVerificacoes
            │  └─ Retorna usuário + %
            │
            └─ Se não encontrado:
-              └─ Retorna exists: false
-└──────────┬───────────────────┘
+              └─ Retorna existe: false
            │
            ▼
 ┌──────────────────────────────┐
@@ -879,19 +941,21 @@ Refresh Token Flow (quando accessToken expirar):
 │                              │
 │ Se encontrado:               │
 │ ┌────────────────────────────┐
-│ │ Usuário Identificado!   │
+│ │ "Rosto encontrado. Acesso │
+│ │  autorizado!"              │
 │ │ Nome: João Silva           │
-│ │ Tipo: Aluno                │
 │ │ Similaridade: 98.5%        │
-│ │ Status: Liberado        │
 │ └────────────────────────────┘
 │                              │
 │ Se não encontrado:           │
 │ ┌────────────────────────────┐
-│ │ Rosto não encontrado    │
+│ │ "Rosto não encontrado.    │
+│ │  Acesso negado!"           │
 │ └────────────────────────────┘
 └──────────────────────────────┘
 ```
+
+> **Contextos extras (backend):** além de `verificacao`, o controller `verificarRosto` também trata os contextos `entrada` e `saida` — registram `LogEntrada` (subsistema do app mobile). No frontend web, apenas `verificacao` é usado.
 
 ### 4. Fluxo de Bloqueio de Merenda (60 segundos)
 
@@ -969,59 +1033,69 @@ Refresh Token Flow (quando accessToken expirar):
 ┌────────────────────────────────┐
 │ 3. Backend - gerarRelatorio()  │
 │                                │
-│ Pipeline MongoDB Aggregation:  │
-│ $group por tipoUsuario         │
-│ $project: { tipo, usuarios[] } │
-│ $sort: { tipo: 1 }             │
-│                                │
-│ SELECT:                        │
+│ Base de dados:                 │
 │ • totalCadastros               │
-│ • totalVerificacoes            │
-│ • usuarios organizado por tipo │
+│   (Usuario.countDocuments)     │
+│ • Estatistica singleton        │
+│   (verificações, entradas,     │
+│    saídas, merendas)           │
+│                                │
+│ MongoDB Aggregation:           │
+│ $group por tipoUsuario         │
+│ → quantidades (usuariosPorTipo)│
+│                                │
+│ Busca todos usuários           │
+│ (nome, tipo, data, sorted 1)   │
+│ Agrupa em memória na ordem     │
+│ [Aluno, Professor, Funcionario │
+│  , Outro] → usuariosOrganizados│
+│ Mais: primeiro/último cadastro │
 └────────────┬───────────────────┘
              │
              ▼
 ┌────────────────────────────────┐
 │ 4. Response {                  │
-│   dataRelatorio: '2026-04-01', │
+│   dataRelatorio: Date,         │
 │   totalCadastros: 145,         │
 │   totalVerificacoes: 1240,     │
+│   totalEntradas / totalSaidas  │
+│   / totalMerendas,             │
+│   usuariosPorTipo: [           │
+│     { _id: "Aluno", qtd }      │
+│   ],                           │
 │   usuariosOrganizados: [       │
-│     {                          │
-│       tipo: "Aluno",           │
+│     { tipo: "Aluno",           │
 │       quantidade: 98,          │
 │       usuarios: [              │
 │         { nome, dataCadastro } │
-│         ...                    │
-│       ]                        │
-│     },                         │
-│     ...                        │
-│   ]                            │
+│       ] }                      │
+│   ],                           │
+│   primeiroCadastro,            │
+│   ultimoCadastro,              │
+│   ultimaAtualizacao            │
 │ }                              │
 └────────────┬───────────────────┘
              │
              ▼ Frontend
 ┌────────────────────────────────┐
 │ 5. useGerarRelatorio()         │
-│ generatePdf(dadosRelatorio)    │
-│                                │
-│ jsPDF:                         │
+│ gerarRelatorioPdf(dados)       │
+│ (jsPDF):                       │
 │ - Cabeçalho                    │
 │ - Data do relatório            │
 │ - Tabelas por tipo             │
 │ - Lista de usuários alfabética │
 │                                │
 │ doc.save(                      │
-│   'relatorio_2026-04-01.pdf'   │
-│ )                              │
+│ 'relatorio-estatisticas-       │
+│  YYYY-MM-DD.pdf' )             │
 └────────────┬───────────────────┘
              │
              ▼
 ┌────────────────────────────────┐
 │ 6. Download automático do PDF  │
-│                                │
-│ relatorio_relatorio_2026-04-01 │
-│ .pdf                           │
+│ relatorio-estatisticas-2026-   │
+│ 04-01.pdf                      │
 └────────────────────────────────┘
 ```
 
@@ -1053,9 +1127,9 @@ Frontend usa custom hooks para:
 - Reutilizar lógica entre componentes
 - Sem necessidade de Redux/Zustand
 
-### 4. **Factory Pattern**
+### 4. **Factory Pattern (não utilizado)**
 
-Singleton para modelo único:
+O projeto **não implementa** Factory Pattern. A criação de documentos usa os construtores do Mongoose (`new Admin(...)`, `new Usuario(...)`) dentro dos controllers. O que existe de similar é a **injeção de dependência por construtor**: os controllers recebem os models (e o `FaceRecognitionService`) via construtor (`new UsuarioController(faceRecognitionService, Estatistica)`), o que facilita testes com mocks.
 
 ### 5. **Middleware Pattern**
 
@@ -1132,12 +1206,11 @@ Usuários Finais (Aluno, Professor, etc)
 
 ### CORS (Cross-Origin Resource Sharing)
 
-**Allowed Origins:**
+**Allowed Origin:**
 
-- `http://localhost:5173` (frontend local)
-- `https://seu-frontend-react.com` (production)
+- `http://localhost:5173` (frontend local) — única origem configurada; requisições sem origin (Postman etc.) também são aceitas, desativar em produção.
 
-**Configuração:**
+**Configuração:** backend/config/corsConfig.ts (credentials true, métodos GET/POST/PUT/PATCH/DELETE/OPTIONS)
 
 ### Proteção contra Ataques
 
@@ -1152,6 +1225,19 @@ Usuários Finais (Aluno, Professor, etc)
 ---
 
 ## Banco de Dados MongoDB
+
+### Operações MongoDB Principais
+
+| Operação                          | Onde é usada                                        |
+| --------------------------------- | --------------------------------------------------- |
+| `new Model(args)` + `.save()`     | Criação de Admin e Usuario (cadastro)               |
+| `Model.findOne(query)`            | Login (busca por nome), bloqueio/desbloqueio        |
+| `Model.countDocuments()`          | Total de cadastros (estatísticas e relatório)       |
+| `Model.find(query, campos).sort()`| Listagem, busca por nome (regex) e relatório        |
+| `Model.findOneAndUpdate()`        | Statics do singleton `Estatistica` (upsert)         |
+| `.aggregate([$group])`            | `usuariosPorTipo` (estatísticas detalhadas/relatório)|
+| `.lean()`                         | Relatório (objetos JS puros em vez de documentos)   |
+| `Model.updateOne()`               | Atualização de senha/role de admin                  |
 
 ### Schema: Admin
 
@@ -1171,8 +1257,7 @@ Usuários Finais (Aluno, Professor, etc)
 **Índices:**
 
 - `unique: nome`
-- `unique: funcao, partialFilterExpression: { funcao: 'super-admin' }`
-- `unique: funcao, partialFilterExpression: { funcao: 'desenvolvedor' }`
+- `unique: funcao, partialFilterExpression: { funcao: { $in: ['desenvolvedor', 'super-admin'] } }`
 
 ### Schema: Usuario
 
@@ -1200,13 +1285,14 @@ Usuários Finais (Aluno, Professor, etc)
 {
   "_id": ObjectId,
   "totalVerificacoes": "number (default: 0)",
+  "totalEntradas": "number (default: 0)",
+  "totalSaidas": "number (default: 0)",
+  "totalMerendas": "number (default: 0)",
   "ultimaAtualizacao": "Date"
 }
 ```
 
-**Padrão:** Singleton (apenas 1 documento)
-
-### Operações MongoDB Principais
+**Padrão:** Singleton (apenas 1 documento) — estático `getInstance()` com upsert
 
 ---
 
@@ -1221,18 +1307,20 @@ Usuários Finais (Aluno, Professor, etc)
 $ cd backend
 $ pnpm install
 
-# 2. Configuração (.env)
+# 2. Configuração (.env) — opcional
+# Sem .env, o usuário desenvolvedor padrão é criado com admin/admin
 DATABASE_URL=mongodb://localhost:27017/facedb
 JWT_SECRET=sua-chave-secreta
 REFRESH_TOKEN_SECRET=sua-chave-refresh
 DEV_USER_NOME=desenvolvedor
 DEV_USER_SENHA=admin123456
 
-# 3. Startup
-$ node server.ts
+# 3. Startup (desenvolvimento — tsx watch)
+$ pnpm dev
+# Não .env? Login padrão: admin / admin
 # Output:
 # Conectado ao MongoDB
-# Usuário "desenvolvedor" criado
+# Usuário "admin" criado com sucesso!
 # Servidor escutando na porta 3000
 ```
 
@@ -1258,9 +1346,10 @@ $ pnpm preview
 
 ```
 Terminal 1: Backend
-$ cd backend && pnpm install && node server.ts
+$ cd backend && pnpm install && pnpm dev
 # Conecta MongoDB
-# Cria desenvolvedor
+# Cria desenvolvedor (admin/admin)
+# Roda seedAlunosMockados (20 matrículas)
 # Escuta :3000
 
 Terminal 2: Frontend
@@ -1272,7 +1361,7 @@ $ cd frontend && pnpm install && pnpm dev
 Browser:
 $ Acessa http://localhost:5173
 $ Vê tela de login
-$ Login com desenvolvedor(usuário)/admin123456(senha)
+$ Login padrão: admin (usuário) / admin (senha)
 ```
 
 ---
@@ -1287,45 +1376,56 @@ Este arquivo foi estruturado para facilitar:
    - Use Ctrl+F para buscar por: `interface`, `class`, `function`, `endpoint`
 
 2. **Implementação de Features Novas:**
-   - Seção 4: Backend → Models/Controllers/Services/Routes
-   - Seção 5: Frontend → Pages/Hooks/Types
-   - Seção 6: Fluxos de Dados → Entenda integração
+   - Seção **Documentação do Backend** → Models/Controllers/Services/Routes/Middlewares/Config
+   - Seção **Documentação do Frontend** → Pages/Hooks/Types/Components/Config & Templates
+   - Seção **Fluxos de Dados Principais** → Entenda a integração
+   - Seção **Banco de Dados MongoDB** → Schemas e operações
 
 3. **Debug de Erros:**
    - Verifique: rotas corretas? JWT válido? Validações passando?
-   - Consulte seção de Segurança para auth issues
-   - Consulte banco de dados para schema issues
+   - Consulte a seção **Segurança & Autenticação** para auth issues
+   - Consulte **Banco de Dados MongoDB** para schema issues
 
 4. **Adicionar Nova Funcionalidade:**
-   - Crie Model (MongoDB schema)
-   - Crie Controller (lógica)
-   - Crie Service se lógica complexa
-   - Crie Route (endpoint)
-   - Crie Pages/Hooks no frontend
-   - Atualize Types (TypeScript)
+   - Crie Model (MongoDB schema) em `backend/models/`
+   - Crie Controller em `backend/controllers/`
+   - Crie Service se a lógica for complexa (`backend/services/`)
+   - Crie Route em `backend/routes/`
+   - Crie Pages/Hooks em `frontend/src/pages/` e `frontend/src/hooks/`
+   - Atualize Types em `frontend/src/types/`
+
+5. **Rodar Testes (Vitest):**
+   - Backend: `cd backend && pnpm test` (watch) ou `pnpm test:run` / `pnpm test:coverage`
+   - Frontend: `cd frontend && pnpm test` ou `pnpm test:run`
+   - Testes usam `mongodb-memory-server` (backend) e Testing Library/jsdom (frontend)
 
 ### Pontos de Entrada por Tipo de Tarefa
 
-| Tarefa                    | Seção | Arquivos Chave                    |
-| ------------------------- | ----- | --------------------------------- |
-| **Adicionar rota**        | 4.4   | routes/_.js, controllers/_.js     |
-| **Adicionar validação**   | 4.5   | middlewares/validation.js         |
-| **Adicionar página**      | 5.2   | pages/_.tsx, hooks/frontend/_.ts  |
-| **Adicionar hook**        | 5.3   | hooks/\*_/_.ts                    |
-| **Alterar modelo**        | 4.1   | models/\*.js                      |
-| **Bug em autenticação**   | 8     | auth/useAuth.ts, jwtConfig.js     |
-| **Bug em face detection** | 5.3   | useFaceDetection.ts, face-api.js  |
-| **Relatório/Agregação**   | 4.2.3 | estatisticaController.js, MongoDB |
+| Tarefa                    | Onde                    | Arquivos Chave                                  |
+| ------------------------- | ----------------------- | ----------------------------------------------- |
+| **Adicionar rota**        | Rotas (Backend 4)       | routes/*.ts, controllers/*.ts                   |
+| **Adicionar validação**   | Middlewares (Backend 5)| middlewares/validation.ts                       |
+| **Adicionar página**      | Páginas (Frontend 2)    | pages/*.tsx, hooks/frontend/*.ts                |
+| **Adicionar hook**        | Hooks (Frontend 3)      | hooks/**/*.ts                                   |
+| **Alterar modelo**        | Models (Backend 1)      | models/*.ts                                     |
+| **Bug em autenticação**   | Segurança               | config/jwtConfig.ts, hooks/auth/useAuth.ts, middlewares/authResponsavel.ts |
+| **Bug em face detection** | Hooks (Frontend 3)      | hooks/detection/useFaceDetection.ts, components/VideoAndCanvas.tsx, utils/faceDetection.ts |
+| **Relatório/Agregação**   | Controllers (Backend 2)| controllers/estatisticaController.ts, templates/generatePdf.ts, MongoDB |
+| **App mobile/responsáveis**| Nota de abertura         | routes/responsavelRoutes.ts, routes/logEntradaRoutes.ts, models/*.ts |
 
 ### Exemplos de Busca Rápida
 
 ```
 Buscar por:                    Vá para:
-"POST /api/usuarios"           Seção 4.4 - usuarioRoutes.js
-"face-api"                     Seção 5.3 - useFaceDetection.ts
-"similaridade cosseno"         Seção 4.3 - faceRecognitionService.js
-"JWT"                          Seção 8 - Segurança
-"descriptor"                   Seção 4.1 - Usuario.js
+"POST /api/usuarios"           Rotas (Backend 4) - routes/usuarioRoutes.ts
+"verificar-rosto"              Controllers (Backend 2) - controllers/usuarioController.ts
+"face-api"                     Hooks (Frontend 3) - hooks/detection/useFaceDetection.ts
+"similaridade cosseno"         Services (Backend 3) - services/faceRecognitionService.ts
+"JWT"                          Segurança & Autenticação
+"descriptor"                   Models (Backend 1) - models/Usuario.ts
+"threshold 0.96"               Config (Backend 6) - utils/threshold.ts
+"relatorio-estatisticas"       Frontend 6 - templates/generatePdf.ts
+"contexto entrada/saida"       Controllers (Backend 2) - controllers/usuarioController.ts
 ```
 
 ---
