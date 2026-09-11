@@ -214,6 +214,8 @@ POST /api/usuarios/cadastrar
 
 ## Documentação do Backend
 
+> **Subsistema do Aplicativo Mobile:** Os models `Responsavel`, `AlunoMatricula`, `Vinculo` e `LogEntrada`, os controllers `responsavelController.ts` e `logEntradaController.ts`, as rotas `/api/responsaveis/*` e `/api/logs/*` e o middleware `authResponsavel.ts` fazem parte do subsistema do **aplicativo mobile do C.E.R.F**, destinado aos responsáveis dos alunos — permitindo o vínculo com a matrícula dos filhos e o monitoramento de entradas e retirada de merenda. A documentação detalhada desse subsistema está no repositório do aplicativo mobile; este backend apenas expõe os endpoints consumidos pelo app.
+
 ### 1. MODELOS (Models)
 
 Os modelos definem a estrutura dos dados persistidos no MongoDB via Mongoose.
