@@ -1,14 +1,6 @@
-# 📐 ARQUITETURA DO PROJETO C.E.R.F
+# ARQUITETURA DO PROJETO C.E.R.F (Cadastro Escolar com Reconhecimento Facial)
 
-## Cadastro Escolar com Reconhecimento Facial
-
-**Versão:** 1.0  
-**Data:** 1º de Abril de 2026  
-**Status:** Projeto Acadêmico - Feira de Ciências 2025 (CETEP Ipirá, BA)
-
----
-
-## 📋 ÍNDICE DE CONTEÚDO
+## SUMÁRIO
 
 1. [Informações do Projeto](#informações-do-projeto)
 2. [Ferramentas & Dependências Completas](#ferramentas--dependências-completas)
@@ -34,11 +26,11 @@
 
 Controlar o fluxo de entrada de indivíduos em escolas através de reconhecimento facial, permitindo:
 
-- ✅ Verificar se um rosto foi cadastrado no sistema
-- ✅ Barrar acesso não autorizado
-- ✅ Registrar estatísticas de utilização
-- ✅ Controlar fluxo de merenda escolar
-- ✅ Gerar relatórios de utilização
+- Verificar se um rosto foi cadastrado no sistema
+- Barrar acesso não autorizado
+- Registrar estatísticas de utilização
+- Controlar fluxo de merenda escolar
+- Gerar relatórios de utilização
 
 ### Funcionalidades Disponíveis
 
@@ -56,12 +48,12 @@ Controlar o fluxo de entrada de indivíduos em escolas através de reconheciment
 ### Resumo das stacks usadas
 
 ```
-┌─────────────┐                    ┌──────────────┐                   ┌──────────────┐
-│   Frontend  │                    │   Backend    │                   │   Database   │
-│ React + Ts  │◄────HTTP/REST────► │  Node.js +   │ ◄──MONGOOSE────►  │  MongoDB     │
-│ Vite + Face │                    │  Express     │                   │  (Atlas)     │
-│ TailwindCSS │                    │              │                   │              │
-└─────────────┘                    └──────────────┘                   └──────────────┘
+┌─────────────┐                    ┌─────────────┐                   ┌──────────────┐
+│   Frontend  │                    │   Backend   │                   │   Database   │
+│ React + Ts  │◄────HTTP/REST────► │ Node.js +   │ ◄──MONGOOSE────►  │   MongoDB    │
+│ Vite + Face │                    │ Express +   │                   │ (local:      │
+│ TailwindCSS │                    │ TypeScript  │                   │  facedb)     │
+└─────────────┘                    └─────────────┘                   └──────────────┘
 ```
 
 ---
@@ -76,28 +68,76 @@ Controlar o fluxo de entrada de indivíduos em escolas através de reconheciment
 | ----------------- | ------ | ---------------------------------------------------- |
 | **express**       | 5.1.0  | Framework HTTP/REST server                           |
 | **mongoose**      | 8.17.1 | ODM (Object Data Modeling) para MongoDB              |
+| **mongodb**       | 6.20.0 | Driver oficial do MongoDB                            |
 | **bcrypt**        | 6.0.0  | Hashing de senhas (12 rounds)                        |
 | **jsonwebtoken**  | 9.0.2  | Geração e verificação de JWT (Access + Refresh)      |
 | **cors**          | 2.8.5  | Middleware de CORS (permite requisições do frontend) |
 | **cookie-parser** | 1.4.7  | Parsing de cookies (armazenamento de JWT)            |
-| **dotenv**        | _dev_  | Variáveis de ambiente (.env)                         |
+
+#### Backend — Desenvolvimento & Testes (devDependencies)
+
+| Ferramenta                | Versão | Propósito                                       |
+| ------------------------- | ------ | ----------------------------------------------- |
+| **typescript**            | 6.0.3  | Tipagem estática (projeto 100% em `.ts`)        |
+| **tsx**                   | 4.22.3 | Execução direta de TypeScript (`tsx watch`)     |
+| **ts-node**               | 10.9.2 | Execução de TypeScript no Node.js               |
+| **vitest**                | 4.1.6  | Framework de testes unitários/integração        |
+| **@vitest/coverage-v8**   | 4.1.6  | Relatório de cobertura de código                |
+| **supertest**             | 7.2.2  | Testes de requisições HTTP (controllers/routes) |
+| **mongodb-memory-server** | 11.1.0 | MongoDB em memória para testes isolados         |
+| **prettier**              | 3.8.2  | Formatação de código                            |
+| **eslint**                | 10.2.0 | Linting (com plugins de segurança/imports)      |
 
 ### Frontend (React + TypeScript)
 
 **Arquivo:** `frontend/package.json`
 
-| Dependência          | Propósito                                     |
-| -------------------- | --------------------------------------------- |
-| **react**            | Library JavaScript para UI componentes        |
-| **react-dom**        | Rendering de React no DOM                     |
-| **react-router-dom** | Roteamento client-side (SPA)                  |
-| **typescript**       | Tipagem estática JavaScript                   |
-| **vite**             | Build tool ultra-rápido (substitui webpack)   |
-| **tailwindcss**      | Framework CSS utility-first para estilização  |
-| **face-api.js**      | **Reconhecimento facial com TensorFlow.js**   |
-| **jsPDF**            | Geração de PDFs no browser                    |
-| **lucide-react**     | Biblioteca de ícones SVG                      |
-| **clsx**             | Utility para construir className condicionais |
+| Dependência           | Versão  | Propósito                                     |
+| --------------------- | ------- | --------------------------------------------- |
+| **react**             | 19.1.1  | Library JavaScript para UI componentes        |
+| **react-dom**         | 19.1.1  | Rendering de React no DOM                     |
+| **react-router-dom**  | 7.8.2   | Roteamento client-side (SPA)                  |
+| **tailwindcss**       | 4.1.12  | Framework CSS utility-first para estilização  |
+| **@tailwindcss/vite** | 4.1.12  | Plugin do Tailwind CSS para Vite              |
+| **face-api.js**       | 0.22.2  | **Reconhecimento facial com TensorFlow.js**   |
+| **jsPDF**             | 3.0.3   | Geração de PDFs no browser                    |
+| **lucide-react**      | 0.542.0 | Biblioteca de ícones SVG                      |
+| **clsx**              | 2.1.1   | Utility para construir className condicionais |
+
+#### Frontend — Desenvolvimento & Testes (devDependencies)
+
+| Ferramenta                      | Versão | Propósito                                   |
+| ------------------------------- | ------ | ------------------------------------------- |
+| **typescript**                  | 5.8.3  | Tipagem estática JavaScript                 |
+| **vite**                        | 7.1.2  | Build tool ultra-rápido (substitui webpack) |
+| **@vitejs/plugin-react**        | 5.0.0  | Integração React + Vite (Fast Refresh)      |
+| **vitest**                      | 4.1.11 | Framework de testes unitários               |
+| **@testing-library/react**      | 16.3.2 | Testes de componentes React                 |
+| **@testing-library/jest-dom**   | 7.0.1  | Matchers DOM para testes                    |
+| **@testing-library/user-event** | 14.6.6 | Simulação de interações do usuário          |
+| **jsdom**                       | 30.0.1 | Ambiente DOM para testes                    |
+| **eslint**                      | 9.33.0 | Linting de código                           |
+
+### Testes & Qualidade
+
+Além do linting com ESLint, a qualidade é garantida por suítes de testes automatizados com **Vitest**.
+
+**Backend** (`backend/package.json`):
+
+| Comando              | Descrição                                         |
+| -------------------- | ------------------------------------------------- |
+| `pnpm test`          | Executa os testes em modo watch (desenvolvimento) |
+| `pnpm test:run`      | Executa todos os testes uma única vez             |
+| `pnpm test:coverage` | Executa os testes com relatório de cobertura (v8) |
+| `pnpm lint`          | Linting do código backend                         |
+
+**Frontend** (`frontend/package.json`):
+
+| Comando         | Descrição                             |
+| --------------- | ------------------------------------- |
+| `pnpm test`     | Executa os testes em modo watch       |
+| `pnpm test:run` | Executa todos os testes uma única vez |
+| `pnpm lint`     | Linting do código frontend            |
 
 ### Banco de Dados
 
@@ -113,7 +153,7 @@ Controlar o fluxo de entrada de indivíduos em escolas através de reconheciment
 | ---------- | ------------------------------------------------- |
 | **pnpm**   | Package manager (mais rápido e otimizado que npm) |
 | **Git**    | Controle de versão                                |
-| **ESLint** | Linting de código (frontend)                      |
+| **ESLint** | Linting de código (frontend e backend)            |
 
 ### Modelo de Reconhecimento Facial
 
@@ -148,8 +188,9 @@ FRONTEND (React + TypeScript)
          │
     ↓ HTTP/REST (JSON)
     │
-BACKEND (Node.js + Express)
-    ├── Routes (Roteamento)
+BACKEND (Node.js + Express + TypeScript)
+    ├── Routes (Roteamento) — 5 routers: usuarios, admin,
+    │        estatisticas, responsaveis, logs
     ├── Middlewares (Validação, Autenticação)
     ├── Controllers (Regras de negócio)
     ├── Services (Algoritmos especializados)
@@ -158,7 +199,8 @@ BACKEND (Node.js + Express)
     ↓ Mongoose/Driver
     │
 DATABASE (MongoDB)
-    ├── Collections: Admin, Usuario, Estatistica
+    ├── Collections: Admin, Usuario, Estatistica, Responsavel,
+    │        AlunoMatricula, Vinculo, LogEntrada
     └── Índices (único, partial, etc)
 ```
 
@@ -172,13 +214,14 @@ DATABASE (MongoDB)
 - Integra com face-api.js para detecção facial
 - Comunica com backend via fetch/axios
 
-#### **Backend (Node.js)**
+#### **Backend (Node.js + TypeScript)**
 
 - Valida requisições (middlewares)
 - Executa lógica de negócio (controllers)
 - Implementa algoritmos (services)
 - Persiste dados (MongoDB via Mongoose)
 - Gerencia autenticação (JWT)
+- No boot, conecta ao MongoDB, cria o usuário `desenvolvedor` e executa `seedAlunosMockados()`
 
 #### **Database (MongoDB)**
 
@@ -214,13 +257,15 @@ POST /api/usuarios/cadastrar
 
 ## Documentação do Backend
 
+> **Subsistema do Aplicativo Mobile:** Os models `Responsavel`, `AlunoMatricula`, `Vinculo` e `LogEntrada`, os controllers `responsavelController.ts` e `logEntradaController.ts`, as rotas `/api/responsaveis/*` e `/api/logs/*` e o middleware `authResponsavel.ts` fazem parte do subsistema do **aplicativo mobile do C.E.R.F**, destinado aos responsáveis dos alunos — permitindo o vínculo com a matrícula dos filhos e o monitoramento de entradas e retirada de merenda. A documentação detalhada desse subsistema está no repositório do aplicativo mobile; este backend apenas expõe os endpoints consumidos pelo app.
+
 ### 1. MODELOS (Models)
 
 Os modelos definem a estrutura dos dados persistidos no MongoDB via Mongoose.
 
-#### **Admin.js** - Usuários Administrativos
+#### **Admin.ts** - Usuários Administrativos
 
-**Arquivo:** backend/models/Admin.js
+**Arquivo:** backend/models/Admin.ts
 
 **Responsabilidade:** Armazenar credenciais e permissões de administradores.
 
@@ -229,18 +274,19 @@ Os modelos definem a estrutura dos dados persistidos no MongoDB via Mongoose.
 **Índices Especiais:**
 
 - `unique` em `nome` → Busca O(1) por nome
-- `unique: true, partialFilterExpression: { funcao: 'super-admin' }` → Garante apenas 1 super-admin
-- `unique: true, partialFilterExpression: { funcao: 'desenvolvedor' }` → Garante apenas 1 desenvolvedor
+- `unique: true, partialFilterExpression: { funcao: { $in: ['desenvolvedor', 'super-admin'] } }` → Garante apenas 1 desenvolvedor e 1 super-admin (índice parcial único)
 
-**Métodos:** Virtual `dataCadastro`, pre-hook para bcrypt, `toJSON()` sem senha
+**Hashing de senha:** A criptografia é centralizada na função `criptografarSenha()` em `backend/utils/utils.ts` (12 rounds), chamada nos controllers antes do `save()`.
 
-#### **Usuario.js** - Usuários do Sistema (Alunos, Professores, etc)
+**Métodos:** Virtual `dataCadastro`, `toJSON()` sem senha
 
-**Arquivo:** backend/models/Usuario.js
+#### **Usuario.ts** - Usuários do Sistema (Alunos, Professores, etc)
+
+**Arquivo:** backend/models/Usuario.ts
 
 **Responsabilidade:** Armazenar dados de usuários finais com reconhecimento facial.
 
-**Schema:** Campos para nome (único), tipoUsuario (enum: Aluno, Professor, Funcionario, Outro), descriptor (array de 128 números), dataCadastro, status (enum: liberado/bloqueado), bloqueadoAte, timestamps.
+**Schema:** Campos para nome (único), tipoUsuario (string — **sem enum aplicado no schema**; os valores utilizados são Aluno, Professor, Funcionario, Outro), descriptor (array de 128 números), dataCadastro, status (enum: liberado/bloqueado), bloqueadoAte, timestamps.
 
 **O que é o Descriptor?**
 
@@ -254,15 +300,15 @@ Os modelos definem a estrutura dos dados persistidos no MongoDB via Mongoose.
 
 - `unique` em `nome` → Busca rápida de usuários
 
-#### **Estatistica.js** - Métricas do Sistema
+#### **Estatistica.ts** - Métricas do Sistema
 
-**Arquivo:** backend/models/Estatistica.js
+**Arquivo:** backend/models/Estatistica.ts
 
 **Responsabilidade:** Singleton que armazena estatísticas globais.
 
-**Schema:** Campos para totalVerificações (número) e ÚltimaAtualização (data).
+**Schema:** Contadores `totalVerificacoes`, `totalEntradas`, `totalSaidas` e `totalMerendas` (número, default 0) + `ultimaAtualizacao` (data).
 
-**Padrão Singleton:** Static method `getInstance()` garante apenas 1 documento. Static method `incrementarVerificações()` incrementa contador e timestamp.
+**Padrão Singleton:** Static methods `getInstance()` (garante apenas 1 documento), `incrementarVerificacoes()`, `incrementarEntrada()` e `incrementarMerenda()` — cada um incrementa o respectivo contador e atualiza o timestamp.
 
 ---
 
@@ -270,24 +316,34 @@ Os modelos definem a estrutura dos dados persistidos no MongoDB via Mongoose.
 
 Os controladores implementam a lógica de negócio e orquestram modelos + serviços.
 
-#### **usuarioController.js** - Gerenciamento de Usuários
+#### **usuarioController.ts** - Gerenciamento de Usuários
 
-**Arquivo:** backend/controllers/usuarioController.js
+**Arquivo:** backend/controllers/usuarioController.ts
 
 **Responsabilidade:** CRUD de usuários finais + verificação facial.
 
 **Métodos Principais:**
 
-- `cadastrarUsuario()` - POST /api/usuarios/cadastrar (valida duplicação 96%)
-- `verificarRosto()` - POST /api/verificar-rosto (encontra usuário similar)
+- `cadastrarUsuario()` - POST /api/usuarios/cadastrar (valida duplicação facial 96%)
+- `verificarRosto()` - POST /api/verificar-rosto (encontra usuário similar por contexto)
 - `listarUsuarios()` - GET /api/usuarios/listar?nome=... (busca regex case-insensitive)
 - `removerUsuario()` - DELETE /api/usuarios/remover/:id
 - `removerTodosOsUsuarios()` - DELETE /api/usuarios/remover-todos
 - `bloquearUsuario()` - PATCH /api/usuarios/bloquear/:id (bloqueio 60s automático)
 
-#### **adminController.js** - Gerenciamento de Administradores
+**Contextos de Verificação (`verificarRosto`):**
 
-**Arquivo:** backend/controllers/adminController.js
+- `cadastro` — apenas checa a existência do rosto, sem incrementar estatísticas
+- `verificacao` — valida o rosto e incrementa `totalVerificacoes`
+- `entrada` — valida o rosto, registra `LogEntrada` tipo `entrada` e incrementa `totalEntradas`
+- `saida` — valida o rosto e registra `LogEntrada` tipo `saida`
+- `merenda` — valida o rosto (se não bloqueado), registra `LogEntrada` tipo `merenda` e incrementa `totalMerendas`
+
+**Observação:** além dos incrementos específicos, cada verificação com contexto diferente de `cadastro` também incrementa `totalVerificacoes`.
+
+#### **adminController.ts** - Gerenciamento de Administradores
+
+**Arquivo:** backend/controllers/adminController.ts
 
 **Responsabilidade:** Autenticação + CRUD de admins.
 
@@ -303,18 +359,38 @@ Os controladores implementam a lógica de negócio e orquestram modelos + servi�
 - `removerAdmins()` - DELETE /api/admin/remover/:id
 - `atualizarSenha()` - PUT /api/admin/atualizar-senha
 
-#### **estatisticaController.js** - Relatórios e Estatísticas
+#### **estatisticaController.ts** - Relatórios e Estatísticas
 
-**Arquivo:** backend/controllers/estatisticaController.js
+**Arquivo:** backend/controllers/estatisticaController.ts
 
 **Responsabilidade:** Agregação de dados para dashboards.
 
 **Métodos Principais:**
 
 - `obterEstatisticas()` - GET /api/estatisticas (total cadastros + verificações)
-- `obterEstatisticasDetalhadas()` - GET /api/estatisticas/detalhadas (agregação por tipo)
+- `obterEstatisticasDetalhadas()` - GET /api/estatisticas/detalhadas (agregação por tipo + primeiro/último cadastro)
 - `reiniciarVerificacoes()` - POST /api/estatisticas/reset (requer autenticação)
 - `gerarRelatorio()` - POST /api/estatisticas/relatorio (agregação MongoDB com pipeline)
+
+**Respostas:** os endpoints retornam os campos `totalCadastros`, `totalVerificacoes`, `totalEntradas`, `totalSaidas`, `totalMerendas` e `ultimaAtualizacao`.
+
+#### **responsavelController.ts** - Responsáveis (App Mobile)
+
+**Arquivo:** backend/controllers/responsavelController.ts
+
+**Responsabilidade:** Cadastro, login/logout e vínculo de responsáveis com alunos, além do monitoramento de entradas e merenda dos filhos.
+
+**Métodos Principais:** `cadastrar`, `login`, `logout`, `perfil`, `meusAlunos`, `entradas`, `merenda`, `vincular`, `validarMatricula`.
+
+**Obs.:** pertence ao subsistema do app mobile — detalhes na nota no início desta seção e no repositório do aplicativo.
+
+#### **logEntradaController.ts** - Logs de Entrada/Saída/Merenda
+
+**Arquivo:** backend/controllers/logEntradaController.ts
+
+**Responsabilidade:** Consulta e registro de logs de entrada/saída/merenda (`LogEntrada`).
+
+**Métodos Principais:** `buscarLogsPorUsuario`, `buscarLogsPorAlunoMatricula`, `buscarLogsPorData`, `registrarLog`.
 
 ---
 
@@ -322,9 +398,9 @@ Os controladores implementam a lógica de negócio e orquestram modelos + servi�
 
 Services encapsulam lógica de negócio complexa ou algoritmos.
 
-#### **faceRecognitionService.js** - Reconhecimento Facial
+#### **faceRecognitionService.ts** - Reconhecimento Facial
 
-**Arquivo:** backend/services/faceRecognitionService.js
+**Arquivo:** backend/services/faceRecognitionService.ts
 
 **Responsabilidade:** Algoritmo de comparação de faces (similaridade cosseno).
 
@@ -338,10 +414,10 @@ Services encapsulam lógica de negócio complexa ou algoritmos.
 
 ```
 Valor         | Interpretação
-0.96+         | ✅ Mesmo rosto (Usar para cadastro)
-0.90-0.95     | ⚠️ Muito similar (revisar)
-0.70-0.89     | ⚠️ Alguma semelhança (não usar)
-< 0.70        | ❌ Rostos diferentes
+0.96+         | Mesmo rosto (Usar para cadastro)
+0.90-0.95     | Muito similar (revisar)
+0.70-0.89     | Alguma semelhança (não usar)
+< 0.70        | Rostos diferentes
 ```
 
 ---
@@ -350,9 +426,11 @@ Valor         | Interpretação
 
 Definem os endpoints HTTP disponíveis.
 
-#### **usuarioRoutes.js**
+**Ordem de middlewares:** nas rotas protegidas, o middleware de validação (`validate*`) é aplicado **antes** de `autenticarToken`.
 
-**Arquivo:** backend/routes/usuarioRoutes.js
+#### **usuarioRoutes.ts**
+
+**Arquivo:** backend/routes/usuarioRoutes.ts
 
 **Endpoints:**
 
@@ -363,15 +441,15 @@ Definem os endpoints HTTP disponíveis.
 - DELETE /api/usuarios/remover-todos - autenticarToken
 - PATCH /api/usuarios/bloquear/:id - validateIdParam, autenticarToken
 
-#### **adminRoutes.js**
+#### **adminRoutes.ts**
 
-**Arquivo:** backend/routes/adminRoutes.js
+**Arquivo:** backend/routes/adminRoutes.ts
 
 **Endpoints:**
 
 - POST /api/admin/login - validateLogin (PUBLIC)
 - POST /api/admin/refresh-token - (PUBLIC)
-- POST /api/admin/logout
+- POST /api/admin/logout - (PUBLIC)
 - GET /api/admin/verificar - autenticarToken
 - POST /api/admin/cadastrar - validateCadastroAdmin, autenticarToken
 - POST /api/admin/cadastrar/super-admin - validateCadastroAdmin, autenticarToken
@@ -379,9 +457,9 @@ Definem os endpoints HTTP disponíveis.
 - DELETE /api/admin/remover/:id - validateIdParam, autenticarToken
 - PUT /api/admin/atualizar-senha - validateMudancaDeSenha, autenticarToken
 
-#### **estatisticaRoutes.js**
+#### **estatisticaRoutes.ts**
 
-**Arquivo:** backend/routes/estatisticaRoutes.js
+**Arquivo:** backend/routes/estatisticaRoutes.ts
 
 **Endpoints:**
 
@@ -390,47 +468,95 @@ Definem os endpoints HTTP disponíveis.
 - POST /api/estatisticas/reset - autenticarToken
 - POST /api/estatisticas/relatorio - autenticarToken
 
+#### **responsavelRoutes.ts**
+
+**Arquivo:** backend/routes/responsavelRoutes.ts
+
+**Endpoints (subsistema app mobile):**
+
+- POST /api/responsaveis/cadastrar - (PUBLIC)
+- POST /api/responsaveis/login - (PUBLIC)
+- POST /api/responsaveis/logout - autenticarResponsavel
+- GET /api/responsaveis/perfil - autenticarResponsavel
+- GET /api/responsaveis/meus-alunos - autenticarResponsavel
+- GET /api/responsaveis/entradas/:id - autenticarResponsavel
+- GET /api/responsaveis/merenda/:id - autenticarResponsavel
+- POST /api/responsaveis/vincular - autenticarResponsavel
+- POST /api/responsaveis/validar-matricula - (PUBLIC)
+
+#### **logEntradaRoutes.ts**
+
+**Arquivo:** backend/routes/logEntradaRoutes.ts
+
+**Endpoints:**
+
+- GET /api/logs/entrada/usuario/:usuarioId - autenticarToken
+- GET /api/logs/entrada/aluno/:alunoMatriculaId - autenticarToken
+- GET /api/logs/entrada - autenticarToken
+- POST /api/logs/entrada - autenticarToken
+
 ---
 
 ### 5. MIDDLEWARES (Middlewares)
 
 Intermediários que processam requisições antes de chegarem aos controllers.
 
-#### **validation.js**
+#### **validation.ts**
 
-**Arquivo:** backend/middlewares/validation.js
+**Arquivo:** backend/middlewares/validation.ts
 
 **Validações Implementadas:**
 
 - `validateLogin` - Valida nome + senha
-- `validateCadastroUsuario` - Valida nome, tipoUsuario, descriptor (128 números)
-- `validateVerificacaoRosto` - Valida descriptor + contexto (cadastro/verificacao/merenda)
+- `validateCadastroUsuario` - Valida presença de nome, tipoUsuario e descriptor (não valida o tamanho/length do descritor)
+- `validateVerificacaoRosto` - Valida descriptor (array) + contexto (cadastro/verificacao/merenda)
 - `validateCadastroAdmin` - Valida nome, senha (min 8 chars), funcao
+- `validateId` - Valida ID no body
 - `validateIdParam` - Valida ID em params
 - `validateMudancaDeSenha` - Valida nova_senha + confirmacao
 - `autenticarToken` - Middleware JWT (verifica cookie 'jwt')
+
+#### **authResponsavel.ts**
+
+**Arquivo:** backend/middlewares/authResponsavel.ts
+
+**Responsabilidade:** Autenticação de responsáveis (app mobile). Verifica o cookie `jwt`, exige que o payload tenha `tipo: "responsavel"` e injeta `req.responsavel` com os dados do token.
+
+> **Obs.:** o `autenticarResponsavel` roda em todas as rotas `/api/responsaveis/*` protegidas, exceto cadastrar/login/validar-matricula.
 
 ---
 
 ### 6. CONFIGURAÇÕES (Config)
 
-#### **database.js**
+#### **database.ts**
 
-**Arquivo:** backend/config/database.js
+**Arquivo:** backend/config/database.ts
 
 **Responsável por:** Conexão MongoDB (mongodb://localhost:27017/facedb)
 
-#### **corsConfig.js**
+#### **corsConfig.ts**
 
-**Arquivo:** backend/config/corsConfig.js
+**Arquivo:** backend/config/corsConfig.ts
 
-**Configuração:** Origins permitidas (localhost:5173 + production), credenciais true, métodos GET/POST/PUT/DELETE/PATCH
+**Configuração:** Origem permitida `http://localhost:5173` (frontend local) — requisições sem origin (não-browser, ex.: Postman) também são aceitas; **desativar em produção**. Credenciais true, métodos GET/POST/PUT/PATCH/DELETE/OPTIONS, headers Content-Type/Authorization, expõe `set-cookie`.
 
-#### **jwtConfig.js**
+#### **jwtConfig.ts**
 
-**Arquivo:** backend/config/jwtConfig.js
+**Arquivo:** backend/config/jwtConfig.ts
 
-**Tokens:** generateAccessToken (1h), generateRefreshToken (7d), verify, definirTokens (httpOnly cookies)
+**Tokens:** generateAccessToken (1h), generateRefreshToken (7d), verify, definirTokens/removerTokens (httpOnly cookies), autenticarToken (verifica o cookie `jwt`).
+
+#### **seedAlunos.ts**
+
+**Arquivo:** backend/config/seedAlunos.ts
+
+**Responsável por:** Inserir 20 matrículas de alunos fictícios no boot (somente desenvolvimento/testes). **Atenção:** desativar em produção — em produção, as matrículas são cadastradas pelos gestores da escola.
+
+#### **threshold.ts**
+
+**Arquivo:** backend/utils/threshold.ts
+
+**Responsável por:** Constante global de similaridade mínima (`0.96`) para considerar dois rostos como o mesmo.
 
 ---
 
@@ -442,12 +568,12 @@ Intermediários que processam requisições antes de chegarem aos controllers.
 
 **Inicialização:**
 
-1. Conecta ao MongoDB via DatabaseConfig.conectar()
-2. Cria usuário "desenvolvedor" (fallback .env: DEV_USER_NOME, DEV_USER_SENHA)
-3. Monta middlewares: express.json(), CORS, cookie-parser
-4. Monta rotas: /api/usuarios, /api/admin, /api/estatisticas
-5. Health check: GET /health
-6. Escuta na porta 3000 (ou env.PORT)
+1. Conecta ao MongoDB via `databaseConfig.connect()`
+2. Cria usuário desenvolvedor via `cadastrarDesenvolvedor()` (fallback sem `.env`: `admin`/`admin` — pode ser sobrescrito por `DEV_USER_NOME`/`DEV_USER_SENHA`)
+3. Executa `seedAlunosMockados()` (20 matrículas fictícias — desativar em produção)
+4. Monta middlewares: express.json(), CORS, cookie-parser
+5. Monta as 5 rotas: /api/usuarios, /api/admin, /api/estatisticas, /api/logs, /api/responsaveis
+6. Escuta na porta **3000** (fixa no código)
 
 **Tratamento de Sinais:** SIGINT para graceful shutdown
 
@@ -503,6 +629,14 @@ frontend/src/
 │ ├── useFormatData.ts # Formatação de datas
 │ └── useGerarRelatorio.ts # Geração de PDF
 │
+├── utils/ # Utilitários puros (sem estado)
+│ ├── errorHandling.ts # ApiError + handleApiError
+│ ├── faceDetection.ts # calculateDistance + analyzeExpression
+│ ├── formatData.ts # Formatação de datas (pt-BR)
+│ ├── roleMapping.ts # Labels e cores de funções/tipos
+│ ├── time.ts # formatação de tempo (bloqueio merenda)
+│ └── validation.ts # Validações de formulário/descritor
+│
 ├── types/ # Tipos TypeScript
 │ ├── admin.types.ts # Tipos de admin
 │ ├── api.types.ts # Tipos de API
@@ -543,41 +677,87 @@ frontend/src/
 
 #### **Cadastrar.tsx** - Cadastro Facial com Captura
 
-**Responsabilidade:** Captura facial para novo usuário. Integra face-api.js para detecção.
+**Armazenamento:** frontend/src/pages/Cadastrar.tsx
+
+**Responsabilidade:** Captura facial para novo usuário. Integra `VideoCanvasDetector` (vídeo + canvas) e `useCadastroFacial` (dupla checagem do rosto antes de salvar).
 
 #### **Verificacao.tsx** - Verificação de Identidade
 
-**Responsabilidade:** Identificar pessoa por rosto. Mostra resultado com dados do usuário.
+**Arquivo:** frontend/src/pages/Verificacao.tsx
+
+**Responsabilidade:** Identificar pessoa por rosto. Mostra resultado com dados do usuário ("Rosto encontrado. Acesso autorizado!" ou "Acesso negado"). Usa `useVerificacao`, que envia `contexto: "verificacao"`.
+
+#### **VerificarMerenda.tsx** - Controle de Merenda (Bloqueio 60s)
+
+**Arquivo:** frontend/src/pages/VerificarMerenda.tsx
+
+**Responsabilidade:** Verificação facial para retirada de merenda. Se liberado, bloqueia o aluno por 60 segundos e exibe countdown (`useVerificarStatus`).
+
+#### **Estatisticas.tsx** - Dashboard de Relatórios
+
+**Arquivo:** frontend/src/pages/Estatisticas.tsx
+
+**Responsabilidade:** Exibe estatísticas do sistema (obter/atualizar/detalhadas), gera relatório PDF (`useGerarRelatorio` → `generatePdf`) e reinicia o contador de verificações.
+
+#### **AdminPage.tsx** - Gerenciamento de Administradores
+
+**Arquivo:** frontend/src/pages/AdminPage.tsx
+
+**Responsabilidade:** Página do diretor: cadastra/remove admins e seguranças, com lista paginada e busca (`useAdminPage`, `useFormatData`, `roleMapping`).
+
+#### **UserManagement.tsx** - Gerenciamento de Usuários
+
+**Arquivo:** frontend/src/pages/UserManagement.tsx
+
+**Responsabilidade:** Lista, busca e remoção de usuários (individual ou em massa) via `useUserManagement`.
 
 ---
 
-### 3. HOOKS CUSTOMIZADOS (14 Hooks)
+### 3. HOOKS CUSTOMIZADOS (13 Hooks)
 
-Os hooks encapsulam lógica reutilizável e gerenciam estado.
+Os hooks encapsulam lógica reutilizável e gerenciam estado (13 hooks em `frontend/src/hooks/`).
 
-#### **useAuth.ts** - Autenticação JWT
-
-### **useFaceDetection.ts** - Integração face-api.js
-
-#### **useCadastro.ts** - Orquestração de Cadastro
+- `useApi` (api/) - Estado de loading/error + `handleApiError`
+- `useAuth` (auth/) - Login/logout, refresh de token, `authenticatedFetch`
+- `useVerificacao` (auth/) - Ciclo de vida da verificação facial (`iniciarSistema`, `realizarVerificacao`, `verificarRosto`, `reiniciarProcesso`, `pararSistema`)
+- `useVerificarStatus` (auth/) - Verificação de merenda com bloqueio de 1 minuto e countdown
+- `useFaceDetection` (detection/) - Carrega modelos da face-api.js, câmera e **loop de detecção a cada 300ms** (extrai descriptor, distância, expressão)
+- `useLogin` (frontend/) - Lógica da página Login
+- `useCadastro` (frontend/) - Fluxo de cadastro facial (`useCadastroFacial`): validação + dupla checagem do rosto
+- `useAdminPage` (frontend/) - CRUD de admins com paginação e busca
+- `useEstatisticas` (frontend/) - Obter/resetar estatísticas (comuns e detalhadas)
+- `useUserManagement` (frontend/) - CRUD de usuários (lista, busca, remoção)
+- `useValidation` (validation/) - Wrappers das validações + `showValidationErrors`
+- `useFormatData` (utils/) - Wrapper de `formatData`
+- `useGerarRelatorio` (utils/) - Busca `/estatisticas/relatorio` e chama `gerarRelatorioPdf`
 
 ### 4. TIPOS TYPESCRIPT
 
-#### **face.type.ts** - Tipos de Resposta de Rosto
-
-#### **admin.types.ts** - Tipos de Administrador
-
----
+Tipos centralizados em `frontend/src/types/` (9 arquivos): `face.type.ts`, `admin.types.ts`, `api.types.ts`, `cadastro.types.ts`, `distance.types.ts`, `estatisticas.types.ts`, `login.types.ts`, `user.types.ts`, `validation.types.ts`.
 
 ### 5. COMPONENTES
 
-#### **VideoAndCanvas.tsx** - Elemento de Vídeo e Detecção
+#### **VideoAndCanvas.tsx** - Vídeo + Canvas de Detecção
+
+**Arquivo:** frontend/src/components/VideoAndCanvas.tsx
+
+**Exportação:** `export default VideoCanvasDetector` (default export, único componente na pasta).
+
+**Responsabilidade:** Componente apresentacional que renderiza `<video>` + `<canvas>` sobrepostos, altera a cor da borda conforme `distanceStatus`/`expressionStatus` e mostra mensagens de distância/expressão. O loop de detecção (300ms) e a extração do descriptor ficam no hook `useFaceDetection`.
 
 ### 6. CONFIGURAÇÃO & TEMPLATES
 
 #### **url.ts** - Base URL da API
 
+**Arquivo:** frontend/src/config/url.ts
+
+**Configuração:** `baseURL = "http://localhost:3000/api"`
+
 #### **generatePdf.ts** - Gerador de Relatório PDF
+
+**Arquivo:** frontend/src/templates/generatePdf.ts
+
+**Responsabilidade:** Exports `gerarRelatorioPdf(dadosEstatisticas)` usando jsPDF (cabeçalho, data, tabelas por tipo, lista alfabética). Salva o arquivo como `relatorio-estatisticas-YYYY-MM-DD.pdf`.
 
 ## Fluxos de Dados Principais
 
@@ -650,7 +830,7 @@ Refresh Token Flow (quando accessToken expirar):
              ▼
 ┌────────────────────────────────┐
 │ 2. Face Detect Loop            │
-│ (100ms interval)               │
+│ (300ms interval)               │
 │ ├─ faceapi.detectSingleFace()  │
 │ ├─ Calcula bounding box        │
 │ ├─ Extrai landmarks            │
@@ -667,7 +847,16 @@ Refresh Token Flow (quando accessToken expirar):
              │
              ▼ Clica "Salvar"
 ┌────────────────────────────────┐
-│ 4. POST /usuarios/cadastrar    │
+│ 4. 1ª CHECAGEM (Frontend)      │
+│ POST /verificar-rosto          │
+│ { descriptor,                  │
+│   contexto:"cadastro" }        │
+│ └─ Se "existe": alerta e aborta│
+└────────────┬───────────────────┘
+             │
+             ▼ (rosto novo)
+┌────────────────────────────────┐
+│ 5. POST /usuarios/cadastrar    │
 │ {                              │
 │   "nome": "João Silva",        │
 │   "tipoUsuario": "Aluno",      │
@@ -677,21 +866,22 @@ Refresh Token Flow (quando accessToken expirar):
              │
              ▼
 ┌────────────────────────────────┐
-│ 5. Backend validação           │
+│ 6. 2ª CHECAGEM (Backend)       │
 │ ├─ verificarRostoExistente()   │
 │ │  (threshold 96%)             │
-│ │  └─ Se duplicado: erro 400   │
+│ │  └─ Se duplicado: erro 409   │
+│ │     "Rosto já cadastrado"    │
 │ ├─ Validações de formato       │
 │ └─ Save no MongoDB             │
 └────────────┬───────────────────┘
              │
              ▼ Sucesso
 ┌────────────────────────────────┐
-│ 6. Response { success: true,   │
+│ 7. Response { success: true,   │
 │    usuario: { _id, nome, ... } │
 │ }                              │
 │                                │
-│ UI: "✅ Cadastro com sucesso!"  │
+│ UI: "Cadastro com sucesso!"  │
 └────────────────────────────────┘
 ```
 
@@ -706,7 +896,7 @@ Refresh Token Flow (quando accessToken expirar):
            ▼ Carrega modelos + abre câmera
 ┌──────────────────────────────┐
 │ 2. Face Detection Loop       │
-│ Igual ao fluxo de cadastro   │
+│ (300ms, igual ao cadastro)   │
 │ Extrai descriptor quando ok  │
 └──────────┬───────────────────┘
            │
@@ -727,25 +917,23 @@ Refresh Token Flow (quando accessToken expirar):
 │   descriptor, 0.96 threshold │
 │ )                            │
 │                              │
-│ Loop: for cada usuario {     │
+│ Loop: para cada usuario {    │
 │  similaridade =              │
-│  calcularSimilaridadeCossenos(
-│    descriptorBusca,          │
-│    usuario.descriptor        │
-│  )                           │
+│  calcularSimilaridadeCossenos│
+│  (descriptorBusca,           │
+│   usuario.descriptor)        │
 │  if (similaridade > max)     │
 │    melhorMatch = usuario     │
 │ }                            │
 └──────────┬───────────────────┘
            │
-           ├─ Se encon trado:
+           ├─ Se encontrado:
            │  ├─ Verifica bloqueio
-           │  ├─ Incrementa totalVerificações
+           │  ├─ Incrementa totalVerificacoes
            │  └─ Retorna usuário + %
            │
            └─ Se não encontrado:
-              └─ Retorna exists: false
-└──────────┬───────────────────┘
+              └─ Retorna existe: false
            │
            ▼
 ┌──────────────────────────────┐
@@ -753,19 +941,21 @@ Refresh Token Flow (quando accessToken expirar):
 │                              │
 │ Se encontrado:               │
 │ ┌────────────────────────────┐
-│ │ ✅ Usuário Identificado!   │
+│ │ "Rosto encontrado. Acesso │
+│ │  autorizado!"              │
 │ │ Nome: João Silva           │
-│ │ Tipo: Aluno                │
 │ │ Similaridade: 98.5%        │
-│ │ Status: 🟢 Liberado        │
 │ └────────────────────────────┘
 │                              │
 │ Se não encontrado:           │
 │ ┌────────────────────────────┐
-│ │ ❌ Rosto não encontrado    │
+│ │ "Rosto não encontrado.    │
+│ │  Acesso negado!"           │
 │ └────────────────────────────┘
 └──────────────────────────────┘
 ```
+
+> **Contextos extras (backend):** além de `verificacao`, o controller `verificarRosto` também trata os contextos `entrada` e `saida` — registram `LogEntrada` (subsistema do app mobile). No frontend web, apenas `verificacao` é usado.
 
 ### 4. Fluxo de Bloqueio de Merenda (60 segundos)
 
@@ -788,7 +978,7 @@ Refresh Token Flow (quando accessToken expirar):
 └──────────┬───────────────────────┘
            │
            ├─ Se bloqueado:
-           │  └─ "⏳ Já pegou merenda"
+           │  └─ "Já pegou merenda"
            │
            └─ Se liberado:
               └─ Mostra botão "Liberar Merenda"
@@ -817,11 +1007,11 @@ Refresh Token Flow (quando accessToken expirar):
            ▼ Response { success: true }
 ┌──────────────────────────────────┐
 │ 5. UI Feedback                   │
-│ "⏳ Bloqueado por 60 segundos"    │
+│ "Bloqueado por 60 segundos"    │
 │                                  │
 │ [Wait 60s]                       │
 │           ▼                      │
-│ "✅ Desbloqueado automaticamente" │
+│ "Desbloqueado automaticamente" │
 └──────────────────────────────────┘
 ```
 
@@ -843,59 +1033,69 @@ Refresh Token Flow (quando accessToken expirar):
 ┌────────────────────────────────┐
 │ 3. Backend - gerarRelatorio()  │
 │                                │
-│ Pipeline MongoDB Aggregation:  │
-│ $group por tipoUsuario         │
-│ $project: { tipo, usuarios[] } │
-│ $sort: { tipo: 1 }             │
-│                                │
-│ SELECT:                        │
+│ Base de dados:                 │
 │ • totalCadastros               │
-│ • totalVerificacoes            │
-│ • usuarios organizado por tipo │
+│   (Usuario.countDocuments)     │
+│ • Estatistica singleton        │
+│   (verificações, entradas,     │
+│    saídas, merendas)           │
+│                                │
+│ MongoDB Aggregation:           │
+│ $group por tipoUsuario         │
+│ → quantidades (usuariosPorTipo)│
+│                                │
+│ Busca todos usuários           │
+│ (nome, tipo, data, sorted 1)   │
+│ Agrupa em memória na ordem     │
+│ [Aluno, Professor, Funcionario │
+│  , Outro] → usuariosOrganizados│
+│ Mais: primeiro/último cadastro │
 └────────────┬───────────────────┘
              │
              ▼
 ┌────────────────────────────────┐
 │ 4. Response {                  │
-│   dataRelatorio: '2026-04-01', │
+│   dataRelatorio: Date,         │
 │   totalCadastros: 145,         │
 │   totalVerificacoes: 1240,     │
+│   totalEntradas / totalSaidas  │
+│   / totalMerendas,             │
+│   usuariosPorTipo: [           │
+│     { _id: "Aluno", qtd }      │
+│   ],                           │
 │   usuariosOrganizados: [       │
-│     {                          │
-│       tipo: "Aluno",           │
+│     { tipo: "Aluno",           │
 │       quantidade: 98,          │
 │       usuarios: [              │
 │         { nome, dataCadastro } │
-│         ...                    │
-│       ]                        │
-│     },                         │
-│     ...                        │
-│   ]                            │
+│       ] }                      │
+│   ],                           │
+│   primeiroCadastro,            │
+│   ultimoCadastro,              │
+│   ultimaAtualizacao            │
 │ }                              │
 └────────────┬───────────────────┘
              │
              ▼ Frontend
 ┌────────────────────────────────┐
 │ 5. useGerarRelatorio()         │
-│ generatePdf(dadosRelatorio)    │
-│                                │
-│ jsPDF:                         │
+│ gerarRelatorioPdf(dados)       │
+│ (jsPDF):                       │
 │ - Cabeçalho                    │
 │ - Data do relatório            │
 │ - Tabelas por tipo             │
 │ - Lista de usuários alfabética │
 │                                │
 │ doc.save(                      │
-│   'relatorio_2026-04-01.pdf'   │
-│ )                              │
+│ 'relatorio-estatisticas-       │
+│  YYYY-MM-DD.pdf' )             │
 └────────────┬───────────────────┘
              │
              ▼
 ┌────────────────────────────────┐
 │ 6. Download automático do PDF  │
-│                                │
-│ relatorio_relatorio_2026-04-01 │
-│ .pdf                           │
+│ relatorio-estatisticas-2026-   │
+│ 04-01.pdf                      │
 └────────────────────────────────┘
 ```
 
@@ -927,9 +1127,9 @@ Frontend usa custom hooks para:
 - Reutilizar lógica entre componentes
 - Sem necessidade de Redux/Zustand
 
-### 4. **Factory Pattern**
+### 4. **Factory Pattern (não utilizado)**
 
-Singleton para modelo único:
+O projeto **não implementa** Factory Pattern. A criação de documentos usa os construtores do Mongoose (`new Admin(...)`, `new Usuario(...)`) dentro dos controllers. O que existe de similar é a **injeção de dependência por construtor**: os controllers recebem os models (e o `FaceRecognitionService`) via construtor (`new UsuarioController(faceRecognitionService, Estatistica)`), o que facilita testes com mocks.
 
 ### 5. **Middleware Pattern**
 
@@ -1006,12 +1206,11 @@ Usuários Finais (Aluno, Professor, etc)
 
 ### CORS (Cross-Origin Resource Sharing)
 
-**Allowed Origins:**
+**Allowed Origin:**
 
-- `http://localhost:5173` (frontend local)
-- `https://seu-frontend-react.com` (production)
+- `http://localhost:5173` (frontend local) — única origem configurada; requisições sem origin (Postman etc.) também são aceitas, desativar em produção.
 
-**Configuração:**
+**Configuração:** backend/config/corsConfig.ts (credentials true, métodos GET/POST/PUT/PATCH/DELETE/OPTIONS)
 
 ### Proteção contra Ataques
 
@@ -1026,6 +1225,19 @@ Usuários Finais (Aluno, Professor, etc)
 ---
 
 ## Banco de Dados MongoDB
+
+### Operações MongoDB Principais
+
+| Operação                          | Onde é usada                                        |
+| --------------------------------- | --------------------------------------------------- |
+| `new Model(args)` + `.save()`     | Criação de Admin e Usuario (cadastro)               |
+| `Model.findOne(query)`            | Login (busca por nome), bloqueio/desbloqueio        |
+| `Model.countDocuments()`          | Total de cadastros (estatísticas e relatório)       |
+| `Model.find(query, campos).sort()`| Listagem, busca por nome (regex) e relatório        |
+| `Model.findOneAndUpdate()`        | Statics do singleton `Estatistica` (upsert)         |
+| `.aggregate([$group])`            | `usuariosPorTipo` (estatísticas detalhadas/relatório)|
+| `.lean()`                         | Relatório (objetos JS puros em vez de documentos)   |
+| `Model.updateOne()`               | Atualização de senha/role de admin                  |
 
 ### Schema: Admin
 
@@ -1045,8 +1257,7 @@ Usuários Finais (Aluno, Professor, etc)
 **Índices:**
 
 - `unique: nome`
-- `unique: funcao, partialFilterExpression: { funcao: 'super-admin' }`
-- `unique: funcao, partialFilterExpression: { funcao: 'desenvolvedor' }`
+- `unique: funcao, partialFilterExpression: { funcao: { $in: ['desenvolvedor', 'super-admin'] } }`
 
 ### Schema: Usuario
 
@@ -1074,13 +1285,14 @@ Usuários Finais (Aluno, Professor, etc)
 {
   "_id": ObjectId,
   "totalVerificacoes": "number (default: 0)",
+  "totalEntradas": "number (default: 0)",
+  "totalSaidas": "number (default: 0)",
+  "totalMerendas": "number (default: 0)",
   "ultimaAtualizacao": "Date"
 }
 ```
 
-**Padrão:** Singleton (apenas 1 documento)
-
-### Operações MongoDB Principais
+**Padrão:** Singleton (apenas 1 documento) — estático `getInstance()` com upsert
 
 ---
 
@@ -1093,21 +1305,23 @@ Usuários Finais (Aluno, Professor, etc)
 ```bash
 # 1. Instalação
 $ cd backend
-$ npm install  # ou pnpm install
+$ pnpm install
 
-# 2. Configuração (.env)
+# 2. Configuração (.env) — opcional
+# Sem .env, o usuário desenvolvedor padrão é criado com admin/admin
 DATABASE_URL=mongodb://localhost:27017/facedb
 JWT_SECRET=sua-chave-secreta
 REFRESH_TOKEN_SECRET=sua-chave-refresh
 DEV_USER_NOME=desenvolvedor
 DEV_USER_SENHA=admin123456
 
-# 3. Startup
-$ node server.ts
+# 3. Startup (desenvolvimento — tsx watch)
+$ pnpm dev
+# Não .env? Login padrão: admin / admin
 # Output:
-# ✅ Conectado ao MongoDB
-# ✅ Usuário "desenvolvedor" criado
-# 🚀 Servidor escutando na porta 3000
+# Conectado ao MongoDB
+# Usuário "admin" criado com sucesso!
+# Servidor escutando na porta 3000
 ```
 
 ### Frontend
@@ -1117,28 +1331,29 @@ $ node server.ts
 $ cd frontend
 $ pnpm install
 
-# 2. Dev Server
-$ npm run dev  # ou pnpm dev
+# 2. Rodar em modo de desenvolvimento
+$ pnpm dev
 # Output:
 # ➜  Local:   http://localhost:5173/
 # ➜  press h to show help
 
 # 3. Build para produção
-$ npm run build
-$ npm run preview
+$ pnpm build
+$ pnpm preview
 ```
 
 ### Sequência Completa
 
 ```
 Terminal 1: Backend
-$ cd backend && npm install && node server.ts
+$ cd backend && pnpm install && pnpm dev
 # Conecta MongoDB
-# Cria desenvolvedor
+# Cria desenvolvedor (admin/admin)
+# Roda seedAlunosMockados (20 matrículas)
 # Escuta :3000
 
 Terminal 2: Frontend
-$ cd frontend && npm install && npm run dev
+$ cd frontend && pnpm install && pnpm dev
 # Vite dev server :5173
 # Hot reload ativo
 # Conecta em localhost:3000/api
@@ -1146,7 +1361,7 @@ $ cd frontend && npm install && npm run dev
 Browser:
 $ Acessa http://localhost:5173
 $ Vê tela de login
-$ Login com desenvolvedor(usuário)/admin123456(senha)
+$ Login padrão: admin (usuário) / admin (senha)
 ```
 
 ---
@@ -1159,48 +1374,58 @@ Este arquivo foi estruturado para facilitar:
 
 1. **Busca Rápida de Contexto:**
    - Use Ctrl+F para buscar por: `interface`, `class`, `function`, `endpoint`
-   - Cabeçalhos estruturados com ✅ ✅ ✅ para fácil scanning
 
 2. **Implementação de Features Novas:**
-   - Seção 4: Backend → Models/Controllers/Services/Routes
-   - Seção 5: Frontend → Pages/Hooks/Types
-   - Seção 6: Fluxos de Dados → Entenda integração
+   - Seção **Documentação do Backend** → Models/Controllers/Services/Routes/Middlewares/Config
+   - Seção **Documentação do Frontend** → Pages/Hooks/Types/Components/Config & Templates
+   - Seção **Fluxos de Dados Principais** → Entenda a integração
+   - Seção **Banco de Dados MongoDB** → Schemas e operações
 
 3. **Debug de Erros:**
    - Verifique: rotas corretas? JWT válido? Validações passando?
-   - Consulte seção de Segurança para auth issues
-   - Consulte banco de dados para schema issues
+   - Consulte a seção **Segurança & Autenticação** para auth issues
+   - Consulte **Banco de Dados MongoDB** para schema issues
 
 4. **Adicionar Nova Funcionalidade:**
-   - Crie Model (MongoDB schema)
-   - Crie Controller (lógica)
-   - Crie Service se lógica complexa
-   - Crie Route (endpoint)
-   - Crie Pages/Hooks no frontend
-   - Atualize Types (TypeScript)
+   - Crie Model (MongoDB schema) em `backend/models/`
+   - Crie Controller em `backend/controllers/`
+   - Crie Service se a lógica for complexa (`backend/services/`)
+   - Crie Route em `backend/routes/`
+   - Crie Pages/Hooks em `frontend/src/pages/` e `frontend/src/hooks/`
+   - Atualize Types em `frontend/src/types/`
+
+5. **Rodar Testes (Vitest):**
+   - Backend: `cd backend && pnpm test` (watch) ou `pnpm test:run` / `pnpm test:coverage`
+   - Frontend: `cd frontend && pnpm test` ou `pnpm test:run`
+   - Testes usam `mongodb-memory-server` (backend) e Testing Library/jsdom (frontend)
 
 ### Pontos de Entrada por Tipo de Tarefa
 
-| Tarefa                    | Seção | Arquivos Chave                    |
-| ------------------------- | ----- | --------------------------------- |
-| **Adicionar rota**        | 4.4   | routes/_.js, controllers/_.js     |
-| **Adicionar validação**   | 4.5   | middlewares/validation.js         |
-| **Adicionar página**      | 5.2   | pages/_.tsx, hooks/frontend/_.ts  |
-| **Adicionar hook**        | 5.3   | hooks/\*_/_.ts                    |
-| **Alterar modelo**        | 4.1   | models/\*.js                      |
-| **Bug em autenticação**   | 8     | auth/useAuth.ts, jwtConfig.js     |
-| **Bug em face detection** | 5.3   | useFaceDetection.ts, face-api.js  |
-| **Relatório/Agregação**   | 4.2.3 | estatisticaController.js, MongoDB |
+| Tarefa                    | Onde                    | Arquivos Chave                                  |
+| ------------------------- | ----------------------- | ----------------------------------------------- |
+| **Adicionar rota**        | Rotas (Backend 4)       | routes/*.ts, controllers/*.ts                   |
+| **Adicionar validação**   | Middlewares (Backend 5)| middlewares/validation.ts                       |
+| **Adicionar página**      | Páginas (Frontend 2)    | pages/*.tsx, hooks/frontend/*.ts                |
+| **Adicionar hook**        | Hooks (Frontend 3)      | hooks/**/*.ts                                   |
+| **Alterar modelo**        | Models (Backend 1)      | models/*.ts                                     |
+| **Bug em autenticação**   | Segurança               | config/jwtConfig.ts, hooks/auth/useAuth.ts, middlewares/authResponsavel.ts |
+| **Bug em face detection** | Hooks (Frontend 3)      | hooks/detection/useFaceDetection.ts, components/VideoAndCanvas.tsx, utils/faceDetection.ts |
+| **Relatório/Agregação**   | Controllers (Backend 2)| controllers/estatisticaController.ts, templates/generatePdf.ts, MongoDB |
+| **App mobile/responsáveis**| Nota de abertura         | routes/responsavelRoutes.ts, routes/logEntradaRoutes.ts, models/*.ts |
 
 ### Exemplos de Busca Rápida
 
 ```
 Buscar por:                    Vá para:
-"POST /api/usuarios"           Seção 4.4 - usuarioRoutes.js
-"face-api"                     Seção 5.3 - useFaceDetection.ts
-"similaridade cosseno"         Seção 4.3 - faceRecognitionService.js
-"JWT"                          Seção 8 - Segurança
-"descriptor"                   Seção 4.1 - Usuario.js
+"POST /api/usuarios"           Rotas (Backend 4) - routes/usuarioRoutes.ts
+"verificar-rosto"              Controllers (Backend 2) - controllers/usuarioController.ts
+"face-api"                     Hooks (Frontend 3) - hooks/detection/useFaceDetection.ts
+"similaridade cosseno"         Services (Backend 3) - services/faceRecognitionService.ts
+"JWT"                          Segurança & Autenticação
+"descriptor"                   Models (Backend 1) - models/Usuario.ts
+"threshold 0.96"               Config (Backend 6) - utils/threshold.ts
+"relatorio-estatisticas"       Frontend 6 - templates/generatePdf.ts
+"contexto entrada/saida"       Controllers (Backend 2) - controllers/usuarioController.ts
 ```
 
 ---
@@ -1209,8 +1434,3 @@ Buscar por:                    Vá para:
 
 - [README.md](../README.md) - Guia de execução
 - [docs/](../) - Diagramas visuais
-
-**Última atualização:** 1º de Abril de 2026  
-**Desenvolvido para:** Feira de Ciências 2025 - CETEP Ipirá, BA  
-**Status:** Projeto Acadêmico com potencial de escalabilidade  
-**Licença:** CC BY-NC-ND 4.0

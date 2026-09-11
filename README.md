@@ -8,7 +8,7 @@ O objetivo do C.E.R.F é reforçar a segurança das escolas, através do uso de 
 
 Com a funcionalidade de reconhecimento facial do C.E.R.F, buscamos controlar o fluxo de entrada de indivíduos em escolas, permitindo quem entra e barrando acesso não autorizado dentro da unidade escolar, utilizando o reconhecimento facial para verificar se o rosto escaneado foi cadastro anteriormente no sistema ou não. Dessa forma, o C.E.R.F ajudará a portaria das escolas a não permitir que pessoas que não fazem parte da unidade escolar entrarem, criando assim um ambiente de segurança entre os alunos, professores e outros integrantes da escola que possuirá o sistema C.E.R.F em atividade.
 
-O sistema C.E.R.F agora possui também um aplicativo mobile em desenvolvimento que está sendo integrado com o backend do projeto. No app, os responsáveis dos alunos podem fazer monitoramento dos mesmos na escola, observando os horários de entrada e retirada de merenda do aluno. Código fonte e documentação serão liberadas em breve.
+O sistema C.E.R.F possui também um aplicativo mobile em desenvolvimento, integrado ao backend deste projeto. No app, os responsáveis dos alunos fazem o monitoramento dos mesmos na escola, observando os horários de entrada e retirada de merenda do aluno. Código fonte e documentação são privados no momento, mas serão liberados em breve.
 
 ---
 
@@ -26,7 +26,7 @@ O sistema C.E.R.F agora possui também um aplicativo mobile em desenvolvimento q
 
 ### Como Executar o Projeto
 
-Como o C.E.R.F não está em produção, só se pode interagir com projeto executando ele no seu computador. Para isso, é necessário que você tenha instalado o Git, NodeJs, npm, pnpm e o MongoDB em sua máquina.
+Como o sistema C.E.R.F não está em produção, só é possível interagir com projeto executando ele no seu computador. Para isso, é necessário que você tenha instalado o Git, NodeJs, npm, pnpm e o MongoDB em sua máquina.
 
 Os comandos abaixo devem ser executados no Git Bash se você estiver no Windows ou no terminal padrão do seu sistema se estiver no Linux ou MacOs.
 <br>
@@ -81,7 +81,41 @@ Copie e cole o link gerado no **frontend** na barra de endereços do seu navegad
 http://localhost:5173/
 ```
 
-**OBS:** usuários de Linux e Mac podem executar todos os processos acima através dos scripts bash da pasta **scripts**.
+**Login padrão (sem `.env`):** usuário `admin`, senha `admin` — criado automaticamente no boot. Pode ser sobrescrito pelas variáveis `DEV_USER_NOME` e `DEV_USER_SENHA` em `backend/.env`.
+
+**OBS:** usuários de Linux e Mac podem executar todos os processos acima através dos scripts bash da pasta **scripts**. Para build de produção: `cd frontend && pnpm build` e `cd backend && pnpm build` (gera `dist/`).
+
+---
+
+### Testes (Vitest)
+
+Os testes usam **Vitest** e `mongodb-memory-server` (backend sem depender de MongoDB local).
+
+**Backend** (`cd backend`):
+
+```bash
+pnpm test          # watch mode
+pnpm test:run      # executa uma única vez
+pnpm test:coverage # executa com relatório de cobertura
+```
+
+**Frontend** (`cd frontend`):
+
+```bash
+pnpm test          # watch mode
+pnpm test:run      # executa uma única vez
+```
+
+---
+
+### Aplicativo Mobile
+
+O C.E.R.F também possui um **aplicativo mobile** em desenvolvimento para os responsáveis dos alunos, que consome diretamente este backend em `http://localhost:3000/api`:
+
+- Rotas de responsáveis: `/api/responsaveis/*` (cadastro, login, vincular matrícula, entradas e merenda dos filhos)
+- Rotas de logs: `/api/logs/*` (histórico de entrada/saída/merenda)
+
+O código-fonte e a documentação detalhada do app estão no repositório do aplicativo mobile.
 
 ---
 
@@ -91,4 +125,4 @@ Este projeto NÃO é uma iniciativa open-source e está protegido por direitos a
 
 Para mais informações, consulte **LICENSE** e o resto da documentação na pasta **docs**.
 
-Comandos de instalação de dependêcias não são permitidas na raíz do projeto. Apenas em **frontend** e **backend**
+Comandos de instalação de dependências não são permitidos na raiz do projeto. Apenas em **frontend** e **backend**.
