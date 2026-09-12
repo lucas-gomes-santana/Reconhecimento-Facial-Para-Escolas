@@ -73,12 +73,12 @@ function AdminPage() {
   };
 
   return (
-    <main className="min-h-screen p-8">
+    <main className="cerf-scan-bg min-h-screen p-8">
       <div className="max-w-3xl mx-auto space-y-6">
         {/* Card de Cadastro */}
-        <div className="bg-white rounded-2xl shadow-lg p-6">
-          <h1 className="text-2xl font-bold text-[#1E3A8A] mb-2">Página do Diretor</h1>
-          <p className="text-[#1E3A8A] text-sm mb-6">
+        <div className="cerf-surface p-6">
+          <h1 className="cerf-heading text-2xl mb-2">Página do Diretor</h1>
+          <p className="cerf-subtext text-sm mb-6">
             Cadastre ou exclua administradores e seguranças no sistema C.E.R.F
           </p>
 
@@ -87,8 +87,8 @@ function AdminPage() {
             <div
               className={`mb-6 p-4 rounded-lg border ${
                 message.tipo === "success"
-                  ? "bg-green-100 border-green-300 text-green-700"
-                  : "bg-red-100 border-red-300 text-red-700"
+                  ? "bg-green-50 border-green-300 text-green-700"
+                  : "cerf-alert-error cerf-alert-error-text"
               }`}
             >
               <p className="text-sm font-medium">{message.texto}</p>
@@ -98,14 +98,12 @@ function AdminPage() {
           {/* Formulário */}
           <form onSubmit={handleCadastrarAdmin} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-[#1E3A8A] mb-2">
-                Nome do Gestor
-              </label>
+              <label className="cerf-label block mb-2">Nome do Gestor</label>
               <input
                 type="text"
                 value={nome}
                 onChange={(e) => setNome(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1E3A8A] focus:border-[#1E3A8A] transition-all"
+                className="cerf-input px-4 py-3"
                 placeholder="Digite o nome completo"
                 required
                 disabled={loading}
@@ -114,14 +112,12 @@ function AdminPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-[#1E3A8A] mb-2">
-                  Senha para o Gestor
-                </label>
+                <label className="cerf-label block mb-2">Senha para o Gestor</label>
                 <input
                   type="password"
                   value={senha}
                   onChange={(e) => setSenha(e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1E3A8A] focus:border-[#1E3A8A] transition-all"
+                  className="cerf-input px-4 py-3"
                   placeholder="Crie uma senha segura"
                   required
                   disabled={loading}
@@ -130,10 +126,7 @@ function AdminPage() {
               </div>
 
               <div>
-                <label
-                  htmlFor="tipoGestor"
-                  className="block text-sm font-medium text-[#1E3A8A] mb-2"
-                >
+                <label htmlFor="tipoGestor" className="cerf-label block mb-2">
                   Tipo do Gestor
                 </label>
                 <select
@@ -142,7 +135,7 @@ function AdminPage() {
                   onChange={(e) => setFuncao(e.target.value)}
                   required
                   disabled={loading}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1E3A8A] focus:outline-none focus:border-[#1E3A8A] transition-all"
+                  className="cerf-input px-4 py-3"
                 >
                   <option value="">Selecione</option>
                   <option value="admin">Administrador</option>
@@ -154,7 +147,7 @@ function AdminPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full md:w-auto bg-[#5B21B6] hover:bg-[#4C1D95] disabled:bg-gray-400 text-white font-semibold py-3 px-8 rounded-lg transition-all focus:outline-none focus:ring-2 focus:ring-[#5B21B6] focus:ring-offset-2 shadow-lg"
+              className="cerf-btn-primary w-full md:w-auto py-3 px-8"
             >
               {loading ? (
                 <div className="flex items-center justify-center gap-2">
@@ -169,13 +162,13 @@ function AdminPage() {
         </div>
 
         {/* Seção de Gerenciamento */}
-        <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
-          <div className="bg-[#1E3A8A] px-6 py-6">
-            <div className="flex items-center gap-2 mb-2 text-white">
+        <div className="cerf-surface overflow-hidden">
+          <div className="cerf-band-dark px-6 py-6">
+            <div className="flex items-center gap-2 mb-2">
               <Users className="w-6 h-6" />
               <h2 className="text-2xl font-bold">Gerenciamento de Gestores</h2>
             </div>
-            <p className="text-purple-200 text-sm">
+            <p className="cerf-band-dark-subtext text-sm">
               {getTotalAdmins() > 0
                 ? `${getTotalAdmins()} gestor${getTotalAdmins() > 1 ? "es" : ""} cadastrado${getTotalAdmins() > 1 ? "s" : ""}`
                 : searchTerm
@@ -193,7 +186,7 @@ function AdminPage() {
                 placeholder="Pesquisar por nome ou função"
                 value={searchTerm}
                 onChange={(e) => buscarAdmins(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1E3A8A] focus:border-[#1E3A8A] transition-all"
+                className="cerf-input pl-10 pr-4 py-2"
               />
             </div>
 
@@ -201,10 +194,10 @@ function AdminPage() {
             {admins.length === 0 && !loadingList ? (
               <div className="text-center py-12">
                 <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">
+                <h3 className="cerf-heading text-lg mb-2">
                   {searchTerm ? "Nenhum gestor encontrado" : "Nenhum gestor cadastrado"}
                 </h3>
-                <p className="text-gray-500 text-sm">
+                <p className="cerf-subtext text-sm">
                   {searchTerm
                     ? "Tente buscar com outros termos"
                     : "Cadastre o primeiro gestor usando o formulário acima"}
@@ -215,18 +208,18 @@ function AdminPage() {
                 {admins.map((admin) => (
                   <div
                     key={admin._id}
-                    className="flex items-start justify-between p-4 border border-gray-200 rounded-lg hover:shadow-lg hover:border-[#0D47A1]/30 transition-colors"
+                    className="cerf-list-row flex items-start justify-between p-4"
                   >
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-2">
-                        <h3 className="text-lg font-semibold text-[#1E3A8A]">{admin.nome}</h3>
+                        <h3 className="cerf-heading text-lg">{admin.nome}</h3>
                         <span
                           className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getTipoAdminColor(admin.funcao)}`}
                         >
                           {formatarFuncao(admin.funcao)}
                         </span>
                       </div>
-                      <p className="text-sm text-gray-600">
+                      <p className="cerf-subtext text-sm">
                         Cadastrado em: {formatData(admin.dataCadastro)}
                       </p>
                     </div>
@@ -234,7 +227,7 @@ function AdminPage() {
                     <button
                       onClick={() => confirmarRemocao(admin._id)}
                       disabled={removendoAdmin === admin._id}
-                      className="ml-3 p-2 text-gray-400  hover:text-red-600 hover:bg-red-100 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="cerf-icon-btn-danger ml-3 p-2"
                       title="Remover gestor"
                     >
                       {removendoAdmin === admin._id ? (
@@ -250,14 +243,14 @@ function AdminPage() {
 
             {loadingList && (
               <div className="flex justify-center items-center py-8">
-                <Loader className="h-6 w-6 animate-spin text-[#1E3A8A] mr-2" />
-                <span className="text-gray-600">Carregando gestores...</span>
+                <Loader className="h-6 w-6 animate-spin cerf-accent-text mr-2" />
+                <span className="cerf-subtext">Carregando gestores...</span>
               </div>
             )}
 
             {!hasMore && admins.length > 0 && (
               <div className="text-center py-6">
-                <p className="text-gray-400 text-sm">Todos os gestores foram carregados</p>
+                <p className="cerf-subtext text-sm">Todos os gestores foram carregados</p>
               </div>
             )}
           </div>
@@ -266,33 +259,35 @@ function AdminPage() {
 
       {/* Modal de Confirmação */}
       {adminParaRemover && (
-        <div className="fixed inset-0 bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl">
+        <div className="cerf-modal-overlay fixed inset-0 flex items-center justify-center p-4 z-50">
+          <div className="cerf-surface max-w-md w-full p-6">
             <div className="flex items-center gap-3 mb-4">
-              <div className="flex-shrink-0 w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
-                <AlertTriangle className="h-6 w-6 text-red-600" />
+              <div className="cerf-modal-icon-danger flex-shrink-0 w-12 h-12 flex items-center justify-center">
+                <AlertTriangle className="h-6 w-6" style={{ color: "var(--cerf-danger)" }} />
               </div>
-              <h3 className="text-xl font-semibold text-gray-900">Confirmar Remoção</h3>
+              <h3 className="cerf-heading text-xl">Confirmar Remoção</h3>
             </div>
 
-            <p className="text-gray-600 mb-6">
+            <p className="cerf-subtext mb-6">
               Tem certeza que deseja remover o gestor{" "}
-              <strong>{admins.find((u) => u._id === adminParaRemover)?.nome}</strong>? Esta ação não
-              pode ser desfeita.
+              <strong className="cerf-heading">
+                {admins.find((u) => u._id === adminParaRemover)?.nome}
+              </strong>
+              ? Esta ação não pode ser desfeita.
             </p>
 
             <div className="flex justify-end gap-3">
               <button
                 onClick={cancelarRemocao}
                 disabled={removendoAdmin === adminParaRemover}
-                className="px-5 py-2.5 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium"
+                className="cerf-btn-neutral px-5 py-2.5"
               >
                 Cancelar
               </button>
               <button
                 onClick={() => handleRemoverAdmin(adminParaRemover)}
                 disabled={removendoAdmin === adminParaRemover}
-                className="px-5 py-2.5 bg-red-600 text-white hover:bg-red-700 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 font-medium"
+                className="cerf-btn-danger px-5 py-2.5 flex items-center gap-2"
               >
                 {removendoAdmin === adminParaRemover ? (
                   <>
