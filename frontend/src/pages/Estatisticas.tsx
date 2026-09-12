@@ -76,7 +76,7 @@ function Estatisticas() {
     if (!estatisticas) {
       return (
         <div className="text-center">
-          <p className="text-gray-500">Carregando estatísticas...</p>
+          <p className="cerf-subtext">Carregando estatísticas...</p>
         </div>
       );
     }
@@ -86,37 +86,40 @@ function Estatisticas() {
     return (
       <div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-9">
-          <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
-            <h3 className="text-lg font-semibold text-blue-800">Total de Cadastros</h3>
-            <span className="text-3xl font-bold text-blue-600">{stats.totalCadastros}</span>
+          <div className="cerf-stat-card p-4">
+            <h3 className="cerf-stat-card-title text-lg">Total de Cadastros</h3>
+            <span className="cerf-stat-card-value text-3xl">{stats.totalCadastros}</span>
           </div>
-          <div className="bg-green-50 p-4 rounded-lg border border-green-200">
-            <h3 className="text-lg font-semibold text-green-800">Total de Verificações</h3>
-            <span className="text-3xl font-bold text-green-600">{stats.totalVerificacoes}</span>
+          <div className="cerf-stat-card-alt p-4">
+            <h3 className="cerf-stat-card-alt-title text-lg">Total de Verificações</h3>
+            <span className="cerf-stat-card-alt-value text-3xl">{stats.totalVerificacoes}</span>
           </div>
         </div>
 
         {mostrandoDetalhes && stats.usuariosPorTipo && (
-          <div className="bg-gray-50 p-4 rounded-lg mb-4">
-            <h3 className="text-lg font-semibold mb-3">Usuários por Tipo</h3>
+          <div className="cerf-panel-muted p-4 mb-4">
+            <h3 className="cerf-heading text-lg mb-3">Usuários por Tipo</h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
               {stats.usuariosPorTipo.map((tipo: UsuarioPorTipo, index: number) => (
-                <div key={index} className="flex justify-between p-2 bg-white rounded border">
-                  <strong>{tipo._id}:</strong>
+                <div
+                  key={index}
+                  className="cerf-panel-muted-item flex justify-between p-2 cerf-subtext"
+                >
+                  <strong className="cerf-heading">{tipo._id}:</strong>
                   <span>{tipo.quantidade} usuário(s)</span>
                 </div>
               ))}
             </div>
             {stats.primeiroCadastro && (
-              <div className="mt-4 p-3 bg-blue-50 rounded">
+              <div className="cerf-accent-bg mt-4 p-3 rounded-md">
                 <p>
                   <strong>Primeiro cadastro:</strong> {formatData(stats.primeiroCadastro)}
                 </p>
               </div>
             )}
             {stats.ultimoCadastro && (
-              <div className="mt-4 p-3 bg-blue-50 rounded">
+              <div className="cerf-accent-bg mt-4 p-3 rounded-md">
                 <p>
                   <strong>Último cadastro:</strong> {formatData(stats.ultimoCadastro)}
                 </p>
@@ -125,7 +128,7 @@ function Estatisticas() {
           </div>
         )}
 
-        <div className="text-base text-gray-800 text-center">
+        <div className="text-base cerf-subtext text-center">
           <p>Última atualização dos dados: {formatData(stats.ultimaAtualizacao)}</p>
         </div>
       </div>
@@ -133,55 +136,52 @@ function Estatisticas() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <header className="bg-[#1E3A8A]  text-white text-center p-6">
+    <div className="cerf-scan-bg min-h-screen flex flex-col">
+      <header className="cerf-band-dark text-center p-6">
         <h1 className="text-xl md:text-3xl font-bold">📊 Estatísticas do C.E.R.F</h1>
       </header>
 
       <main className="flex-1 p-10 grid grid-cols-1 gap-8">
-        <section className="bg-white p-4 rounded-lg shadow-md">
-          <h2 className="mb-4 text-lg md:text-xl font-semibold">Controles</h2>
+        <section className="cerf-surface p-4">
+          <h2 className="cerf-heading mb-4 text-lg md:text-xl">Controles</h2>
           <div className="flex gap-4 flex-wrap">
             <button
               onClick={handleRefresh}
               disabled={loading}
-              className="flex-1 min-w-[150px] py-2 px-4 rounded-lg text-white bg-green-500 hover:bg-green-600 transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="cerf-btn-success flex-1 min-w-[150px] py-2 px-4"
             >
               {loading ? "⏳ Carregando..." : "🔄 Atualizar"}
             </button>
             <button
               onClick={handleToggleDetalhes}
               disabled={loading}
-              className="flex-1 min-w-[150px] py-2 px-4 rounded-lg text-white bg-blue-500 hover:bg-blue-600 transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="cerf-btn-info flex-1 min-w-[150px] py-2 px-4"
             >
               📋 {mostrandoDetalhes ? "Ocultar Detalhes" : "Mostrar Detalhes"}
             </button>
             <button
               onClick={handleGerarRelatorio}
               disabled={loading || loadingRelatorio}
-              className="flex-1 min-w-[150px] py-2 px-4 rounded-lg text-white bg-purple-500 hover:bg-purple-600 transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="cerf-btn-primary flex-1 min-w-[150px] py-2 px-4"
             >
               {loadingRelatorio ? "⏳ Gerando..." : "📄 Gerar Relatório"}
             </button>
             <button
               onClick={handleReset}
               disabled={loading}
-              className="flex-1 min-w-[150px] py-2 px-4 rounded-lg text-white bg-red-500 hover:bg-red-600 transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="cerf-btn-danger flex-1 min-w-[150px] py-2 px-4"
             >
               🔄 Reiniciar Verificações
             </button>
           </div>
         </section>
 
-        <section className="bg-white p-6 rounded-lg shadow-md">
-          <h2 className="mb-5 text-lg md:text-xl font-semibold">Dados do Sistema</h2>
+        <section className="cerf-surface p-6">
+          <h2 className="cerf-heading mb-5 text-lg md:text-xl">Dados do Sistema</h2>
           {error && (
-            <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
-              <p className="text-red-700">⚠️ Erro: {error}</p>
-              <button
-                onClick={clearError}
-                className="mt-2 px-3 py-1 bg-red-100 text-red-700 rounded hover:bg-red-200"
-              >
+            <div className="cerf-alert-error mb-4 p-4">
+              <p className="cerf-alert-error-text">⚠️ Erro: {error}</p>
+              <button onClick={clearError} className="cerf-btn-neutral mt-2 px-3 py-1 text-sm">
                 Fechar
               </button>
             </div>
@@ -190,8 +190,8 @@ function Estatisticas() {
         </section>
       </main>
 
-      <footer className="bg-[#1E3A8A] text-white text-center p-4 text-sm">
-        <p>
+      <footer className="cerf-band-dark text-center p-4 text-sm">
+        <p className="cerf-band-dark-subtext">
           Os dados são atualizados automaticamente conforme novos cadastros e verificações são
           realizados.
         </p>
