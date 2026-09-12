@@ -28,18 +28,18 @@ function Cadastrar() {
   const { expressionStatus } = useFaceDetection();
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-8">
-      <div className="w-full max-w-xl bg-white border-none shadow-xl rounded-lg">
+    <div className="cerf-scan-bg min-h-screen flex items-center justify-center p-8">
+      <div className="w-full max-w-xl cerf-surface">
         {/* Header */}
         <div className="px-6 pt-6 pb-4">
-          <h1 className="text-center text-2xl font-semibold text-blue-700">Cadastro de Usuários</h1>
+          <h1 className="cerf-heading text-center text-2xl">Cadastro de Usuários</h1>
         </div>
 
         {/* Formulário */}
         <form id="cadastroForm" className="px-6 pb-6 space-y-6" onSubmit={handleSalvarCadastro}>
           {/* Nome Completo */}
           <div className="space-y-2">
-            <label htmlFor="nome" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="nome" className="cerf-label block">
               Nome Completo
             </label>
             <input
@@ -49,13 +49,13 @@ function Cadastrar() {
               onChange={(e) => setNome(e.target.value)}
               required
               placeholder="Digite seu nome completo"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="cerf-input px-3 py-2"
             />
           </div>
 
           {/* Tipo de Usuário */}
           <div className="space-y-2">
-            <label htmlFor="tipoUsuario" className="block text-sm font-medium text-gray-700">
+            <label htmlFor="tipoUsuario" className="cerf-label block">
               Tipo de Usuário
             </label>
             <select
@@ -63,7 +63,7 @@ function Cadastrar() {
               value={tipoUsuario}
               onChange={(e) => setTipoUsuario(e.target.value)}
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="cerf-input px-3 py-2"
             >
               <option value="">Selecione o tipo de usuário</option>
               <option value="Professor">Professor</option>
@@ -75,7 +75,7 @@ function Cadastrar() {
 
           {/* Captura Facial */}
           <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700">Captura Facial</label>
+            <label className="cerf-label block">Captura Facial</label>
             <VideoCanvasDetector
               videoRef={videoRef}
               canvasRef={canvasRef}
@@ -87,8 +87,8 @@ function Cadastrar() {
           </div>
 
           {/* Mensagem do Sistema */}
-          <div className="bg-blue-700 rounded-lg p-4 text-center">
-            <p className="text-white text-sm">
+          <div className="cerf-band-dark rounded-lg p-4 text-center">
+            <p className="text-sm">
               {statusMessage || "Sistema pronto - Preencha os dados e inicie o reconhecimento"}
             </p>
           </div>
@@ -100,7 +100,7 @@ function Cadastrar() {
                 onClick={handleIniciarReconhecimento}
                 type="button"
                 disabled={isLoading}
-                className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg shadow-md transition-colors disabled:opacity-50"
+                className="cerf-btn-success w-full flex items-center justify-center gap-2 px-4 py-3"
               >
                 <Camera className="w-4 h-4" />
                 Iniciar Reconhecimento
@@ -110,7 +110,7 @@ function Cadastrar() {
                 onClick={handlePararReconhecimento}
                 type="button"
                 disabled={isLoading}
-                className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg shadow-md transition-colors disabled:opacity-50"
+                className="cerf-btn-danger w-full flex items-center justify-center gap-2 px-4 py-3"
               >
                 <Camera className="w-4 h-4" />
                 Parar Reconhecimento
@@ -120,7 +120,7 @@ function Cadastrar() {
             <button
               type="submit"
               disabled={!canSave || isLoading}
-              className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-blue-700 hover:bg-blue-800 text-white font-semibold rounded-lg shadow-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="cerf-btn-primary w-full flex items-center justify-center gap-2 px-4 py-3"
             >
               <Save className="w-4 h-4" />
               {isLoading ? "Salvando..." : "Salvar Cadastro"}
