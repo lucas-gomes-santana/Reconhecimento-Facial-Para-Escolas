@@ -1,13 +1,55 @@
 @import url("https://fonts.googleapis.com/css2?family=Heebo:wght@100..900&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap");
 @import "tailwindcss";
 
+:root {
+  --cerf-graphite-900: #0a0f1a; /* fundo geral das telas */
+  --cerf-graphite-800: #0f172a; /* superficie de cards escuros / header */
+  --cerf-graphite-700: #1e293b; /* superficie elevada, hover de card escuro */
+  --cerf-graphite-600: #334155; /* bordas sobre fundo escuro */
+
+  /* Ciano — acento principal, remete a scanner biometrico */
+  --cerf-cyan-500: #22d3ee;
+  --cerf-cyan-600: #0fb8d4;
+  --cerf-cyan-400: #67e4f5;
+  --cerf-cyan-100: #cffafe; /* fundo suave do acento (badges, chips) */
+
+  --cerf-surface: #ffffff; /* cards claros (inputs, paineis de conteudo) */
+
+  --cerf-text-primary: #0f172a;
+  --cerf-text-secondary: #51607a;
+  --cerf-text-on-dark: #e2e8f0;
+  --cerf-text-on-dark-muted: #94a3b8;
+  --cerf-text-on-accent: #063542;
+
+  --cerf-border: #e2e8f0;
+  --cerf-border-strong: #cbd5e1;
+  --cerf-border-on-dark: #334155;
+
+  --cerf-danger: #ef4444;
+  --cerf-danger-bg: #fef2f2;
+  --cerf-danger-border: #fecaca;
+  --cerf-danger-text: #b91c1c;
+
+  --cerf-success: #22c55e;
+  --cerf-warning: #f59e0b;
+
+  --cerf-radius-sm: 8px;
+  --cerf-radius-md: 12px;
+  --cerf-radius-lg: 16px;
+
+  --cerf-shadow-md: 0 10px 25px -5px rgba(2, 6, 23, 0.35), 0 8px 10px -6px rgba(2, 6, 23, 0.2);
+  --cerf-shadow-lg: 0 20px 45px -10px rgba(2, 6, 23, 0.5);
+  --cerf-glow-cyan: 0 0 0 4px rgba(34, 211, 238, 0.15);
+}
+
 * {
   font-family: "Roboto", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   box-sizing: border-box;
 }
 
 body {
-  background-color: #d9e021;
+  background-color: var(--cerf-graphite-900);
+  color: var(--cerf-text-on-dark);
 }
 
 html {
@@ -18,4 +60,160 @@ button:hover {
   cursor: pointer;
   transform: translateY(-4px) scale(1.02);
   transition: transform 0.2s ease-in-out;
+}
+
+/* Fundo de tela com leve textura de "grade" de scanner (opcional, sutil) */
+.cerf-scan-bg {
+  background-color: var(--cerf-graphite-900);
+  background-image:
+    linear-gradient(rgba(34, 211, 238, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(34, 211, 238, 0.05) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+/* Cards claros (paineis de formulario sobre fundo escuro) */
+.cerf-surface {
+  background-color: var(--cerf-surface);
+  border-radius: var(--cerf-radius-lg);
+  box-shadow: var(--cerf-shadow-lg);
+}
+
+/* Icone de destaque com "anel de scanner" */
+.cerf-icon-badge {
+  background-color: var(--cerf-graphite-800);
+  border: 1px solid var(--cerf-cyan-500);
+  border-radius: var(--cerf-radius-md);
+  box-shadow: var(--cerf-glow-cyan);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cerf-icon-badge svg {
+  color: var(--cerf-cyan-500);
+}
+
+/* Titulos sobre fundo escuro */
+.cerf-heading-on-dark {
+  color: var(--cerf-text-on-dark);
+  font-weight: 700;
+}
+
+/* Titulos sobre fundo claro (dentro de cards brancos) */
+.cerf-heading {
+  color: var(--cerf-graphite-800);
+  font-weight: 700;
+}
+
+.cerf-subtext-on-dark {
+  color: var(--cerf-text-on-dark-muted);
+}
+
+.cerf-subtext {
+  color: var(--cerf-text-secondary);
+}
+
+/* Rotulos de campo */
+.cerf-label {
+  color: var(--cerf-graphite-800);
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+/* Campos de entrada */
+.cerf-input {
+  width: 100%;
+  border: 1px solid var(--cerf-border-strong);
+  border-radius: var(--cerf-radius-sm);
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
+  transition: all 0.2s ease-in-out;
+}
+
+.cerf-input:focus {
+  outline: none;
+  border-color: var(--cerf-cyan-500);
+  box-shadow: var(--cerf-glow-cyan);
+}
+
+/* Botao primario — ciano vibrante, acao de destaque (ex: Entrar) */
+.cerf-btn-primary {
+  color: var(--cerf-text-on-accent);
+  background-color: var(--cerf-cyan-500);
+  font-weight: 700;
+  border-radius: var(--cerf-radius-sm);
+  box-shadow: var(--cerf-shadow-md);
+  transition: all 0.2s ease-in-out;
+}
+
+.cerf-btn-primary:hover {
+  background-color: var(--cerf-cyan-600);
+}
+
+.cerf-btn-primary:focus {
+  outline: none;
+  box-shadow:
+    0 0 0 2px var(--cerf-cyan-600),
+    var(--cerf-glow-cyan);
+}
+
+.cerf-btn-primary:disabled {
+  background-color: var(--cerf-border-strong);
+  color: var(--cerf-text-secondary);
+  cursor: not-allowed;
+}
+
+/* Acento ciano textual */
+.cerf-accent-text {
+  color: var(--cerf-cyan-600);
+}
+
+.cerf-accent-bg {
+  background-color: var(--cerf-cyan-100);
+  color: var(--cerf-text-on-accent);
+}
+
+/* Alertas de erro */
+.cerf-alert-error {
+  background-color: var(--cerf-danger-bg);
+  border: 2px solid var(--cerf-danger-border);
+  border-radius: var(--cerf-radius-sm);
+}
+
+.cerf-alert-error-text {
+  color: var(--cerf-danger-text);
+}
+
+/* Cards de navegacao (menu principal) — escuros, com anel ciano no hover */
+.cerf-card {
+  background-color: var(--cerf-graphite-800);
+  border: 1px solid var(--cerf-border-on-dark);
+  border-radius: var(--cerf-radius-lg);
+  box-shadow: var(--cerf-shadow-md);
+  transition: all 0.3s ease-in-out;
+}
+
+.cerf-card:hover {
+  border-color: var(--cerf-cyan-500);
+  box-shadow: var(--cerf-shadow-lg), var(--cerf-glow-cyan);
+  transform: translateY(-4px);
+}
+
+.cerf-card-icon {
+  background-color: var(--cerf-graphite-700);
+  border: 1px solid var(--cerf-cyan-500);
+  border-radius: 9999px;
+  transition: all 0.3s ease-in-out;
+}
+
+.cerf-card-icon svg {
+  color: var(--cerf-cyan-500);
+}
+
+.cerf-card:hover .cerf-card-icon {
+  background-color: var(--cerf-cyan-500);
+  transform: scale(1.1);
+}
+
+.cerf-card:hover .cerf-card-icon svg {
+  color: var(--cerf-graphite-900);
 }
