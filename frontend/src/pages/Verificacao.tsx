@@ -1,7 +1,5 @@
- 
 import { useEffect } from "react";
 import { Camera, CheckCircle, XCircle } from "lucide-react";
-
 import { useApi } from "../hooks/api/useApi";
 import { useFaceDetection } from "../hooks/detection/useFaceDetection";
 import { useValidation } from "../hooks/validation/useValidation";
@@ -45,7 +43,7 @@ function Verificacao() {
         <button
           onClick={iniciarSistema}
           disabled={faceLoading}
-          className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg shadow-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="cerf-btn-success w-full flex items-center justify-center gap-2 px-6 py-3"
         >
           <Camera className="w-5 h-5" />
           {faceLoading ? "Carregando..." : "Iniciar Verificação"}
@@ -58,14 +56,14 @@ function Verificacao() {
         <div className="flex flex-col sm:flex-row gap-4 w-full">
           <button
             onClick={reiniciarProcesso}
-            className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg shadow-md transition-colors"
+            className="cerf-btn-success flex-1 flex items-center justify-center gap-2 px-6 py-3"
           >
             <Camera className="w-5 h-5" />
             Nova Verificação
           </button>
           <button
             onClick={pararSistema}
-            className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-lg shadow-md transition-colors"
+            className="cerf-btn-danger flex-1 flex items-center justify-center gap-2 px-6 py-3"
           >
             Finalizar
           </button>
@@ -78,14 +76,14 @@ function Verificacao() {
         <button
           onClick={realizarVerificacao}
           disabled={!isAtIdealDistance || apiLoading}
-          className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg shadow-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="cerf-btn-success flex-1 flex items-center justify-center gap-2 px-6 py-3"
         >
           <CheckCircle className="w-5 h-5" />
           {apiLoading ? "Verificando..." : "Verificar Identidade"}
         </button>
         <button
           onClick={pararSistema}
-          className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-lg shadow-md transition-colors"
+          className="cerf-btn-danger flex-1 flex items-center justify-center gap-2 px-6 py-3"
         >
           Cancelar
         </button>
@@ -94,12 +92,12 @@ function Verificacao() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-8">
-      <div className="w-full max-w-xl bg-white border-none shadow-xl rounded-lg">
+    <div className="cerf-scan-bg min-h-screen flex items-center justify-center p-8">
+      <div className="w-full max-w-xl cerf-surface">
         {/* Header */}
         <div className="px-6 pt-6 pb-4">
-          <h1 className="text-center text-2xl font-semibold text-[#3F51B5] flex items-center justify-center gap-2">
-            <Camera className="w-6 h-6" />
+          <h1 className="cerf-heading text-center text-2xl flex items-center justify-center gap-2">
+            <Camera className="w-6 h-6 cerf-accent-text" />
             Verificação de Cadastro
           </h1>
         </div>
@@ -118,17 +116,17 @@ function Verificacao() {
 
           {/* Mensagens de Erro */}
           {(apiError || faceError) && (
-            <div className="p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg flex items-start gap-2">
-              <XCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
-              <span className="text-sm">{apiError || faceError}</span>
+            <div className="cerf-alert-error p-4 flex items-start gap-2">
+              <XCircle className="w-5 h-5 flex-shrink-0 mt-0.5 cerf-alert-error-text" />
+              <span className="text-sm cerf-alert-error-text">{apiError || faceError}</span>
             </div>
           )}
 
           {/* Resultado da Verificação */}
           {verificacaoCompleta && resultadoVerificacao && (
             <div
-              className={`p-6 rounded-lg ${
-                resultadoVerificacao.existe ? "bg-[#09ad5e]" : "bg-red-500"
+              className={`p-6 ${
+                resultadoVerificacao.existe ? "cerf-result-success" : "cerf-result-danger"
               }`}
             >
               {resultadoVerificacao.existe ? (

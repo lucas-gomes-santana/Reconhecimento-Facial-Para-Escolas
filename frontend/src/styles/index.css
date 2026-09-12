@@ -2,6 +2,7 @@
 @import "tailwindcss";
 
 :root {
+  /* Grafite / fundo escuro */
   --cerf-graphite-900: #0a0f1a; /* fundo geral das telas */
   --cerf-graphite-800: #0f172a; /* superficie de cards escuros / header */
   --cerf-graphite-700: #1e293b; /* superficie elevada, hover de card escuro */
@@ -26,12 +27,22 @@
   --cerf-border-on-dark: #334155;
 
   --cerf-danger: #ef4444;
+  --cerf-danger-600: #dc2626;
   --cerf-danger-bg: #fef2f2;
   --cerf-danger-border: #fecaca;
   --cerf-danger-text: #b91c1c;
 
   --cerf-success: #22c55e;
+  --cerf-success-600: #16a34a;
+  --cerf-success-bg: #f0fdf4;
+  --cerf-success-border: #bbf7d0;
+  --cerf-success-text: #ffffff;
+
   --cerf-warning: #f59e0b;
+  --cerf-warning-600: #d97706;
+  --cerf-warning-bg: #fffbeb;
+  --cerf-warning-border: #fde68a;
+  --cerf-warning-text: #ffffff;
 
   --cerf-radius-sm: 8px;
   --cerf-radius-md: 12px;
@@ -62,7 +73,6 @@ button:hover {
   transition: transform 0.2s ease-in-out;
 }
 
-/* Fundo de tela com leve textura de "grade" de scanner (opcional, sutil) */
 .cerf-scan-bg {
   background-color: var(--cerf-graphite-900);
   background-image:
@@ -181,6 +191,67 @@ button:hover {
 
 .cerf-alert-error-text {
   color: var(--cerf-danger-text);
+}
+
+/* Estilizações das telas de verificação e merenda */
+.cerf-btn-success {
+  color: #ffffff;
+  background-color: var(--cerf-success);
+  font-weight: 600;
+  border-radius: var(--cerf-radius-sm);
+  box-shadow: var(--cerf-shadow-md);
+  transition: all 0.2s ease-in-out;
+}
+
+.cerf-btn-success:hover {
+  background-color: var(--cerf-success-600);
+}
+
+.cerf-btn-success:disabled {
+  background-color: var(--cerf-border-strong);
+  color: var(--cerf-text-secondary);
+  cursor: not-allowed;
+  transform: none;
+}
+
+.cerf-btn-danger {
+  color: #ffffff;
+  background-color: var(--cerf-danger);
+  font-weight: 600;
+  border-radius: var(--cerf-radius-sm);
+  box-shadow: var(--cerf-shadow-md);
+  transition: all 0.2s ease-in-out;
+}
+
+.cerf-btn-danger:hover {
+  background-color: var(--cerf-danger-600);
+}
+
+/* Paineis de resultado de verificacao */
+.cerf-result-success {
+  background-color: var(--cerf-success);
+  border-radius: var(--cerf-radius-md);
+}
+
+.cerf-result-danger {
+  background-color: var(--cerf-danger);
+  border-radius: var(--cerf-radius-md);
+}
+
+.cerf-result-warning {
+  background-color: var(--cerf-warning);
+  border-radius: var(--cerf-radius-md);
+}
+
+/* Alerta neutro sobre fundo escuro (ex: aguardando deteccao) */
+.cerf-alert-error-on-dark {
+  background-color: rgba(239, 68, 68, 0.1);
+  border: 1px solid var(--cerf-danger);
+  border-radius: var(--cerf-radius-sm);
+}
+
+.cerf-alert-error-on-dark-text {
+  color: #fca5a5;
 }
 
 /* Cards de navegacao (menu principal) — escuros, com anel ciano no hover */
