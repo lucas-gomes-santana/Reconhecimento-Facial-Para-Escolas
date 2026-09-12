@@ -1,7 +1,5 @@
- 
 import { useEffect } from "react";
 import { Camera, CheckCircle, XCircle, AlertTriangle, Salad } from "lucide-react";
-
 import { useApi } from "../hooks/api/useApi";
 import { useFaceDetection } from "../hooks/detection/useFaceDetection";
 import { useVerificacao } from "../hooks/auth/useVerificacao";
@@ -12,9 +10,7 @@ import "../styles/index.css";
 
 function VerificarMerenda() {
   const { loading: apiLoading, error: apiError } = useApi();
-
   const { loading: faceLoading, error: faceError, expressionStatus } = useFaceDetection();
-
   const { getDistanceMessage } = useValidation();
 
   const {
@@ -79,7 +75,7 @@ function VerificarMerenda() {
 
     if (!resultadoVerificacao.existe) {
       return (
-        <div className="p-6 rounded-lg bg-red-500/90 border-2 border-red-500">
+        <div className="cerf-result-danger p-6">
           <div className="text-center space-y-3">
             <div className="flex items-center justify-center gap-2">
               <XCircle className="w-8 h-8 text-white" />
@@ -93,7 +89,7 @@ function VerificarMerenda() {
 
     if (resultadoVerificacao.bloqueado) {
       return (
-        <div className="p-6 rounded-lg bg-yellow-500/90 border-2 border-yellow-500">
+        <div className="cerf-result-warning p-6">
           <div className="text-center space-y-3">
             <div className="flex items-center justify-center gap-2">
               <AlertTriangle className="w-8 h-8 text-white" />
@@ -112,7 +108,7 @@ function VerificarMerenda() {
     }
 
     return (
-      <div className="p-6 rounded-lg bg-[#09ad5e]">
+      <div className="cerf-result-success p-6">
         <div className="text-center space-y-3">
           <div className="flex items-center justify-center gap-2">
             <CheckCircle className="w-8 h-8 text-white" />
@@ -136,7 +132,7 @@ function VerificarMerenda() {
         <button
           onClick={iniciarSistema}
           disabled={faceLoading}
-          className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg shadow-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="cerf-btn-success w-full flex items-center justify-center gap-2 px-6 py-3"
         >
           <Camera className="w-5 h-5" />
           {faceLoading ? "Carregando..." : "Iniciar Verificação"}
@@ -149,14 +145,14 @@ function VerificarMerenda() {
         <div className="flex flex-col sm:flex-row gap-4 w-full">
           <button
             onClick={reiniciarProcesso}
-            className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg shadow-md transition-colors"
+            className="cerf-btn-success flex-1 flex items-center justify-center gap-2 px-6 py-3"
           >
             <Camera className="w-5 h-5" />
             Nova Verificação
           </button>
           <button
             onClick={pararSistema}
-            className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-lg shadow-md transition-colors"
+            className="cerf-btn-danger flex-1 flex items-center justify-center gap-2 px-6 py-3"
           >
             Finalizar
           </button>
@@ -169,14 +165,14 @@ function VerificarMerenda() {
         <button
           onClick={realizarVerificacaoMerenda}
           disabled={!isAtIdealDistance || apiLoading}
-          className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-lg shadow-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="cerf-btn-success flex-1 flex items-center justify-center gap-2 px-6 py-3"
         >
           <CheckCircle className="w-5 h-5" />
           {apiLoading ? "Verificando..." : "Verificar e Liberar"}
         </button>
         <button
           onClick={pararSistema}
-          className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-lg shadow-md transition-colors"
+          className="cerf-btn-danger flex-1 flex items-center justify-center gap-2 px-6 py-3"
         >
           Cancelar
         </button>
@@ -185,13 +181,13 @@ function VerificarMerenda() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-8]">
-      <div className="w-full max-w-2xl bg-white border-none shadow-2xl rounded-2xl">
+    <div className="cerf-scan-bg min-h-screen flex items-center justify-center p-8">
+      <div className="w-full max-w-2xl cerf-surface">
         {/* Header com ícones */}
         <div className="px-8 pt-8 pb-4">
-          <h1 className="text-center text-3xl font-semibold text-[#1E3A8A] flex items-center justify-center gap-3">
+          <h1 className="cerf-heading text-center text-3xl flex items-center justify-center gap-3">
             <div className="relative">
-              <Salad className="w-10 h-10" />
+              <Salad className="w-10 h-10 cerf-accent-text" />
             </div>
             Verificação de Merenda
           </h1>
@@ -211,9 +207,9 @@ function VerificarMerenda() {
 
           {/* Mensagens de Erro */}
           {(apiError || faceError) && (
-            <div className="p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg flex items-start gap-2">
-              <XCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
-              <span className="text-sm">{apiError || faceError}</span>
+            <div className="cerf-alert-error p-4 flex items-start gap-2">
+              <XCircle className="w-5 h-5 flex-shrink-0 mt-0.5 cerf-alert-error-text" />
+              <span className="text-sm cerf-alert-error-text">{apiError || faceError}</span>
             </div>
           )}
 
