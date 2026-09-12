@@ -3,6 +3,7 @@ import { Trash2, Search, Users, AlertTriangle, Loader } from "lucide-react";
 import { useUserManagement } from "../hooks/frontend/useUserManagement";
 import { useFormatData } from "../hooks/utils/useFormatData";
 import { getTipoUsuarioColor } from "../utils/roleMapping";
+import "../styles/index.css";
 
 function UserManagement() {
   const {
@@ -65,18 +66,18 @@ function UserManagement() {
   };
 
   return (
-    <div className="min-h-screen flex h-screen justify-center items-center">
+    <div className="cerf-scan-bg min-h-screen flex h-screen justify-center items-center">
       <div className="min-w-4xl mx-auto">
-        <div className="bg-white rounded-2xl shadow-2xl overflow-hidden">
-          {/* Header com gradiente azul */}
-          <div className="bg-gradient-to-r from-[#0D47A1] to-[#1565C0] px-8 py-8 ">
+        <div className="cerf-surface overflow-hidden">
+          {/* Header com gradiente escuro/ciano */}
+          <div className="cerf-band-gradient px-8 py-8">
             <div className="flex items-center justify-between">
               <div>
                 <div className="flex items-center gap-3 mb-2">
-                  <Users className="h-8 w-8 text-white" />
-                  <h1 className="text-3xl font-bold text-white">Gerenciamento de Usuários</h1>
+                  <Users className="h-8 w-8 cerf-accent-text" />
+                  <h1 className="text-3xl font-bold">Gerenciamento de Usuários</h1>
                 </div>
-                <p className="text-[#D4E157]">
+                <p className="cerf-band-dark-subtext">
                   {totalUsuarios > 0
                     ? `${totalUsuarios} usuários cadastrados`
                     : "Nenhum usuário cadastrado"}
@@ -86,7 +87,7 @@ function UserManagement() {
               <button
                 onClick={removerTodosOsUsuarios}
                 disabled={removendo}
-                className="p-3 text-white bg-red-600 hover:bg-red-700 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
+                className="cerf-btn-danger p-3"
                 title="Remover todos os usuários"
               >
                 {removendo ? (
@@ -98,8 +99,8 @@ function UserManagement() {
             </div>
           </div>
 
-          {/* Barra de Pesquisa com fundo branco */}
-          <div className="p-6 bg-white border-b border-gray-200">
+          {/* Barra de Pesquisa */}
+          <div className="p-6 cerf-surface border-b" style={{ borderColor: "var(--cerf-border)" }}>
             <div className="relative max-w-md">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
               <input
@@ -107,23 +108,23 @@ function UserManagement() {
                 placeholder="Pesquisar por nome..."
                 value={searchTerm}
                 onChange={(e) => buscarUsuarios(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#0D47A1] focus:border-[#0D47A1] transition-all"
+                className="cerf-input pl-10 pr-4 py-2"
               />
             </div>
           </div>
 
-          <div className="p-6 bg-white">
+          <div className="p-6 cerf-surface">
             {/* Mensagem de Erro */}
             {error && (
-              <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-center gap-3">
-                <AlertTriangle className="h-5 w-5 text-red-500 flex-shrink-0" />
+              <div className="cerf-alert-error mb-6 p-4 flex items-center gap-3">
+                <AlertTriangle className="h-5 w-5 flex-shrink-0 cerf-alert-error-text" />
                 <div className="flex-1">
-                  <p className="text-red-800 font-medium">Erro</p>
-                  <p className="text-red-700 text-sm">{error}</p>
+                  <p className="cerf-alert-error-text font-medium">Erro</p>
+                  <p className="cerf-alert-error-text text-sm">{error}</p>
                 </div>
                 <button
                   onClick={clearError}
-                  className="text-red-500 hover:text-red-700 transition-colors text-xl font-bold"
+                  className="cerf-alert-error-text transition-colors text-xl font-bold"
                 >
                   ×
                 </button>
@@ -134,10 +135,10 @@ function UserManagement() {
             {usuarios.length === 0 && !loading ? (
               <div className="text-center py-12">
                 <Users className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">
+                <h3 className="cerf-heading text-lg mb-2">
                   {searchTerm ? "Nenhum usuário encontrado" : "Nenhum usuário cadastrado"}
                 </h3>
-                <p className="text-gray-500 text-sm">
+                <p className="cerf-subtext text-sm">
                   {searchTerm
                     ? "Tente ajustar os termos de busca"
                     : "Clique em Adicionar Usuário para cadastrar o primeiro usuário"}
@@ -146,15 +147,10 @@ function UserManagement() {
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {usuarios.map((usuario) => (
-                  <div
-                    key={usuario._id}
-                    className="bg-white border-2 border-gray-200 rounded-lg p-4 hover:shadow-lg hover:border-[#0D47A1]/30 transition-all"
-                  >
+                  <div key={usuario._id} className="cerf-list-row p-4">
                     <div className="flex items-start justify-between">
                       <div className="flex-1 min-w-0">
-                        <h3 className="text-lg font-semibold text-gray-900 truncate">
-                          {usuario.nome}
-                        </h3>
+                        <h3 className="cerf-heading text-lg truncate">{usuario.nome}</h3>
                         <div className="mt-2">
                           <span
                             className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getTipoUsuarioColor(usuario.tipoUsuario)}`}
@@ -162,7 +158,7 @@ function UserManagement() {
                             {usuario.tipoUsuario}
                           </span>
                         </div>
-                        <p className="text-sm text-gray-500 mt-2">
+                        <p className="cerf-subtext text-sm mt-2">
                           Cadastrado em {formatData(usuario.dataCadastro)}
                         </p>
                       </div>
@@ -170,7 +166,7 @@ function UserManagement() {
                       <button
                         onClick={() => confirmarRemocao(usuario._id)}
                         disabled={removendoUsuario === usuario._id}
-                        className="ml-3 p-2 text-gray-400 hover:text-red-600 hover:bg-red-100 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="cerf-icon-btn-danger ml-3 p-2"
                         title="Remover usuário"
                       >
                         {removendoUsuario === usuario._id ? (
@@ -188,15 +184,15 @@ function UserManagement() {
             {/* Indicador de Carregamento */}
             {loading && (
               <div className="flex justify-center items-center py-8">
-                <Loader className="h-6 w-6 animate-spin text-[#0D47A1] mr-2" />
-                <span className="text-gray-600">Carregando usuários...</span>
+                <Loader className="h-6 w-6 animate-spin cerf-accent-text mr-2" />
+                <span className="cerf-subtext">Carregando usuários...</span>
               </div>
             )}
 
             {/* Indicador de Fim da Lista */}
             {!hasMore && usuarios.length > 0 && (
               <div className="text-center py-6">
-                <p className="text-gray-500 text-sm">
+                <p className="cerf-subtext text-sm">
                   {searchTerm
                     ? "Todos os resultados foram carregados"
                     : "Todos os usuários foram carregados"}
@@ -209,32 +205,31 @@ function UserManagement() {
 
       {/* Modal de Confirmação de Remoção */}
       {usuarioParaRemover && (
-        <div className="fixed inset-0 bg-blend-saturation flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl">
+        <div className="cerf-modal-overlay fixed inset-0 flex items-center justify-center p-4 z-50">
+          <div className="cerf-surface max-w-md w-full p-6">
             <div className="flex items-center gap-3 mb-4">
-              <div className="flex-shrink-0 w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
-                <AlertTriangle className="h-6 w-6 text-red-600" />
+              <div className="cerf-modal-icon-danger flex-shrink-0 w-12 h-12 flex items-center justify-center">
+                <AlertTriangle className="h-6 w-6" style={{ color: "var(--cerf-danger)" }} />
               </div>
-              <h3 className="text-xl font-semibold text-gray-900">Confirmar Remoção</h3>
+              <h3 className="cerf-heading text-xl">Confirmar Remoção</h3>
             </div>
 
-            <p className="text-gray-600 mb-6">
+            <p className="cerf-subtext mb-6">
               Tem certeza que deseja remover o usuário{" "}
-              <strong>{usuarios.find((u) => u._id === usuarioParaRemover)?.nome}</strong>? Esta ação
-              não pode ser desfeita.
+              <strong className="cerf-heading">
+                {usuarios.find((u) => u._id === usuarioParaRemover)?.nome}
+              </strong>
+              ? Esta ação não pode ser desfeita.
             </p>
 
             <div className="flex justify-end gap-3">
-              <button
-                onClick={cancelarRemocao}
-                className="px-5 py-2.5 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors font-medium"
-              >
+              <button onClick={cancelarRemocao} className="cerf-btn-neutral px-5 py-2.5">
                 Cancelar
               </button>
               <button
                 onClick={() => handleRemoverUsuario(usuarioParaRemover)}
                 disabled={removendoUsuario === usuarioParaRemover}
-                className="px-5 py-2.5 bg-red-600 text-white hover:bg-red-700 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 font-medium"
+                className="cerf-btn-danger px-5 py-2.5 flex items-center gap-2"
               >
                 {removendoUsuario === usuarioParaRemover ? (
                   <>

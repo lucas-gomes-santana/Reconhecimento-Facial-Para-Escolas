@@ -425,3 +425,10 @@ button:hover {
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+/* Faixa com gradiente escuro-para-ciano para a página de gerenciamento de usuários 2*/
+.cerf-band-gradient {
+  background-image: linear-gradient(to right, var(--cerf-graphite-800), var(--cerf-graphite-700));
+  border-bottom: 1px solid var(--cerf-cyan-500);
+  color: var(--cerf-text-on-dark);
+}
