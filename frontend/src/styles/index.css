@@ -73,12 +73,12 @@ button:hover {
   transition: transform 0.2s ease-in-out;
 }
 
-/* Fundo de tela com leve textura de "grade" de scanner */
+/* Fundo de tela com leve textura de malha quadriculada */
 .cerf-scan-bg {
   background-color: var(--cerf-graphite-900);
   background-image:
-    linear-gradient(rgba(34, 211, 238, 0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(34, 211, 238, 0.05) 1px, transparent 1px);
+    linear-gradient(rgba(34, 211, 238, 0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(34, 211, 238, 0.1) 1px, transparent 1px);
   background-size: 32px 32px;
 }
 
@@ -126,7 +126,7 @@ button:hover {
 
 /* Rotulos de campo */
 .cerf-label {
-  color: var(--cerf-graphite-800);
+  color: var(--cerf-graphite-900);
   font-weight: 600;
   font-size: 0.875rem;
 }
@@ -138,12 +138,14 @@ button:hover {
   border-radius: var(--cerf-radius-sm);
   box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
   transition: all 0.2s ease-in-out;
+  color: var(--cerf-graphite-600);
 }
 
 .cerf-input:focus {
   outline: none;
   border-color: var(--cerf-cyan-500);
   box-shadow: var(--cerf-glow-cyan);
+  color: var(--cerf-graphite-900);
 }
 
 /* Botao primario — ciano vibrante, acao de destaque (ex: Entrar) */
@@ -292,7 +294,7 @@ button:hover {
 
 /*  Cabecalhos/rodapes escuros de secao */
 .cerf-band-dark {
-  background-color: var(--cerf-graphite-800);
+  background-color: var(--cerf-graphite-700);
   color: var(--cerf-text-on-dark);
 }
 
