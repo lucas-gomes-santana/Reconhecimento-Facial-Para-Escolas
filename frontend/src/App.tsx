@@ -8,6 +8,7 @@ import UserManegement from "./pages/UserManagement";
 import AdminPage from "./pages/AdminPage";
 import MenuPage from "./pages/MenuPage";
 import VerificarMerenda from "./pages/VerificarMerenda";
+import SobreProjeto from "./pages/Sobre";
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
             <Route path="/gerenciar-usuarios" element={<UserManegement />}></Route>
             <Route path="/pagina-do-admin" element={<AdminPage />}></Route>
             <Route path="/verificacao-de-merenda" element={<VerificarMerenda />}></Route>
+            <Route path="/sobre" element={<SobreProjeto />}></Route>
           </Routes>
         </main>
       </div>

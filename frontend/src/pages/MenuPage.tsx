@@ -1,5 +1,13 @@
 import { Link } from "react-router-dom";
-import { UserPlus, ScanFace, UtensilsCrossed, BarChart3, Settings, Shield } from "lucide-react";
+import {
+  UserPlus,
+  ScanFace,
+  UtensilsCrossed,
+  BarChart3,
+  Settings,
+  Shield,
+  Info,
+} from "lucide-react";
 import "../styles/index.css";
 
 function MenuPage() {
@@ -39,6 +47,12 @@ function MenuPage() {
       icon: Shield,
       title: "Página dos ADMs",
       description: "Acesse a página dos administradores",
+    },
+    {
+      to: "/sobre",
+      icon: Info,
+      title: "Sobre o Projeto",
+      description: "Informações sobre o C.E.R.F e desenvolvedores",
     },
   ];
 
