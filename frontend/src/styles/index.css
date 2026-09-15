@@ -1,13 +1,66 @@
 @import url("https://fonts.googleapis.com/css2?family=Heebo:wght@100..900&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap");
 @import "tailwindcss";
 
+:root {
+  /* Grafite / fundo escuro */
+  --cerf-graphite-900: #0a0f1a; /* fundo geral das telas */
+  --cerf-graphite-800: #0f172a; /* superficie de cards escuros / header */
+  --cerf-graphite-700: #1e293b; /* superficie elevada, hover de card escuro */
+  --cerf-graphite-600: #334155; /* bordas sobre fundo escuro */
+
+  /* Ciano — acento principal, remete a scanner biometrico */
+  --cerf-cyan-500: #22d3ee;
+  --cerf-cyan-600: #0fb8d4;
+  --cerf-cyan-400: #67e4f5;
+  --cerf-cyan-100: #cffafe; /* fundo suave do acento (badges, chips) */
+
+  --cerf-surface: #ffffff; /* cards claros (inputs, paineis de conteudo) */
+
+  --cerf-text-primary: #0f172a;
+  --cerf-text-secondary: #51607a;
+  --cerf-text-on-dark: #e2e8f0;
+  --cerf-text-on-dark-muted: #94a3b8;
+  --cerf-text-on-accent: #063542;
+
+  --cerf-border: #e2e8f0;
+  --cerf-border-strong: #cbd5e1;
+  --cerf-border-on-dark: #334155;
+
+  --cerf-danger: #ef4444;
+  --cerf-danger-600: #dc2626;
+  --cerf-danger-bg: #fef2f2;
+  --cerf-danger-border: #fecaca;
+  --cerf-danger-text: #b91c1c;
+
+  --cerf-success: #22c55e;
+  --cerf-success-600: #16a34a;
+  --cerf-success-bg: #f0fdf4;
+  --cerf-success-border: #bbf7d0;
+  --cerf-success-text: #ffffff;
+
+  --cerf-warning: #f59e0b;
+  --cerf-warning-600: #d97706;
+  --cerf-warning-bg: #fffbeb;
+  --cerf-warning-border: #fde68a;
+  --cerf-warning-text: #ffffff;
+
+  --cerf-radius-sm: 8px;
+  --cerf-radius-md: 12px;
+  --cerf-radius-lg: 16px;
+
+  --cerf-shadow-md: 0 10px 25px -5px rgba(2, 6, 23, 0.35), 0 8px 10px -6px rgba(2, 6, 23, 0.2);
+  --cerf-shadow-lg: 0 20px 45px -10px rgba(2, 6, 23, 0.5);
+  --cerf-glow-cyan: 0 0 0 4px rgba(34, 211, 238, 0.15);
+}
+
 * {
   font-family: "Roboto", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   box-sizing: border-box;
 }
 
 body {
-  background-color: #d9e021;
+  background-color: var(--cerf-graphite-900);
+  color: var(--cerf-text-on-dark);
 }
 
 html {
@@ -18,4 +71,377 @@ button:hover {
   cursor: pointer;
   transform: translateY(-4px) scale(1.02);
   transition: transform 0.2s ease-in-out;
+}
+
+/* Fundo de tela com leve textura de malha quadriculada */
+.cerf-scan-bg {
+  background-color: var(--cerf-graphite-900);
+  background-image:
+    linear-gradient(rgba(34, 211, 238, 0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(34, 211, 238, 0.1) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+/* Cards claros (paineis de formulario sobre fundo escuro) */
+.cerf-surface {
+  background-color: var(--cerf-surface);
+  border-radius: var(--cerf-radius-lg);
+  box-shadow: var(--cerf-shadow-lg);
+}
+
+/* Icone de destaque com "anel de scanner" */
+.cerf-icon-badge {
+  background-color: var(--cerf-graphite-800);
+  border: 1px solid var(--cerf-cyan-500);
+  border-radius: var(--cerf-radius-md);
+  box-shadow: var(--cerf-glow-cyan);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cerf-icon-badge svg {
+  color: var(--cerf-cyan-500);
+}
+
+/* Titulos sobre fundo escuro */
+.cerf-heading-on-dark {
+  color: var(--cerf-text-on-dark);
+  font-weight: 700;
+}
+
+/* Titulos sobre fundo claro (dentro de cards brancos) */
+.cerf-heading {
+  color: var(--cerf-graphite-800);
+  font-weight: 700;
+}
+
+.cerf-subtext-on-dark {
+  color: var(--cerf-text-on-dark-muted);
+}
+
+.cerf-subtext {
+  color: var(--cerf-text-secondary);
+}
+
+/* Rotulos de campo */
+.cerf-label {
+  color: var(--cerf-graphite-900);
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+/* Campos de entrada */
+.cerf-input {
+  width: 100%;
+  border: 1px solid var(--cerf-border-strong);
+  border-radius: var(--cerf-radius-sm);
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
+  transition: all 0.2s ease-in-out;
+  color: var(--cerf-graphite-600);
+}
+
+.cerf-input:focus {
+  outline: none;
+  border-color: var(--cerf-cyan-500);
+  box-shadow: var(--cerf-glow-cyan);
+  color: var(--cerf-graphite-900);
+}
+
+/* Botao primario — ciano vibrante, acao de destaque (ex: Entrar) */
+.cerf-btn-primary {
+  color: var(--cerf-text-on-accent);
+  background-color: var(--cerf-cyan-500);
+  font-weight: 700;
+  border-radius: var(--cerf-radius-sm);
+  box-shadow: var(--cerf-shadow-md);
+  transition: all 0.2s ease-in-out;
+}
+
+.cerf-btn-primary:hover {
+  background-color: var(--cerf-cyan-600);
+}
+
+.cerf-btn-primary:focus {
+  outline: none;
+  box-shadow:
+    0 0 0 2px var(--cerf-cyan-600),
+    var(--cerf-glow-cyan);
+}
+
+.cerf-btn-primary:disabled {
+  background-color: var(--cerf-border-strong);
+  color: var(--cerf-text-secondary);
+  cursor: not-allowed;
+}
+
+/* Acento ciano textual */
+.cerf-accent-text {
+  color: var(--cerf-cyan-600);
+}
+
+.cerf-accent-bg {
+  background-color: var(--cerf-cyan-100);
+  color: var(--cerf-text-on-accent);
+}
+
+/* Alertas de erro */
+.cerf-alert-error {
+  background-color: var(--cerf-danger-bg);
+  border: 2px solid var(--cerf-danger-border);
+  border-radius: var(--cerf-radius-sm);
+}
+
+.cerf-alert-error-text {
+  color: var(--cerf-danger-text);
+}
+
+/* Estilizações nas duas páginas de verificação  */
+.cerf-btn-success {
+  color: #ffffff;
+  background-color: var(--cerf-success);
+  font-weight: 600;
+  border-radius: var(--cerf-radius-sm);
+  box-shadow: var(--cerf-shadow-md);
+  transition: all 0.2s ease-in-out;
+}
+
+.cerf-btn-success:hover {
+  background-color: var(--cerf-success-600);
+}
+
+.cerf-btn-success:disabled {
+  background-color: var(--cerf-border-strong);
+  color: var(--cerf-text-secondary);
+  cursor: not-allowed;
+  transform: none;
+}
+
+.cerf-btn-danger {
+  color: #ffffff;
+  background-color: var(--cerf-danger);
+  font-weight: 600;
+  border-radius: var(--cerf-radius-sm);
+  box-shadow: var(--cerf-shadow-md);
+  transition: all 0.2s ease-in-out;
+}
+
+.cerf-btn-danger:hover {
+  background-color: var(--cerf-danger-600);
+}
+
+/* Paineis de resultado de verificacao */
+.cerf-result-success {
+  background-color: var(--cerf-success);
+  border-radius: var(--cerf-radius-md);
+}
+
+.cerf-result-danger {
+  background-color: var(--cerf-danger);
+  border-radius: var(--cerf-radius-md);
+}
+
+.cerf-result-warning {
+  background-color: var(--cerf-warning);
+  border-radius: var(--cerf-radius-md);
+}
+
+/* Alerta neutro sobre fundo escuro (ex: aguardando deteccao) */
+.cerf-alert-error-on-dark {
+  background-color: rgba(239, 68, 68, 0.1);
+  border: 1px solid var(--cerf-danger);
+  border-radius: var(--cerf-radius-sm);
+}
+
+.cerf-alert-error-on-dark-text {
+  color: #fca5a5;
+}
+
+/* Cards de navegacao (menu principal) — escuros, com anel ciano no hover */
+.cerf-card {
+  background-color: var(--cerf-graphite-800);
+  border: 1px solid var(--cerf-border-on-dark);
+  border-radius: var(--cerf-radius-lg);
+  box-shadow: var(--cerf-shadow-md);
+  transition: all 0.3s ease-in-out;
+}
+
+.cerf-card:hover {
+  border-color: var(--cerf-cyan-500);
+  box-shadow: var(--cerf-shadow-lg), var(--cerf-glow-cyan);
+  transform: translateY(-4px);
+}
+
+.cerf-card-icon {
+  background-color: var(--cerf-graphite-700);
+  border: 1px solid var(--cerf-cyan-500);
+  border-radius: 9999px;
+  transition: all 0.3s ease-in-out;
+}
+
+.cerf-card-icon svg {
+  color: var(--cerf-cyan-500);
+}
+
+.cerf-card:hover .cerf-card-icon {
+  background-color: var(--cerf-cyan-500);
+  transform: scale(1.1);
+}
+
+.cerf-card:hover .cerf-card-icon svg {
+  color: var(--cerf-graphite-900);
+}
+
+/*  Cabecalhos/rodapes escuros de secao */
+.cerf-band-dark {
+  background-color: var(--cerf-graphite-700);
+  color: var(--cerf-text-on-dark);
+}
+
+.cerf-band-dark-subtext {
+  color: var(--cerf-cyan-100);
+}
+
+/* Links do rodapé global */
+.cerf-footer-link {
+  color: var(--cerf-text-on-dark-muted);
+  transition: all 0.2s ease-in-out;
+}
+
+.cerf-footer-link:hover {
+  color: var(--cerf-cyan-500);
+  transform: translateY(-2px);
+}
+
+/* Botões de acao adicionais */
+
+/* Botao de acao secundaria (info/neutro) — ex: alternar detalhes */
+.cerf-btn-info {
+  color: var(--cerf-text-on-accent);
+  background-color: var(--cerf-cyan-400);
+  font-weight: 600;
+  border-radius: var(--cerf-radius-sm);
+  box-shadow: var(--cerf-shadow-md);
+  transition: all 0.2s ease-in-out;
+}
+
+.cerf-btn-info:hover {
+  background-color: var(--cerf-cyan-500);
+}
+
+.cerf-btn-info:disabled {
+  background-color: var(--cerf-border-strong);
+  color: var(--cerf-text-secondary);
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Botao neutro/cinza (ex: Cancelar em modais) */
+.cerf-btn-neutral {
+  color: var(--cerf-graphite-800);
+  background-color: #e2e8f0;
+  font-weight: 600;
+  border-radius: var(--cerf-radius-sm);
+  transition: all 0.2s ease-in-out;
+}
+
+.cerf-btn-neutral:hover {
+  background-color: #cbd5e1;
+}
+
+.cerf-btn-neutral:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.cerf-modal-overlay {
+  background-color: rgba(10, 15, 26, 0.75);
+  backdrop-filter: blur(2px);
+}
+
+.cerf-modal-icon-danger {
+  background-color: var(--cerf-danger-bg);
+  border-radius: 9999px;
+}
+
+/* Card de estatísticas */
+.cerf-stat-card {
+  background-color: var(--cerf-cyan-100);
+  border: 1px solid var(--cerf-cyan-400);
+  border-radius: var(--cerf-radius-md);
+}
+
+.cerf-stat-card-title {
+  color: var(--cerf-text-on-accent);
+  font-weight: 600;
+}
+
+.cerf-stat-card-value {
+  color: var(--cerf-cyan-600);
+  font-weight: 700;
+}
+
+.cerf-stat-card-alt {
+  background-color: var(--cerf-success-bg);
+  border: 1px solid var(--cerf-success-border);
+  border-radius: var(--cerf-radius-md);
+}
+
+.cerf-stat-card-alt-title {
+  color: var(--cerf-success-600);
+  font-weight: 600;
+}
+
+.cerf-stat-card-alt-value {
+  color: var(--cerf-success-600);
+  font-weight: 700;
+}
+
+/* Painel neutro dentro de card claro (ex: bloco "Usuarios por Tipo") */
+.cerf-panel-muted {
+  background-color: #f8fafc;
+  border: 1px solid var(--cerf-border);
+  border-radius: var(--cerf-radius-md);
+}
+
+.cerf-panel-muted-item {
+  background-color: var(--cerf-surface);
+  border: 1px solid var(--cerf-border);
+  border-radius: var(--cerf-radius-sm);
+}
+
+/* Linha de lista com hover (ex: lista de gestores) */
+.cerf-list-row {
+  border: 1px solid var(--cerf-border);
+  border-radius: var(--cerf-radius-md);
+  transition: all 0.2s ease-in-out;
+}
+
+.cerf-list-row:hover {
+  border-color: var(--cerf-cyan-500);
+  box-shadow: var(--cerf-shadow-md);
+}
+
+/* Botao icone de exclusao dentro de linha de lista */
+.cerf-icon-btn-danger {
+  color: var(--cerf-text-secondary);
+  border-radius: var(--cerf-radius-sm);
+  transition: all 0.2s ease-in-out;
+}
+
+.cerf-icon-btn-danger:hover {
+  color: var(--cerf-danger);
+  background-color: var(--cerf-danger-bg);
+}
+
+.cerf-icon-btn-danger:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Faixa com gradiente escuro-para-ciano para a página de gerenciamento de usuários 2*/
+.cerf-band-gradient {
+  background-image: linear-gradient(to right, var(--cerf-graphite-800), var(--cerf-graphite-700));
+  border-bottom: 1px solid var(--cerf-cyan-500);
+  color: var(--cerf-text-on-dark);
 }

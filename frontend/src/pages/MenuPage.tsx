@@ -1,5 +1,12 @@
 import { Link } from "react-router-dom";
-import { UserPlus, ScanFace, UtensilsCrossed, BarChart3, Settings, Shield } from "lucide-react";
+import {
+  UserPlus,
+  ScanFace,
+  UtensilsCrossed,
+  BarChart3,
+  Settings,
+  Shield,
+} from "lucide-react";
 import "../styles/index.css";
 
 function MenuPage() {
@@ -43,19 +50,19 @@ function MenuPage() {
   ];
 
   return (
-    <main className="min-h-screen flex items-center justify-center p-8">
+    <main className="cerf-scan-bg min-h-screen flex items-center justify-center p-8">
       <div className="w-full max-w-5xl">
         {/* Header com Logo */}
         <div className="flex items-center justify-center gap-4 mb-8">
-          <h1 className="text-3xl md:text-4xl font-bold text-[#1E3A8A]">Bem vindo ao C.E.R.F</h1>
-          <div className="w-14 h-14 bg-white border-2 border-[#1E3A8A] rounded-xl flex items-center justify-center">
-            <ScanFace className="w-8 h-8 text-[#1E3A8A]" />
+          <h1 className="cerf-heading-on-dark text-3xl md:text-4xl">Bem vindo ao C.E.R.F</h1>
+          <div className="cerf-icon-badge w-14 h-14">
+            <ScanFace className="w-8 h-8" />
           </div>
         </div>
 
         {/* Título da Seção */}
         <div className="text-center mb-10">
-          <h2 className="text-2xl md:text-3xl font-semibold text-[#1E3A8A]">
+          <h2 className="cerf-heading-on-dark text-2xl md:text-3xl font-semibold">
             O que você deseja fazer?
           </h2>
         </div>
@@ -65,22 +72,18 @@ function MenuPage() {
           {menuItems.map((item, index) => {
             const Icon = item.icon;
             return (
-              <Link
-                key={index}
-                to={item.to}
-                className="group bg-white rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 border-2 border-[#1E3A8A]/20 hover:border-[#1E3A8A]"
-              >
+              <Link key={index} to={item.to} className="cerf-card group p-6">
                 <div className="flex flex-col items-center text-center">
                   {/* Ícone */}
-                  <div className="w-16 h-16 bg-[#1E3A8A] rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
-                    <Icon className="w-8 h-8 text-white" />
+                  <div className="cerf-card-icon w-16 h-16 flex items-center justify-center mb-4">
+                    <Icon className="w-8 h-8" />
                   </div>
 
                   {/* Título */}
-                  <h3 className="text-lg font-semibold text-[#1E3A8A] mb-2">{item.title}</h3>
+                  <h3 className="cerf-heading-on-dark text-lg mb-2">{item.title}</h3>
 
                   {/* Descrição */}
-                  <p className="text-sm text-gray-600">{item.description}</p>
+                  <p className="cerf-subtext-on-dark text-sm">{item.description}</p>
                 </div>
               </Link>
             );
