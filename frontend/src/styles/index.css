@@ -302,6 +302,17 @@ button:hover {
   color: var(--cerf-cyan-100);
 }
 
+/* Links do rodapé global */
+.cerf-footer-link {
+  color: var(--cerf-text-on-dark-muted);
+  transition: all 0.2s ease-in-out;
+}
+
+.cerf-footer-link:hover {
+  color: var(--cerf-cyan-500);
+  transform: translateY(-2px);
+}
+
 /* Botões de acao adicionais */
 
 /* Botao de acao secundaria (info/neutro) — ex: alternar detalhes */

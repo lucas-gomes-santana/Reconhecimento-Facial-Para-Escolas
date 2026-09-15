@@ -6,7 +6,6 @@ import {
   BarChart3,
   Settings,
   Shield,
-  Info,
 } from "lucide-react";
 import "../styles/index.css";
 
@@ -47,12 +46,6 @@ function MenuPage() {
       icon: Shield,
       title: "Página dos ADMs",
       description: "Acesse a página dos administradores",
-    },
-    {
-      to: "/sobre",
-      icon: Info,
-      title: "Sobre o Projeto",
-      description: "Informações sobre o C.E.R.F e desenvolvedores",
     },
   ];
 

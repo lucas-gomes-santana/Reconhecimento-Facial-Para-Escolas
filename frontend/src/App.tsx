@@ -9,6 +9,7 @@ import AdminPage from "./pages/AdminPage";
 import MenuPage from "./pages/MenuPage";
 import VerificarMerenda from "./pages/VerificarMerenda";
 import SobreProjeto from "./pages/Sobre";
+import Footer from "./components/Footer";
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
             <Route path="/sobre" element={<SobreProjeto />}></Route>
           </Routes>
         </main>
+        <Footer />
       </div>
     </Router>
   );
