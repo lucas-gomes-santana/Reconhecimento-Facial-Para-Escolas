@@ -4,7 +4,7 @@ import "../styles/index.css";
 
 function Footer() {
   return (
-    <footer className="cerf-band-dark w-full py-6">
+    <footer className="cerf-band-dark w-full py-6 fixed bottom-0 ">
       <div className="max-w-5xl mx-auto px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
         <div className="flex items-center gap-2">
           <div className="cerf-icon-badge w-8 h-8">

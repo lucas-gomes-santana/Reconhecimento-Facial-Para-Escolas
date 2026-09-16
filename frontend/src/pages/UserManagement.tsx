@@ -53,7 +53,6 @@ function UserManagement() {
     if (sucesso) {
       setUsuarioParaRemover(null);
     }
-
     setRemovendoUsuario(null);
   };
 
@@ -66,7 +65,7 @@ function UserManagement() {
   };
 
   return (
-    <div className="cerf-scan-bg min-h-screen flex h-screen justify-center items-center">
+    <div className="cerf-scan-bg mt-10 flex justify-center items-center">
       <div className="min-w-4xl mx-auto">
         <div className="cerf-surface overflow-hidden">
           {/* Header com gradiente escuro/ciano */}

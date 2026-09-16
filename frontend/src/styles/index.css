@@ -61,6 +61,7 @@
 body {
   background-color: var(--cerf-graphite-900);
   color: var(--cerf-text-on-dark);
+  height: 110vh;
 }
 
 html {
@@ -73,12 +74,16 @@ button:hover {
   transition: transform 0.2s ease-in-out;
 }
 
+.screen-vh {
+  height: 140vh;
+}
+
 /* Fundo de tela com leve textura de malha quadriculada */
 .cerf-scan-bg {
   background-color: var(--cerf-graphite-900);
   background-image:
-    linear-gradient(rgba(34, 211, 238, 0.1) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(34, 211, 238, 0.1) 1px, transparent 1px);
+    linear-gradient(rgba(34, 211, 238, 0.15) 2px, transparent 2px),
+    linear-gradient(90deg, rgba(34, 211, 238, 0.15) 2px, transparent 2px);
   background-size: 32px 32px;
 }
 

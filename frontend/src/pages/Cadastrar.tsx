@@ -28,7 +28,7 @@ function Cadastrar() {
   const { expressionStatus } = useFaceDetection();
 
   return (
-    <div className="cerf-scan-bg min-h-screen flex items-center justify-center p-8">
+    <div className="cerf-scan-bg screen-vh flex items-center justify-center">
       <div className="w-full max-w-xl cerf-surface">
         {/* Header */}
         <div className="px-6 pt-6 pb-4">
