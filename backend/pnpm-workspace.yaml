@@ -1,4 +1,6 @@
 allowBuilds:
+  '@tensorflow/tfjs-node': true
   bcrypt: true
+  core-js: true
   esbuild: true
   mongodb-memory-server: true
