@@ -82,8 +82,8 @@ button:hover {
 .cerf-scan-bg {
   background-color: var(--cerf-graphite-900);
   background-image:
-    linear-gradient(rgba(34, 211, 238, 0.15) 2px, transparent 2px),
-    linear-gradient(90deg, rgba(34, 211, 238, 0.15) 2px, transparent 2px);
+    linear-gradient(rgba(34, 211, 238, 0.08) 2px, transparent 2px),
+    linear-gradient(90deg, rgba(34, 211, 238, 0.08) 2px, transparent 2px);
   background-size: 32px 32px;
 }
 
