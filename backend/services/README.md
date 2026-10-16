@@ -21,5 +21,4 @@ Visto que o sistema espera um número máximo de 1500 alunos em escolas estaduai
 ## Método de comparação facial
 
 Foi decidido utilizar cálculo de **similaridade de cossenos** nos vetores faciais por ser menos sensível a iluminação e distância do rosto para a câmera, como era o método de
-**distância euclidiana** anterior. Embora a biblioteca do face-api.js disponibilize função nativa para comparação, houve conflito de versões entre o NodeJs e a dependência na tentativa
-de implementação no backend. Por isso, a fórmula foi escrita manualmente no service.
+**distância euclidiana** anterior. Está sendo chamada uma versão alternativa da biblioteca face-api.js modificada especificamente para esse projeto. Usando a fórmula e vetorização programadas lá.

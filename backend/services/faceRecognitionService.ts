@@ -1,5 +1,4 @@
 import { cosineSimilarity, cosineSimilarityBatch } from "face-api.js";
-
 import Usuario, { type IUsuario } from "../models/Usuario.ts";
 import { threshold } from "../utils/threshold.ts";
 
