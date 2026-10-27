@@ -10,6 +10,6 @@ da assinatura declarada:
 fn(req, res, next);
 ```
 
-Portanto, remover o parâmetro não apenas "quebra a assinatura": ele \*\*desloca todos os argumentosrecebidos e faz o handler falhar silenciosamente.
+Portanto, remover o parâmetro não apenas "quebra a assinatura": ele \*\*desloca todos os argumentos recebidos e faz o handler falhar silenciosamente.
 Qualquer função registrada como handler de rota (`router.get/post/put/patch/delete`) recebe `(req, res)` por posição. Por isso a regra vale para praticamente todos
 os controllers
